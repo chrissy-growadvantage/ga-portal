@@ -62,7 +62,7 @@ export default function ClientList() {
         </div>
       ) : !filtered?.length ? (
         <Card>
-          <CardContent className="py-12 text-center">
+          <CardContent className="py-10 text-center">
             <Users className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">
               {search ? 'No clients match your search.' : 'No clients yet.'}
