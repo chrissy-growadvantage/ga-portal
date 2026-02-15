@@ -102,12 +102,56 @@ export default function Portal() {
 
   const pastMonthKeys = Object.keys(pastByMonth).sort().reverse();
 
+  // Calculate scope percentage for hero stats
+  const scopePercentage = currentScopes.length > 0
+    ? (() => {
+        const scope = currentScopes[0];
+        const scopeDeliveries = currentDeliveries.filter(d => d.scope_allocation_id === scope.id);
+        const used = scopeDeliveries.reduce((sum, d) => sum + (d.scope_cost || 0), 0);
+        return Math.round((used / scope.total_allocated) * 100);
+      })()
+    : 0;
+
   return (
     <PortalLayout
       operatorName={operator.full_name}
       businessName={operator.business_name}
       clientName={client.company_name || client.contact_name || 'Client'}
     >
+      {/* Hero Stats */}
+      <section className="grid grid-cols-3 gap-3">
+        <Card className="border-border/60">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold font-mono text-primary">
+              {currentDeliveries.filter(d => d.status === 'completed' || d.status === 'approved').length}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Deliveries this month
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold font-mono text-success">
+              {scopePercentage}%
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Scope used
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold font-mono text-accent-warm">
+              {pendingApproval.length}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Pending approval
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Scope Tracker */}
       {currentScopes.length > 0 && (
         <section>
