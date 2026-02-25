@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luma Brand Identity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5B4DC7;
+      --primary-glow: #EDEAFC;
+      --accent: #E8853A;
+      --success: #25A576;
+      --destructive: #EF4343;
+      --background: #FDFBF8;
+      --surface: #FFFFFF;
+      --foreground: #131318;
+      --muted-text: #666770;
+      --border: #E6E4E0;
+      --muted-bg: #F6F5F3;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--foreground);
+      background: var(--background);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 16px;
+      font-style: italic;
+      color: var(--muted-text);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      margin: 48px 0 16px;
+      color: var(--foreground);
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 32px 0 12px;
+      color: var(--foreground);
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin: 24px 0 8px;
+      color: var(--foreground);
+    }
+
+    p {
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    em {
+      font-style: italic;
+      color: var(--muted-text);
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      background: var(--surface);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(91, 77, 199, 0.1);
+    }
+
+    th {
+      background: var(--muted-bg);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .color-swatch {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-right: 8px;
+      border: 1px solid var(--border);
+    }
+
+    code, .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--muted-bg);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 500;
+    }
+
+    pre {
+      background: var(--muted-bg);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--border);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    ul, ol {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+      box-shadow: 0 1px 3px rgba(91, 77, 199, 0.08);
+    }
+
+    .spectrum {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: 8px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .do-dont {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .do-card, .dont-card {
+      padding: 16px;
+      border-radius: 8px;
+      border: 2px solid;
+    }
+
+    .do-card {
+      background: rgba(37, 165, 118, 0.05);
+      border-color: var(--success);
+    }
+
+    .dont-card {
+      background: rgba(239, 67, 67, 0.05);
+      border-color: var(--destructive);
+    }
+
+    .do-card h4, .dont-card h4 {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .do-card h4 { color: var(--success); }
+    .dont-card h4 { color: var(--destructive); }
+
+    .highlight {
+      background: var(--primary-glow);
+      border-left: 3px solid var(--primary);
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 4px;
+    }
+
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+
+    .toc h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .toc ol {
+      margin-top: 16px;
+    }
+
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 32px 16px;
+      }
+
+      .do-dont {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Luma</div>
+      <div class="tagline">Light reveals what's already there.</div>
+    </header>
+
+    <div class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#essence">Brand Essence</a></li>
+        <li><a href="#personality">Brand Personality</a></li>
+        <li><a href="#visual">Visual Identity</a></li>
+        <li><a href="#color">Color System</a></li>
+        <li><a href="#typography">Typography System</a></li>
+        <li><a href="#voice">Voice & Tone</a></li>
+        <li><a href="#distinctive">What Makes Luma Distinctive</a></li>
+        <li><a href="#application">Brand Application Guidelines</a></li>
+        <li><a href="#accessibility">Accessibility as Brand Value</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </div>
+
+    <section id="essence" class="section">
+      <h1>1. Brand Essence</h1>
+
+      <h3>The Name</h3>
+      <p><strong>Luma</strong> — from the Latin <em>lumen</em> (light). Light doesn't create — it reveals. An operator's work already exists; Luma makes it visible. The name is short, warm, and memorable. It sounds like a person's name, not a product. It feels premium without being pretentious.</p>
+
+      <h3>Tagline</h3>
+      <p><strong>Primary:</strong> Make invisible work undeniable.<br>
+      <strong>Supporting:</strong> Your delivery, made visible. / The Client Delivery OS.</p>
+
+      <h3>The Core Tension Luma Resolves</h3>
+      <p>Operators do excellent work that is structurally invisible. Clients pay for outcomes they can't see. This creates a trust gap — not because trust is broken, but because evidence is missing. Luma fills the gap with clarity, not complexity.</p>
+
+      <h3>Brand Promise</h3>
+      <p><strong>To operators:</strong> Your work will speak for itself. No more proving your value — Luma does it for you.<br>
+      <strong>To clients:</strong> One link. Full clarity. Zero effort.</p>
+    </section>
+
+    <hr>
+
+    <section id="personality" class="section">
+      <h1>2. Brand Personality</h1>
+
+      <h3>The Character</h3>
+      <p>Luma is the <strong>confident, organized colleague</strong> who makes everyone around them look better. Not a flashy salesperson. Not a cold enterprise tool. Think: the person in the room who doesn't need to talk loudest because the work is obviously excellent.</p>
+
+      <h3>Personality Attributes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>What it means</th>
+            <th>What it doesn't mean</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Assured</strong></td>
+            <td>Confident in what it does, clear about its purpose</td>
+            <td>Arrogant, competitive, or defensive</td>
+          </tr>
+          <tr>
+            <td><strong>Warm</strong></td>
+            <td>Approachable, human, not corporate</td>
+            <td>Cutesy, informal, or unprofessional</td>
+          </tr>
+          <tr>
+            <td><strong>Precise</strong></td>
+            <td>Every detail is intentional, data is exact</td>
+            <td>Cold, robotic, or sterile</td>
+          </tr>
+          <tr>
+            <td><strong>Supportive</strong></td>
+            <td>Exists to make the operator look competent</td>
+            <td>Patronizing or hand-holding</td>
+          </tr>
+          <tr>
+            <td><strong>Understated</strong></td>
+            <td>Premium expressed through restraint, not flash</td>
+            <td>Boring, plain, or generic</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Brand Archetype</h3>
+      <p><strong>The Sage-Creator hybrid.</strong> Luma brings order and visibility (Sage) while helping operators craft the narrative of their value (Creator). It's not about telling operators what to do — it's about giving them the tools to show what they've already done.</p>
+
+      <h3>Personality Spectrum</h3>
+      <div class="spectrum">
+Cold ─────────────────────────●──── Warm<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ Luma sits here: warm but not fuzzy<br>
+<br>
+Playful ──────────────●──────────── Serious<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ Luma sits here: purposeful with personality<br>
+<br>
+Minimal ──────────●──────────────── Maximal<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ Luma sits here: clean but not empty<br>
+<br>
+Edgy ────────────────────●───────── Safe<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ Luma sits here: refined, not risky
+      </div>
+    </section>
+
+    <hr>
+
+    <section id="visual" class="section">
+      <h1>3. Visual Identity</h1>
+
+      <h3>Design Philosophy</h3>
+      <p>Luma's visual language is <strong>warm precision</strong> — the intersection of approachable warmth and data-driven clarity. Inspired by:</p>
+      <ul>
+        <li><strong>Chrissy Elle's brand:</strong> Understated confidence, "whispers rather than shouts," anti-hype authenticity</li>
+        <li><strong>Grow Advantage's tone:</strong> Practical expertise, conversational professionalism, operational focus</li>
+        <li><strong>Premium SaaS benchmarks:</strong> Linear's density-with-clarity, Notion's warmth-with-structure, Stripe's polish-without-pretension</li>
+      </ul>
+      <p>The goal: a tool that Sarah (the operator) trusts enough to share with Marcus (the client), and that Marcus judges as "my operator has their act together" in the first 50 milliseconds.</p>
+
+      <h3>Visual Pillars</h3>
+      <ol>
+        <li><strong>Warmth through tone</strong> — Off-white backgrounds with warmth (not cold gray-blue). Rounded corners. Soft shadows tinted with the primary color. No hard edges or stark contrasts.</li>
+        <li><strong>Precision through typography</strong> — Monospace numbers for data. Clear hierarchy. Tight letter-spacing on headings. The type system alone should signal "this tool knows what it's doing."</li>
+        <li><strong>Restraint as premium</strong> — Whitespace is the luxury material. No gradients. No illustrations. No mascots. The interface IS the brand. Every saved pixel of noise is a pixel of clarity earned.</li>
+        <li><strong>Color with purpose</strong> — Color is used semantically, not decoratively. Indigo means action. Green means progress. Amber means attention. Red means exceeded. No color exists without a reason.</li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <section id="color" class="section">
+      <h1>4. Color System</h1>
+
+      <h3>Philosophy</h3>
+      <p>The palette is built on a <strong>warm indigo</strong> foundation — distinctive from the cold blues of enterprise SaaS and the bright teals of startup tools. Indigo is historically associated with value, depth, and craftsmanship (indigo dye was once more valuable than gold). Paired with <strong>warm amber</strong> as the attention accent, it creates a palette that is unmistakably Luma.</p>
+
+      <h3>Primary Palette</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Name</th>
+            <th>HSL</th>
+            <th>Hex</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="color-swatch" style="background: #5B4DC7;"></span><strong>Primary</strong></td>
+            <td>Warm Indigo</td>
+            <td><code>245 58% 51%</code></td>
+            <td><code>#5B4DC7</code></td>
+            <td>Actions, active states, links, brand moments</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #EDEAFC;"></span><strong>Primary Glow</strong></td>
+            <td>Indigo Tint</td>
+            <td><code>245 58% 93%</code></td>
+            <td><code>#EDEAFC</code></td>
+            <td>Primary hover backgrounds, selected states</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #E8853A;"></span><strong>Accent</strong></td>
+            <td>Warm Amber</td>
+            <td><code>28 92% 58%</code></td>
+            <td><code>#E8853A</code></td>
+            <td>Attention signals, scope warnings, CTAs</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #25A576;"></span><strong>Success</strong></td>
+            <td>Sage Green</td>
+            <td><code>158 64% 40%</code></td>
+            <td><code>#25A576</code></td>
+            <td>Completed states, on-track scope</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #EF4343;"></span><strong>Destructive</strong></td>
+            <td>Warm Red</td>
+            <td><code>0 84% 60%</code></td>
+            <td><code>#EF4343</code></td>
+            <td>Errors, exceeded scope, destructive actions</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Neutral Palette</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Name</th>
+            <th>HSL</th>
+            <th>Hex</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="color-swatch" style="background: #FDFBF8;"></span><strong>Background</strong></td>
+            <td>Warm Linen</td>
+            <td><code>40 20% 98%</code></td>
+            <td><code>#FDFBF8</code></td>
+            <td>Operator page background</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #FFFFFF;"></span><strong>Surface</strong></td>
+            <td>Pure White</td>
+            <td><code>0 0% 100%</code></td>
+            <td><code>#FFFFFF</code></td>
+            <td>Cards, elevated surfaces</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #131318; border-color: #666770;"></span><strong>Foreground</strong></td>
+            <td>Near Black</td>
+            <td><code>240 10% 8%</code></td>
+            <td><code>#131318</code></td>
+            <td>Primary text</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #666770;"></span><strong>Muted Text</strong></td>
+            <td>Warm Gray</td>
+            <td><code>240 5% 42%</code></td>
+            <td><code>#666770</code></td>
+            <td>Secondary text, metadata</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #E6E4E0;"></span><strong>Border</strong></td>
+            <td>Warm Edge</td>
+            <td><code>40 8% 90%</code></td>
+            <td><code>#E6E4E0</code></td>
+            <td>Dividers, card outlines</td>
+          </tr>
+          <tr>
+            <td><span class="color-swatch" style="background: #F6F5F3;"></span><strong>Muted BG</strong></td>
+            <td>Warm Fog</td>
+            <td><code>40 10% 96%</code></td>
+            <td><code>#F6F5F3</code></td>
+            <td>Subtle section backgrounds</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Dual-Theme: Operator vs. Client Portal</h3>
+      <p>The operator dashboard and client portal share the same palette but use it differently to create distinct experiences that still feel like one product.</p>
+
+      <div class="card">
+        <h4>Operator Dashboard (Workspace Feel)</h4>
+        <ul>
+          <li>Background: Warm Linen (<code>#FDFBF8</code>) with subtle noise texture</li>
+          <li>Higher information density, more color signals</li>
+          <li>Cards have subtle warm-tinted shadows</li>
+          <li>Active use of the full semantic color range</li>
+          <li>Sidebar with slightly different surface tone</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4>Client Portal (Document Feel)</h4>
+        <ul>
+          <li>Background: Near-White (<code>#FCFCFC</code>) — cleaner, less texture</li>
+          <li>No noise texture — feels like a polished report</li>
+          <li>Narrower content column (max 640px) for reading comfort</li>
+          <li>Fewer colors — mostly neutrals with green/amber/red for scope status</li>
+          <li>No chrome (no sidebar, no nav) — content is the interface</li>
+          <li>Slightly lighter font weights — body at 400, headings at 700</li>
+        </ul>
+      </div>
+
+      <pre><code>/* Portal-specific overrides */
+.portal {
+  --background: 0 0% 99%;     /* Cleaner, less warm */
+  --card: 0 0% 100%;          /* Pure white */
+  --border: 0 0% 92%;         /* Cooler border */
+}</code></pre>
+
+      <h3>Semantic Color Mapping</h3>
+      <pre><code>Scope Status:
+  0-60%   → success (green)   → "On Track"
+  61-85%  → primary (indigo)  → "Active"
+  86-100% → accent-warm (amber) → "Nearing Limit"
+  100%    → accent-warm (amber) → "Fully Used"
+  101%+   → destructive (red) → "Exceeded"
+
+Client Status:
+  Active   → success (green dot)
+  Paused   → muted (gray dot)
+  Archived → muted (gray dot, dimmed text)
+
+Delivery Status:
+  Completed         → success (green)
+  In Progress       → primary (indigo)
+  Pending Approval  → accent-warm (amber)
+  Approved          → success (green + check)
+  Revision Requested → destructive (red)</code></pre>
+    </section>
+
+    <hr>
+
+    <section id="typography" class="section">
+      <h1>5. Typography System</h1>
+
+      <h3>Font Selection Rationale</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Font</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Display & Body</strong></td>
+            <td>Plus Jakarta Sans</td>
+            <td>Geometric but warm — rounded terminals give personality without sacrificing readability. More distinctive than Inter/Roboto. Signals "modern and intentional." Google Fonts, well-hinted, excellent weight range.</td>
+          </tr>
+          <tr>
+            <td><strong>Data & Numbers</strong></td>
+            <td>JetBrains Mono</td>
+            <td>Purpose-built for data legibility. Tabular figures align naturally. The monospace treatment tells users "this is precise data." Creates instant visual contrast with the body font.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Type Scale</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Size</th>
+            <th>Weight</th>
+            <th>Tracking</th>
+            <th>Font</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Display</strong></td>
+            <td>30px</td>
+            <td>800</td>
+            <td>-0.02em</td>
+            <td>Jakarta</td>
+            <td>Page titles: "Dashboard," client names</td>
+          </tr>
+          <tr>
+            <td><strong>H1</strong></td>
+            <td>24px</td>
+            <td>700</td>
+            <td>-0.015em</td>
+            <td>Jakarta</td>
+            <td>Section titles</td>
+          </tr>
+          <tr>
+            <td><strong>H2</strong></td>
+            <td>20px</td>
+            <td>600</td>
+            <td>-0.01em</td>
+            <td>Jakarta</td>
+            <td>Card titles, subsections</td>
+          </tr>
+          <tr>
+            <td><strong>H3</strong></td>
+            <td>16px</td>
+            <td>600</td>
+            <td>-0.005em</td>
+            <td>Jakarta</td>
+            <td>List headers, labels</td>
+          </tr>
+          <tr>
+            <td><strong>Body</strong></td>
+            <td>14px</td>
+            <td>400</td>
+            <td>0</td>
+            <td>Jakarta</td>
+            <td>Default content</td>
+          </tr>
+          <tr>
+            <td><strong>Body Small</strong></td>
+            <td>13px</td>
+            <td>400-500</td>
+            <td>0</td>
+            <td>Jakarta</td>
+            <td>Secondary info, metadata</td>
+          </tr>
+          <tr>
+            <td><strong>Caption</strong></td>
+            <td>12px</td>
+            <td>500</td>
+            <td>0.01em</td>
+            <td>Jakarta</td>
+            <td>Badges, timestamps</td>
+          </tr>
+          <tr>
+            <td><strong>Data</strong></td>
+            <td>14px</td>
+            <td>500</td>
+            <td>0</td>
+            <td class="mono">JetBrains Mono</td>
+            <td>Scope numbers, hours, percentages</td>
+          </tr>
+          <tr>
+            <td><strong>Data Large</strong></td>
+            <td>24px</td>
+            <td>600</td>
+            <td>0</td>
+            <td class="mono">JetBrains Mono</td>
+            <td>Scope tracker headline numbers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Typography Rules</h3>
+      <ol>
+        <li><strong>Weight contrast, not size contrast.</strong> Headings differ from body primarily through weight (700 vs 400), not just size. This creates hierarchy without scale bloat.</li>
+        <li><strong>Mono for data, sans for prose.</strong> Scope hours, percentages, and counts use JetBrains Mono. Descriptions, titles, and labels use Plus Jakarta Sans. The font switch is a visual cue: "this is a number that matters."</li>
+        <li><strong>Tight headings, comfortable body.</strong> Headings use negative letter-spacing (-0.02em to -0.005em) for a crafted feel. Body text uses default spacing for readability.</li>
+        <li><strong>Never below 13px.</strong> No readable text smaller than 13px. Badges and timestamps can use 12px at <code>font-weight: 500</code> for compensation.</li>
+        <li><strong>Truncation over wrapping.</strong> In lists and cards, long text truncates with ellipsis. Full text appears on hover/detail view. This preserves layout rhythm.</li>
+      </ol>
+
+      <h3>Portal Typography Adjustments</h3>
+      <p>The client portal uses slightly different weight distribution:</p>
+      <ul>
+        <li>Headings: 700 (not 800) — less commanding, more informational</li>
+        <li>Body: 400 — lighter, more "report-like"</li>
+        <li>Data numbers: 600 — still prominent, but integrated</li>
+      </ul>
+    </section>
+
+    <hr>
+
+    <section id="voice" class="section">
+      <h1>6. Voice & Tone</h1>
+
+      <h3>Voice (Consistent)</h3>
+      <p>Luma speaks like a <strong>knowledgeable colleague</strong> — someone who has been in the trenches of client work and understands the operator's reality. Not a corporation. Not a chatbot. A peer who happens to be really good at organizing information.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Principle</th>
+            <th>Do</th>
+            <th>Don't</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Be direct</strong></td>
+            <td>"3 clients need attention"</td>
+            <td>"It looks like you might want to take a look at some of your clients"</td>
+          </tr>
+          <tr>
+            <td><strong>Be specific</strong></td>
+            <td>"Scope exceeded by 2 hours"</td>
+            <td>"Scope is getting close to the limit"</td>
+          </tr>
+          <tr>
+            <td><strong>Be human</strong></td>
+            <td>"No deliveries logged yet"</td>
+            <td>"Error: delivery_items array is empty"</td>
+          </tr>
+          <tr>
+            <td><strong>Be useful</strong></td>
+            <td>"Log your first delivery to start building a record"</td>
+            <td>"Click the button below to get started on your journey"</td>
+          </tr>
+          <tr>
+            <td><strong>Respect time</strong></td>
+            <td>"12 of 20 hours used"</td>
+            <td>"You have used twelve out of your twenty allocated hours this billing period"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Tone (Contextual)</h3>
+      <p>The tone shifts based on context, but always stays within the brand voice:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Context</th>
+            <th>Tone</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Empty states</strong></td>
+            <td>Encouraging, helpful</td>
+            <td>"Add your first client to get started"</td>
+          </tr>
+          <tr>
+            <td><strong>Success</strong></td>
+            <td>Brief, satisfying</td>
+            <td>"Delivery logged" / "Link copied"</td>
+          </tr>
+          <tr>
+            <td><strong>Warnings</strong></td>
+            <td>Clear, not alarming</td>
+            <td>"Scope nearing limit — 18 of 20 hours used"</td>
+          </tr>
+          <tr>
+            <td><strong>Errors</strong></td>
+            <td>Honest, actionable</td>
+            <td>"Couldn't save. Please try again."</td>
+          </tr>
+          <tr>
+            <td><strong>Portal</strong></td>
+            <td>Warm, professional</td>
+            <td>"Your delivery summary for February"</td>
+          </tr>
+          <tr>
+            <td><strong>Scope exceeded</strong></td>
+            <td>Factual, not judgmental</td>
+            <td>"2 hours over allocated scope" (not "WARNING: Over scope!")</td>
+          </tr>
+          <tr>
+            <td><strong>Onboarding</strong></td>
+            <td>Concise, momentum-building</td>
+            <td>"You're 3 steps from showing clients your value"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Writing Rules</h3>
+      <ol>
+        <li><strong>Sentence case everywhere.</strong> "Add your first client" not "Add Your First Client." Title case feels corporate.</li>
+        <li><strong>No exclamation marks.</strong> Confidence doesn't need exclamation. "Delivery logged." not "Delivery logged!"</li>
+        <li><strong>No jargon.</strong> The operator knows what "scope" means, but the client might not. Portal copy says "hours used" not "scope consumed."</li>
+        <li><strong>Active voice.</strong> "You've used 12 hours" not "12 hours have been used."</li>
+        <li><strong>Contractions are fine.</strong> "Couldn't save" is warmer than "Could not save." We're not writing legal docs.</li>
+        <li><strong>Numbers, not words.</strong> "3 clients" not "three clients." "12 of 20 hours" not "twelve of twenty hours." Operators and clients both scan numbers faster.</li>
+      </ol>
+
+      <h3>Client Portal Voice</h3>
+      <p>The portal speaks to Marcus (the client persona). Key differences from operator-facing copy:</p>
+      <ul>
+        <li><strong>Simpler vocabulary.</strong> "What's been done" not "Deliverables completed."</li>
+        <li><strong>No operator jargon.</strong> "Hours used" not "Scope allocation consumed."</li>
+        <li><strong>Shorter.</strong> Maximum 1-2 sentences per description. Marcus scans, he doesn't read.</li>
+        <li><strong>Confident framing.</strong> "Here's what was delivered" (not "Here's what your operator has been working on"). The work is the subject, not the person.</li>
+      </ul>
+    </section>
+
+    <hr>
+
+    <section id="distinctive" class="section">
+      <h1>7. What Makes Luma Distinctive</h1>
+
+      <h3>Against Generic SaaS</h3>
+      <p>Most SaaS tools look like they were generated from the same template: cold blue primary, Inter font, gray backgrounds, generic illustrations of happy people using laptops. Luma differentiates through:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Generic SaaS</th>
+            <th>Luma</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cold blue primary (#3B82F6)</td>
+            <td>Warm indigo (#5B4DC7) — richer, more distinctive</td>
+          </tr>
+          <tr>
+            <td>Inter/Roboto</td>
+            <td>Plus Jakarta Sans — geometric warmth with character</td>
+          </tr>
+          <tr>
+            <td>Stark white backgrounds</td>
+            <td>Warm Linen (#FDFBF8) — subtle warmth, noise texture</td>
+          </tr>
+          <tr>
+            <td>Generic illustration empty states</td>
+            <td>Text-first empty states with clear CTAs</td>
+          </tr>
+          <tr>
+            <td>Blue-gray shadows</td>
+            <td>Indigo-tinted shadows — everything feels cohesive</td>
+          </tr>
+          <tr>
+            <td>"Dashboard" with 47 widgets</td>
+            <td>Focused views with one primary action per screen</td>
+          </tr>
+          <tr>
+            <td>Dark mode as "invert all colors"</td>
+            <td>Dark mode with adjusted primary (lighter indigo for contrast)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Against Competitors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Competitor</th>
+            <th>Their look</th>
+            <th>Luma's advantage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Motion.io</strong></td>
+            <td>Clean but generic — could be any client portal tool</td>
+            <td>Luma's scope tracker is visually unique; the warm palette is instantly recognizable</td>
+          </tr>
+          <tr>
+            <td><strong>SPP.co</strong></td>
+            <td>Dense, enterprise-y — intimidating for solo operators</td>
+            <td>Luma's warmth and simplicity says "built for you, not for enterprise"</td>
+          </tr>
+          <tr>
+            <td><strong>SuiteDash</strong></td>
+            <td>Everything-tool visual noise — too many features on screen</td>
+            <td>Luma's restraint is its premium signal. Less surface area = more confidence</td>
+          </tr>
+          <tr>
+            <td><strong>Notion template</strong></td>
+            <td>DIY feel — "I built this myself" energy</td>
+            <td>Luma's polish says "your operator uses professional tools"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The Distinctive Moments</h3>
+      <ol>
+        <li><strong>The scope tracker.</strong> No other tool in this space has a scope visualization. The segmented progress bar with status colors is instantly ownable. This is Luma's visual signature.</li>
+        <li><strong>The portal.</strong> The client view — a single-scroll, no-login, document-like experience — is unlike anything in project management. It looks like a beautifully formatted report, not a software interface. This is the "wow" moment.</li>
+        <li><strong>The warm indigo.</strong> <code>#5B4DC7</code> is Luma's color. Not cold blue, not trendy purple, not generic teal. Warm indigo sits in a visual space that very few SaaS tools occupy. It's memorable.</li>
+        <li><strong>The noise texture.</strong> The subtle SVG noise on the operator background adds physical warmth — like paper grain. It's a small detail that separates Luma from flat, sterile SaaS surfaces. (Not used on the portal — the portal is a clean document.)</li>
+        <li><strong>Monospace data.</strong> Using JetBrains Mono for scope numbers and hours creates an immediate visual signal: "this is precise data." It's a typographic choice that communicates credibility without saying a word.</li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <section id="application" class="section">
+      <h1>8. Brand Application Guidelines</h1>
+
+      <h3>Logo Usage</h3>
+      <p>The Luma wordmark uses Plus Jakarta Sans at weight 800 with -0.03em letter-spacing. The "L" is subtly customized — the horizontal stroke extends slightly further than standard, creating a small shelf that evokes a progress bar.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Context</th>
+            <th>Treatment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>App header</strong></td>
+            <td>Wordmark in foreground color, no icon</td>
+          </tr>
+          <tr>
+            <td><strong>Client portal footer</strong></td>
+            <td>"Powered by Luma" in muted-foreground, small</td>
+          </tr>
+          <tr>
+            <td><strong>Favicon</strong></td>
+            <td>"L" in indigo on white, 32x32</td>
+          </tr>
+          <tr>
+            <td><strong>Social/marketing</strong></td>
+            <td>Wordmark + tagline on warm linen background</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Do's and Don'ts</h3>
+      <div class="do-dont">
+        <div class="do-card">
+          <h4>Do:</h4>
+          <ul>
+            <li>Use warm indigo as the dominant brand color</li>
+            <li>Let whitespace breathe — resist filling empty space</li>
+            <li>Use the noise texture on operator backgrounds</li>
+            <li>Keep the portal minimal and document-like</li>
+            <li>Let data (numbers, progress bars) be the visual hero</li>
+          </ul>
+        </div>
+        <div class="dont-card">
+          <h4>Don't:</h4>
+          <ul>
+            <li>Use cold blues or standard SaaS palettes</li>
+            <li>Add illustrations, mascots, or decorative graphics</li>
+            <li>Use gradient fills on backgrounds or buttons</li>
+            <li>Make the portal feel like a software dashboard</li>
+            <li>Add "powered by AI" messaging — Luma is about human work, not AI</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Imagery Style</h3>
+      <p>Luma does not use stock photography or illustrations in the product. The product IS the visual experience. If imagery is needed for marketing:</p>
+      <ul>
+        <li>Abstract, warm-toned textures (paper, linen, fabric)</li>
+        <li>Clean screenshots of the actual product</li>
+        <li>Never: generic stock photos of people at laptops</li>
+        <li>Never: isometric illustrations of floating UI elements</li>
+      </ul>
+
+      <h3>Social Media & Marketing Tone</h3>
+      <p>Marketing copy follows the same brand voice but can be slightly more assertive:</p>
+      <ul>
+        <li>"Your clients should never have to ask 'what have you been doing?'"</li>
+        <li>"Scope creep dies when scope is visible."</li>
+        <li>"Built for operators who are tired of proving their value."</li>
+        <li>"One link. Full clarity. Zero logins."</li>
+      </ul>
+
+      <p><strong>Avoid:</strong></p>
+      <ul>
+        <li>Hype language ("revolutionary," "game-changing," "10x")</li>
+        <li>Fear-based messaging ("stop losing clients" — too negative)</li>
+        <li>Technical jargon in marketing ("SaaS," "RLS," "edge functions")</li>
+        <li>Competitor bashing (Luma's positioning is about what it IS, not what others aren't)</li>
+      </ul>
+    </section>
+
+    <hr>
+
+    <section id="accessibility" class="section">
+      <h1>9. Accessibility as Brand Value</h1>
+
+      <p>Accessibility is not an afterthought — it's a brand principle. Luma's clients include non-technical business owners accessing portals on various devices and in various contexts. The brand commitment:</p>
+
+      <ol>
+        <li><strong>WCAG AA minimum</strong> on all color pairs (4.5:1 text, 3:1 UI)</li>
+        <li><strong>Triple encoding</strong> for all status states (color + icon + text label)</li>
+        <li><strong>prefers-reduced-motion</strong> respected everywhere</li>
+        <li><strong>Keyboard-navigable</strong> — every action reachable via keyboard</li>
+        <li><strong>Screen-reader-friendly</strong> — ARIA labels on all interactive elements</li>
+        <li><strong>Mobile-first portal</strong> — 80% of client views happen on phone</li>
+      </ol>
+
+      <p>This is premium, not charity. Accessibility is how Luma earns trust across the widest possible audience. Sarah won't share a portal link if she's not confident it works for every client.</p>
+    </section>
+
+    <hr>
+
+    <section id="summary" class="section">
+      <h1>10. Summary: The Luma Brand in One Paragraph</h1>
+
+      <div class="highlight">
+        <p>Luma is a warm, precise, and understated brand built for service operators who need their work to be visible without having to self-promote. The visual identity is anchored in warm indigo (<code>#5B4DC7</code>), Plus Jakarta Sans, and a design philosophy of "restraint as premium." The operator experience is a warm, productive workspace; the client experience is a clean, effortless document. Every design choice — from the noise texture on the background to the monospace numbers in the scope tracker — exists to communicate one thing: <em>this operator has their act together, and here's the proof.</em> Luma doesn't shout. It reveals.</p>
+      </div>
+    </section>
+
+    <footer style="margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border); text-align: center; color: var(--muted-text); font-size: 13px;">
+      <p>Luma Brand Identity — Generated 2026</p>
+    </footer>
+  </div>
+</body>
+</html>

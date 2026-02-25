@@ -1,0 +1,287 @@
+# Luma Demo Walkthrough — Chrissy (Grow Advantage)
+
+**Purpose:** Walk Chrissy through the end-to-end Luma experience: operator workflow + client portal.
+**Duration:** ~10 minutes (5-7 operator, 3-5 portal)
+**Presenter:** Mervin
+**Audience:** Chrissy (product owner)
+
+---
+
+## Pre-Demo Setup
+
+### 1. Seed the Demo Data
+
+1. Sign in to Luma as the demo operator
+2. Copy your auth user UUID from the Supabase Auth dashboard
+3. Open `supabase/seed-demo.sql`, replace `YOUR_OPERATOR_UUID` with your UUID
+4. Run the script in Supabase SQL Editor
+5. Confirm you see the success notices
+
+### 2. Verify the Data Loaded
+
+After seeding, you should have:
+
+| Client | Status | Scope | Scope Status |
+|--------|--------|-------|--------------|
+| Acme Corp | Active | 20 hours | 60% — On Track |
+| Bright Ideas Co | Active | 15 hours | 87% — Nearing Limit |
+| Summit Strategies | Active | 5 deliverables | 120% — Exceeded |
+| Evergreen Growth | Active | 30 tasks | 33% — On Track |
+
+Portal test URLs (append to your app URL):
+- `/portal/demo-acme-portal-token-2026` — Acme (on-track, has pending approval)
+- `/portal/demo-summit-portal-token-2026` — Summit (exceeded scope)
+- `/portal/demo-bright-expired-token-2026` — Bright Ideas (expired link — tests error state)
+
+### 3. Browser Setup
+
+- Tab 1: Luma operator app (logged in)
+- Tab 2: Ready for portal link (incognito/separate profile recommended to simulate client)
+
+---
+
+## Part 1: Operator Flow (5-7 minutes)
+
+### Step 1: Dashboard Overview
+
+**Navigate to:** `/` (Dashboard)
+
+**What Chrissy sees:**
+- Stat cards: Total Clients (4), Active (4), Paused (0), Archived (0)
+- Client list with status badges (color dot + label)
+- Each client card shows company name, contact, and status
+
+**Say:** *"This is where an operator starts their day. At a glance you see your entire roster and who needs attention."*
+
+### Step 2: Client List
+
+**Navigate to:** `/clients`
+
+**What Chrissy sees:**
+- Full client list with search bar
+- Status badges with color-coded dots
+
+**Say:** *"Searchable client list. As an OBM with 10+ clients, you can find anyone instantly."*
+
+### Step 3: Client Detail — Acme Corp
+
+**Click:** Acme Corp
+
+**What Chrissy sees:**
+- Client header with name, status badge, contact info
+- Magic Link panel (shows active link with copy/preview)
+- Tabs: Deliveries (default) and Scope
+
+**Say:** *"Everything about this client in one place. Contact info, their portal link, deliveries, and scope."*
+
+### Step 4: Quick-Add Delivery (Key Demo Moment)
+
+**Stay on:** Acme Corp → Deliveries tab
+
+**Action:** Click into the quick-add input at the top (or press `n` on keyboard)
+
+**Type:** `Weekly team standup notes`
+
+**Press:** Enter
+
+**What happens:**
+- Delivery is instantly logged with defaults (status: completed, category: Marketing — inherited from last used, date: now)
+- Green checkmark flash animation confirms success
+- New item appears in the timeline under "This Week"
+
+**Say:** *"This is the core workflow. An OBM logs 10+ things a week — typing a title and pressing Enter is all it takes. No clicking through dialogs."*
+
+### Step 5: Quick-Add with Tab Escalation
+
+**Action:** Click into quick-add again
+
+**Type:** `Client onboarding documentation`
+
+**Press:** Tab (not Enter)
+
+**What happens:**
+- Full Log Delivery dialog opens with the title pre-filled
+- Operator can now add description, change category, set hours, etc.
+
+**Say:** *"If they need to add details — hours, description, category — pressing Tab escalates to the full form without losing what they typed. Two tiers: fast path and full path."*
+
+**Action:** Fill in category (Operations), add hours (1.5), then click "Log Delivery"
+
+### Step 6: Delivery Timeline
+
+**Observe:** The deliveries tab now shows grouped timeline
+
+**What Chrissy sees:**
+- "This Week" section with the items just added + recent Acme deliveries
+- "Last Week" section with older items
+- Each item has: timeline dot (green = completed), title, category badge, hours, date, and status badge
+- Visual timeline connecting line between items
+
+**Say:** *"Instead of a flat list, deliveries are grouped by time period with a visual timeline. At a glance, an operator sees what happened this week vs last week."*
+
+### Step 7: Scope Tracker
+
+**Click:** Scope tab
+
+**What Chrissy sees:**
+- Scope usage card: "12 of 20 hours used" (number may vary after quick-adds)
+- Multi-segment progress bar (green = in-scope, amber = out-of-scope)
+- Status badge: "On Track" with green icon
+- Breakdown cards: In-scope, Out-of-scope, Remaining
+
+**Say:** *"Scope tracking is automatic. Every delivery logged counts against the allocation. The operator never has to manually update a spreadsheet."*
+
+**Point out:** *"The status tiers — On Track, Nearing, At Limit, Exceeded — use color, icon, AND text. Accessible and clear at a glance."*
+
+### Step 8: Magic Link Generation
+
+**Scroll up to:** Magic Link panel
+
+**What Chrissy sees:**
+- Active link (already generated by seed data)
+- Copy button, expiry date (30 days), Preview and Regenerate buttons
+
+**Action:** Click "Copy" to copy the link
+
+**Say:** *"One click to generate a shareable link. No client login needed — it's a magic link. Expires in 30 days for security. The operator controls when clients see their summary."*
+
+---
+
+## Part 2: Client Portal Flow (3-5 minutes)
+
+### Step 9: Open Client Portal — Acme Corp
+
+**Action:** Open Tab 2 (incognito). Paste the copied link, or navigate to:
+`http://localhost:5173/portal/demo-acme-portal-token-2026`
+
+**What Chrissy sees:**
+- Clean, minimal portal layout (white background, no noise texture)
+- Operator name and business at top
+- Client name and current month
+
+**Say:** *"This is what the client sees. No login, no app to download. Just their delivery summary, beautifully laid out."*
+
+### Step 10: Portal Scope Card
+
+**What Chrissy sees:**
+- Scope summary showing hours used vs allocated
+- Visual progress bar
+- Status indicator
+
+**Say:** *"The client sees exactly how much of their retainer has been used. Full transparency. This is what prevents scope creep conversations — the data speaks for itself."*
+
+### Step 11: Portal Delivery Timeline
+
+**Scroll down**
+
+**What Chrissy sees:**
+- Current month deliveries in a clean timeline
+- Each item shows title, category, date
+- No hours shown (clients don't see hours — intentional design decision)
+- Items that need approval are highlighted
+
+**Say:** *"The client sees what was delivered, organized by time. We intentionally hide hours from clients — they care about outcomes, not time spent."*
+
+### Step 12: Pending Approval (if available)
+
+**What Chrissy sees:**
+- "Needs Your Approval" section with Acme's SEO audit item
+- Approve/Request Revision buttons inline
+
+**Action:** Click "Approve" on the SEO audit item
+
+**What happens:**
+- Item moves to approved status
+- Confirmation feedback
+
+**Say:** *"Clients can approve deliveries right from this page. No back-and-forth emails. The operator sees the approval status update in real-time."*
+
+### Step 13: Portal — Summit (Exceeded Scope)
+
+**Navigate to:** `/portal/demo-summit-portal-token-2026`
+
+**What Chrissy sees:**
+- Scope card shows exceeded status (120%)
+- Red overflow indicator on progress bar
+- Out-of-scope items clearly marked
+
+**Say:** *"Here's a client who's exceeded their scope. This is the conversation-starter — the data is right there. No awkward 'I think we went over' — it's documented."*
+
+### Step 14: Expired Link Error State
+
+**Navigate to:** `/portal/demo-bright-expired-token-2026`
+
+**What Chrissy sees:**
+- Clean error page: "Link Expired"
+- Message asking client to contact their service provider
+
+**Say:** *"Expired links are handled gracefully. The client knows to ask for a new one. Invalid links show a similar message."*
+
+---
+
+## Part 3: Key Talking Points
+
+Use these to frame the value throughout the demo:
+
+### The Problem Luma Solves
+*"OBMs and service operators today track deliveries in spreadsheets, update clients via email, and manage scope in their head. Luma replaces all three."*
+
+### Competitive Advantage
+*"Most project management tools are built for teams — Luma is built for the operator-client relationship. It's the operator's tool that gives clients a window in."*
+
+### Why This Matters for Revenue
+*"Scope creep is the #1 revenue leak for service businesses. When scope is tracked automatically and visible to clients, the hard conversations become data conversations."*
+
+### Quick-Add is the Killer Feature
+*"70% of deliveries should be logged in under 3 seconds. Enter key, done. If this isn't fast enough, operators won't use it — and usage is everything."*
+
+### Magic Links = Zero Friction Client Access
+*"No password resets, no app downloads, no onboarding. One link, one page, full transparency. That's the bar for client experience in 2026."*
+
+---
+
+## Post-Demo Checklist
+
+After the demo, confirm with Chrissy:
+
+- [ ] Does the quick-add flow feel fast enough for daily use?
+- [ ] Are the scope status tiers (on-track → exceeded) clear and useful?
+- [ ] Is the client portal showing the right level of detail?
+- [ ] Should clients see hours, or is outcomes-only correct?
+- [ ] Is the magic link approach acceptable vs. client login?
+- [ ] Any missing deliverable categories for her use case?
+- [ ] What's her priority: more scope features, or polish what's here?
+
+---
+
+## Known Limitations (MVP)
+
+Be upfront about these if Chrissy asks:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Delivery editing | Not yet | Can log, can't edit after |
+| Scope period rollover | Not yet | Each period is independent |
+| Email notifications | Not yet | Magic links are manual share |
+| Batch delivery import | Not yet | One-at-a-time logging only |
+| Mobile-optimized portal | Partial | Responsive but not PWA |
+| Multi-operator support | Not yet | Single operator per account |
+
+---
+
+## Troubleshooting
+
+**Portal shows "Link Not Found"**
+- Check the magic_link_token in the clients table matches the URL token
+- Ensure seed script ran successfully
+
+**No deliveries showing**
+- Verify the seed data inserted correctly: `SELECT count(*) FROM delivery_items;` should return 19+
+
+**Quick-add not working**
+- Check browser console for errors
+- Ensure Supabase connection is active (check network tab)
+
+**Scope percentages look wrong**
+- Quick-add deliveries count against scope (scope_cost defaults to 1)
+- The numbers will shift as you add items during the demo

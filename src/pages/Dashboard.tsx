@@ -76,7 +76,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
@@ -90,8 +90,12 @@ export default function Dashboard() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <Card key={stat.label}>
+        {stats.map((stat, index) => (
+          <Card
+            key={stat.label}
+            className="animate-fade-in opacity-0"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <CardContent className="p-5">
               {isLoading ? (
                 <Skeleton className="h-8 w-16" />
@@ -126,7 +130,7 @@ export default function Dashboard() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-20 w-full rounded-xl" />
             ))}
@@ -148,15 +152,15 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-2">
-            {clients.slice(0, 5).map((client) => {
-              const statusCfg = CLIENT_STATUS_CONFIG[client.status as ClientStatus];
-              const latestScope = client.scope_allocations?.[0];
+          <Card className="animate-fade-in">
+            <div className="divide-y divide-border">
+              {clients.slice(0, 5).map((client) => {
+                const statusCfg = CLIENT_STATUS_CONFIG[client.status as ClientStatus];
+                const latestScope = client.scope_allocations?.[0];
 
-              return (
-                <Link key={client.id} to={`/clients/${client.id}`}>
-                  <Card className="card-interactive">
-                    <CardContent className="py-4">
+                return (
+                  <Link key={client.id} to={`/clients/${client.id}`}>
+                    <div className="p-5 hover:bg-muted/50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4 min-w-0">
                           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm shrink-0">
@@ -182,19 +186,22 @@ export default function Dashboard() {
                         </Badge>
                       </div>
                       {latestScope && (
-                        <div className="mt-3 pl-14">
-                          <ScopeTrackerCompact
-                            allocation={latestScope}
-                            deliveries={client.delivery_items ?? []}
-                          />
+                        <div className="flex items-center gap-4 mt-3">
+                          <div className="w-10 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <ScopeTrackerCompact
+                              allocation={latestScope}
+                              deliveries={client.delivery_items ?? []}
+                            />
+                          </div>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </Card>
         )}
       </div>
     </div>

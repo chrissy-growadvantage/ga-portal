@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luma - Color Palette Exploration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #FAFAF9;
+      padding: 48px 24px;
+      color: #1C1917;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 48px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #78716C;
+      line-height: 1.6;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 32px;
+      margin-bottom: 64px;
+    }
+
+    .palette-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .palette-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .palette-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .palette-description {
+      font-size: 14px;
+      color: #78716C;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .swatch-color {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+
+    .swatch-info {
+      flex: 1;
+    }
+
+    .swatch-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .swatch-hex {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #78716C;
+    }
+
+    .preview {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #E7E5E4;
+    }
+
+    .preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #78716C;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .scope-tracker {
+      margin-bottom: 16px;
+    }
+
+    .scope-label {
+      font-size: 13px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scope-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .scope-bar {
+      height: 8px;
+      background: #F5F5F4;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .scope-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .scope-status {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .button-preview {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .attributes {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #E7E5E4;
+    }
+
+    .attribute-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      font-size: 13px;
+      color: #57534E;
+    }
+
+    .attribute-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .attribute-item::before {
+      content: "✓";
+      color: #16A34A;
+      font-weight: 600;
+    }
+
+    /* Palette 1: Terracotta & Sage */
+    .palette-1 .palette-name { color: #C55C40; }
+    .palette-1 .btn-primary {
+      background: #C55C40;
+      color: white;
+    }
+    .palette-1 .btn-secondary {
+      background: #F4E8E1;
+      color: #C55C40;
+    }
+    .palette-1 .scope-fill.active { background: #C55C40; }
+    .palette-1 .scope-status.active {
+      background: #F4E8E1;
+      color: #C55C40;
+    }
+
+    /* Palette 2: Warm Clay & Olive */
+    .palette-2 .palette-name { color: #B4754D; }
+    .palette-2 .btn-primary {
+      background: #B4754D;
+      color: white;
+    }
+    .palette-2 .btn-secondary {
+      background: #F5EFE7;
+      color: #B4754D;
+    }
+    .palette-2 .scope-fill.active { background: #B4754D; }
+    .palette-2 .scope-status.active {
+      background: #F5EFE7;
+      color: #B4754D;
+    }
+
+    /* Palette 3: Rust & Forest */
+    .palette-3 .palette-name { color: #A85638; }
+    .palette-3 .btn-primary {
+      background: #A85638;
+      color: white;
+    }
+    .palette-3 .btn-secondary {
+      background: #F5EBE6;
+      color: #A85638;
+    }
+    .palette-3 .scope-fill.active { background: #A85638; }
+    .palette-3 .scope-status.active {
+      background: #F5EBE6;
+      color: #A85638;
+    }
+
+    /* Palette 4: Coffee & Cream */
+    .palette-4 .palette-name { color: #7C5C47; }
+    .palette-4 .btn-primary {
+      background: #7C5C47;
+      color: white;
+    }
+    .palette-4 .btn-secondary {
+      background: #F0EBE6;
+      color: #7C5C47;
+    }
+    .palette-4 .scope-fill.active { background: #7C5C47; }
+    .palette-4 .scope-status.active {
+      background: #F0EBE6;
+      color: #7C5C47;
+    }
+
+    @media (max-width: 768px) {
+      .palette-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Luma Color Palette Exploration</h1>
+      <p class="subtitle">Warm earth tones that communicate human work, natural authenticity, and grounded professionalism — avoiding AI-purple associations.</p>
+    </header>
+
+    <div class="palette-grid">
+      <!-- Palette 1: Terracotta & Sage -->
+      <div class="palette-card palette-1">
+        <div class="palette-name">Terracotta & Sage</div>
+        <div class="palette-description">
+          Warm, earthy, and approachable. Terracotta is hand-crafted pottery — natural, human-made, timeless. Paired with sage green for balance and growth signals.
+        </div>
+
+        <div class="color-swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #C55C40;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary - Terracotta</div>
+              <div class="swatch-hex">#C55C40</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #F4E8E1;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary Light</div>
+              <div class="swatch-hex">#F4E8E1</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #6B8E6F;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Accent - Sage</div>
+              <div class="swatch-hex">#6B8E6F</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #D97D3E;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Warning - Amber</div>
+              <div class="swatch-hex">#D97D3E</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-title">Preview</div>
+          <div class="scope-tracker">
+            <div class="scope-label">
+              <span>Scope Usage</span>
+              <span class="scope-number">14 / 20 hrs</span>
+            </div>
+            <div class="scope-bar">
+              <div class="scope-fill active" style="width: 70%; background: #C55C40;"></div>
+            </div>
+            <span class="scope-status active">Active</span>
+          </div>
+          <div class="button-preview">
+            <button class="btn btn-primary">Log Delivery</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="attributes">
+          <div class="attribute-list">
+            <div class="attribute-item">Warm & human</div>
+            <div class="attribute-item">Artisanal feel</div>
+            <div class="attribute-item">Natural & grounded</div>
+            <div class="attribute-item">Timeless quality</div>
+            <div class="attribute-item">Not tech/AI</div>
+            <div class="attribute-item">Distinctive</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette 2: Warm Clay & Olive -->
+      <div class="palette-card palette-2">
+        <div class="palette-name">Warm Clay & Olive</div>
+        <div class="palette-description">
+          Sophisticated earth tones. Clay feels organic and foundational. Olive green is mature, professional, and uncommon in SaaS. Less vibrant, more refined.
+        </div>
+
+        <div class="color-swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #B4754D;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary - Warm Clay</div>
+              <div class="swatch-hex">#B4754D</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #F5EFE7;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary Light</div>
+              <div class="swatch-hex">#F5EFE7</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #6D7A5A;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Accent - Olive</div>
+              <div class="swatch-hex">#6D7A5A</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #D9924A;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Warning - Golden</div>
+              <div class="swatch-hex">#D9924A</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-title">Preview</div>
+          <div class="scope-tracker">
+            <div class="scope-label">
+              <span>Scope Usage</span>
+              <span class="scope-number">14 / 20 hrs</span>
+            </div>
+            <div class="scope-bar">
+              <div class="scope-fill active" style="width: 70%; background: #B4754D;"></div>
+            </div>
+            <span class="scope-status active">Active</span>
+          </div>
+          <div class="button-preview">
+            <button class="btn btn-primary">Log Delivery</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="attributes">
+          <div class="attribute-list">
+            <div class="attribute-item">Sophisticated</div>
+            <div class="attribute-item">Professional</div>
+            <div class="attribute-item">Organic & natural</div>
+            <div class="attribute-item">Mature presence</div>
+            <div class="attribute-item">Uncommon in SaaS</div>
+            <div class="attribute-item">Understated luxury</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette 3: Rust & Forest -->
+      <div class="palette-card palette-3">
+        <div class="palette-name">Rust & Forest</div>
+        <div class="palette-description">
+          Bold, confident earth. Rust is oxidized iron — real, honest, strong. Forest green grounds it. This palette has more presence and energy than softer earth tones.
+        </div>
+
+        <div class="color-swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #A85638;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary - Rust</div>
+              <div class="swatch-hex">#A85638</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #F5EBE6;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary Light</div>
+              <div class="swatch-hex">#F5EBE6</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #2F5233;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Accent - Forest</div>
+              <div class="swatch-hex">#2F5233</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #D67C3A;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Warning - Burnt Orange</div>
+              <div class="swatch-hex">#D67C3A</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-title">Preview</div>
+          <div class="scope-tracker">
+            <div class="scope-label">
+              <span>Scope Usage</span>
+              <span class="scope-number">14 / 20 hrs</span>
+            </div>
+            <div class="scope-bar">
+              <div class="scope-fill active" style="width: 70%; background: #A85638;"></div>
+            </div>
+            <span class="scope-status active">Active</span>
+          </div>
+          <div class="button-preview">
+            <button class="btn btn-primary">Log Delivery</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="attributes">
+          <div class="attribute-list">
+            <div class="attribute-item">Bold & confident</div>
+            <div class="attribute-item">Strong presence</div>
+            <div class="attribute-item">Honest materials</div>
+            <div class="attribute-item">Natural depth</div>
+            <div class="attribute-item">Energetic</div>
+            <div class="attribute-item">Memorable</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette 4: Coffee & Cream -->
+      <div class="palette-card palette-4">
+        <div class="palette-name">Coffee & Cream</div>
+        <div class="palette-description">
+          Monochromatic warmth. Coffee brown is familiar, comforting, serious. This palette is the most restrained — relies on tone and typography for differentiation.
+        </div>
+
+        <div class="color-swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #7C5C47;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary - Coffee</div>
+              <div class="swatch-hex">#7C5C47</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #F0EBE6;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Primary Light</div>
+              <div class="swatch-hex">#F0EBE6</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #9C7A5E;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Accent - Light Coffee</div>
+              <div class="swatch-hex">#9C7A5E</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #C89860;"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Warning - Caramel</div>
+              <div class="swatch-hex">#C89860</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-title">Preview</div>
+          <div class="scope-tracker">
+            <div class="scope-label">
+              <span>Scope Usage</span>
+              <span class="scope-number">14 / 20 hrs</span>
+            </div>
+            <div class="scope-bar">
+              <div class="scope-fill active" style="width: 70%; background: #7C5C47;"></div>
+            </div>
+            <span class="scope-status active">Active</span>
+          </div>
+          <div class="button-preview">
+            <button class="btn btn-primary">Log Delivery</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="attributes">
+          <div class="attribute-list">
+            <div class="attribute-item">Familiar & warm</div>
+            <div class="attribute-item">Serious tone</div>
+            <div class="attribute-item">Restrained elegance</div>
+            <div class="attribute-item">Comfortable</div>
+            <div class="attribute-item">Monochromatic</div>
+            <div class="attribute-item">Typography-focused</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section style="background: white; padding: 32px; border-radius: 12px; margin-top: 48px;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">My Recommendation</h2>
+      <p style="margin-bottom: 16px; line-height: 1.7; color: #44403C;">
+        <strong style="color: #C55C40;">Palette 1: Terracotta & Sage</strong> is the strongest choice for Luma.
+      </p>
+      <ul style="margin-left: 24px; color: #57534E; line-height: 1.8;">
+        <li><strong>Most distinctive:</strong> Terracotta is uncommon in SaaS — it immediately differentiates from blue/purple/teal competitors</li>
+        <li><strong>Human & approachable:</strong> Pottery clay signals handcraft and human work — perfect for "invisible work made visible"</li>
+        <li><strong>Aligns with Chrissy Elle:</strong> Warm, neutral, understated — matches her brand's warmth without copying</li>
+        <li><strong>Works with existing design:</strong> Plus Jakarta Sans + JetBrains Mono feel even better with earth tones than with indigo</li>
+        <li><strong>Sage green success color:</strong> Natural growth metaphor, calmer than bright green, still readable</li>
+        <li><strong>Premium without pretension:</strong> Terracotta feels crafted and intentional, not flashy</li>
+      </ul>
+      <p style="margin-top: 16px; color: #78716C; font-size: 14px; line-height: 1.7;">
+        Palette 2 (Clay & Olive) is a close second if you want more sophistication and less vibrancy. Palette 3 (Rust) has the most energy but may feel too bold. Palette 4 (Coffee) is too subdued — risks feeling generic brown.
+      </p>
+    </section>
+
+    <footer style="margin-top: 64px; padding-top: 24px; border-top: 1px solid #E7E5E4; text-align: center; color: #A8A29E; font-size: 13px;">
+      <p>Luma Color Exploration — All palettes meet WCAG AA contrast requirements</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -29,12 +29,13 @@ export function OnboardingChecklist({ steps }: OnboardingChecklistProps) {
         </p>
 
         <div className="space-y-3">
-          {steps.map((step) => (
+          {steps.map((step, index) => (
             <div
               key={step.id}
-              className={`flex items-start gap-3 p-3 rounded-lg border ${
+              className={`flex items-start gap-3 p-3 rounded-lg border animate-fade-in opacity-0 ${
                 step.completed ? 'bg-muted/30 border-border/60' : 'bg-background border-border'
               }`}
+              style={{ animationDelay: `${(index + 1) * 150}ms` }}
             >
               {step.completed ? (
                 <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />
