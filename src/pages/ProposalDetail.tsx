@@ -40,10 +40,13 @@ import {
 } from 'lucide-react';
 import { ProposalStatusBadge } from '@/components/proposals/ProposalStatusBadge';
 import { ProposalActivityTimeline } from '@/components/proposals/ProposalActivityTimeline';
+import { ContentBlocksEditor } from '@/components/content-blocks/ContentBlocksEditor';
 import { PROPOSAL_STATUS_CONFIG, BILLING_TYPE_LABELS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { generateHTML } from '@/lib/tiptap-extensions';
+import type { JSONContent } from '@tiptap/react';
 import type { ProposalWithDetails, ProposalLineItem, ProposalAddon, Agreement } from '@/types/database';
 
 // --- Helpers ---
@@ -81,13 +84,23 @@ function ServiceItemsCard({ lineItems }: { lineItems: ProposalLineItem[] }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {sorted.map((item) => (
+                {sorted.map((item) => {
+                  const descHtml = item.description_json && typeof item.description_json === 'object' && 'type' in item.description_json && item.description_json.type === 'doc'
+                    ? (() => { try { return generateHTML(item.description_json as JSONContent); } catch { return null; } })()
+                    : null;
+
+                  return (
                   <tr key={item.id}>
                     <td className="py-2.5">
                       <p className="font-medium">{item.name}</p>
-                      {item.description && (
+                      {descHtml ? (
+                        <div
+                          className="prose prose-xs max-w-none text-muted-foreground mt-0.5"
+                          dangerouslySetInnerHTML={{ __html: descHtml }}
+                        />
+                      ) : item.description ? (
                         <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
-                      )}
+                      ) : null}
                     </td>
                     <td className="py-2.5 text-right font-mono">{item.quantity}</td>
                     <td className="py-2.5 text-right font-mono">{formatCurrency(item.unit_price)}</td>
@@ -100,7 +113,8 @@ function ServiceItemsCard({ lineItems }: { lineItems: ProposalLineItem[] }) {
                       {formatCurrency(item.quantity * item.unit_price)}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
               <tfoot>
                 <tr className="border-t border-border">
@@ -159,9 +173,25 @@ function AddonsCard({ addons }: { addons: ProposalAddon[] }) {
                     </Badge>
                   )}
                 </div>
-                {addon.description && (
+                {addon.description_json && typeof addon.description_json === 'object' && 'type' in addon.description_json && addon.description_json.type === 'doc' ? (
+                  (() => {
+                    try {
+                      const html = generateHTML(addon.description_json as JSONContent);
+                      return (
+                        <div
+                          className="prose prose-xs max-w-none text-muted-foreground mt-1"
+                          dangerouslySetInnerHTML={{ __html: html }}
+                        />
+                      );
+                    } catch {
+                      return addon.description ? (
+                        <p className="text-xs text-muted-foreground mt-1">{addon.description}</p>
+                      ) : null;
+                    }
+                  })()
+                ) : addon.description ? (
                   <p className="text-xs text-muted-foreground mt-1">{addon.description}</p>
-                )}
+                ) : null}
               </div>
               <div className="text-right shrink-0">
                 <p className="font-mono font-medium text-sm">{formatCurrency(addon.price)}</p>
@@ -440,10 +470,17 @@ export default function ProposalDetail() {
       </div>
 
       {/* Summary */}
-      {proposal.summary && (
+      {(proposal.summary_json || proposal.summary) && (
         <Card>
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground">{proposal.summary}</p>
+            {proposal.summary_json && typeof proposal.summary_json === 'object' && 'type' in proposal.summary_json && proposal.summary_json.type === 'doc' ? (
+              <div
+                className="prose prose-sm max-w-none text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: (() => { try { return generateHTML(proposal.summary_json as unknown as JSONContent); } catch { return ''; } })() }}
+              />
+            ) : proposal.summary ? (
+              <p className="text-sm text-muted-foreground">{proposal.summary}</p>
+            ) : null}
           </CardContent>
         </Card>
       )}
@@ -460,6 +497,9 @@ export default function ProposalDetail() {
 
       {/* Service Items */}
       <ServiceItemsCard lineItems={proposal.line_items} />
+
+      {/* Content Blocks */}
+      <ContentBlocksEditor proposalId={proposal.id} readOnly />
 
       {/* Addons */}
       {showAddons && <AddonsCard addons={proposal.addons} />}

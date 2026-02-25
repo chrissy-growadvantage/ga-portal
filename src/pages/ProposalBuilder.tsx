@@ -1,14 +1,21 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { Editor } from '@tiptap/react';
 import { createProposalSchema, type CreateProposalInput } from '@/lib/proposal-schemas';
 import { useCreateProposal, useUpdateProposal, useProposal } from '@/hooks/useProposals';
 import { useClients } from '@/hooks/useClients';
+import { useAuth } from '@/hooks/useAuth';
 import { useAddonTemplates } from '@/hooks/useAddonTemplates';
+import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates';
 import { ProposalLineItems } from '@/components/proposals/ProposalLineItems';
 import { ProposalAddonSelector } from '@/components/proposals/ProposalAddonSelector';
 import { ProposalPreviewPanel } from '@/components/proposals/ProposalPreviewPanel';
+import { ContentBlocksEditor } from '@/components/content-blocks/ContentBlocksEditor';
+import { TiptapFormField } from '@/components/editor/TiptapFormField';
+import { TemplateLibrary, SaveTemplateDialog } from '@/components/editor';
+import { createImageUploadHandler } from '@/lib/tiptap-image-upload';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +46,7 @@ import { toast } from 'sonner';
 const DEFAULT_LINE_ITEM = {
   name: '',
   description: '',
+  description_json: null,
   quantity: 1,
   unit_price: 0,
   billing_type: 'one_time' as const,
@@ -50,11 +58,66 @@ export default function ProposalBuilder() {
   const navigate = useNavigate();
   const isEditMode = !!id;
 
+  const { user } = useAuth();
   const { data: existingProposal, isLoading: proposalLoading } = useProposal(id ?? '');
   const { data: clients, isLoading: clientsLoading } = useClients();
   const { data: addonTemplates } = useAddonTemplates();
   const createProposal = useCreateProposal();
   const updateProposal = useUpdateProposal();
+
+  // Template state
+  const { data: templates = [], isLoading: templatesLoading } = useTemplates();
+  const createTemplate = useCreateTemplate();
+  const [templateLibraryOpen, setTemplateLibraryOpen] = useState(false);
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const summaryEditorRef = useRef<Editor | null>(null);
+
+  const handleTemplateSelect = useCallback(
+    (contentJson: Record<string, unknown>) => {
+      if (summaryEditorRef.current) {
+        summaryEditorRef.current.commands.insertContent(contentJson);
+      }
+      setTemplateLibraryOpen(false);
+    },
+    [],
+  );
+
+  const handleSaveAsTemplate = useCallback(
+    async (template: {
+      name: string;
+      description: string;
+      content_json: Record<string, unknown>;
+      category: string | undefined;
+    }) => {
+      try {
+        await createTemplate.mutateAsync({
+          name: template.name,
+          description: template.description || undefined,
+          content_json: template.content_json,
+          category: template.category as 'intro' | 'deliverables' | 'terms' | 'custom' | undefined,
+        });
+        toast.success('Template saved');
+        setSaveTemplateOpen(false);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to save template';
+        toast.error(message);
+      }
+    },
+    [createTemplate],
+  );
+
+  const handleImageUpload = useCallback(
+    (file: File) => {
+      if (!user) return Promise.reject(new Error('Not authenticated'));
+      const proposalId = id ?? 'draft';
+      const handler = createImageUploadHandler({
+        operatorId: user.id,
+        proposalId,
+      });
+      return handler(file);
+    },
+    [user, id],
+  );
 
   const form = useForm<CreateProposalInput>({
     resolver: zodResolver(createProposalSchema),
@@ -62,6 +125,7 @@ export default function ProposalBuilder() {
       client_id: '',
       title: '',
       summary: '',
+      summary_json: null,
       notes: '',
       valid_days: 30,
       line_items: [{ ...DEFAULT_LINE_ITEM }],
@@ -76,12 +140,14 @@ export default function ProposalBuilder() {
         client_id: existingProposal.client_id,
         title: existingProposal.title,
         summary: existingProposal.summary ?? '',
+        summary_json: existingProposal.summary_json ?? null,
         notes: existingProposal.notes ?? '',
         valid_days: existingProposal.valid_days ?? 30,
         line_items: existingProposal.line_items.length > 0
           ? existingProposal.line_items.map((item) => ({
               name: item.name,
               description: item.description ?? '',
+              description_json: item.description_json ?? null,
               quantity: item.quantity,
               unit_price: item.unit_price,
               billing_type: item.billing_type,
@@ -92,6 +158,7 @@ export default function ProposalBuilder() {
           addon_template_id: addon.addon_template_id ?? null,
           name: addon.name,
           description: addon.description ?? '',
+          description_json: addon.description_json ?? null,
           price: addon.price,
           billing_type: addon.billing_type,
           is_included: addon.is_included,
@@ -259,22 +326,15 @@ export default function ProposalBuilder() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="summary"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Summary</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe the services you're proposing..."
-                        className="min-h-[80px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <TiptapFormField
+                name="summary_json"
+                label="Summary"
+                placeholder="Describe the services you're proposing..."
+                maxLength={5000}
+                onImageUpload={handleImageUpload}
+                onInsertTemplate={() => setTemplateLibraryOpen(true)}
+                onSaveAsTemplate={() => setSaveTemplateOpen(true)}
+                editorRef={(editor) => { summaryEditorRef.current = editor; }}
               />
 
               <FormField
@@ -306,6 +366,11 @@ export default function ProposalBuilder() {
 
           {/* Service Line Items */}
           <ProposalLineItems form={form} />
+
+          {/* Content Blocks */}
+          {isEditMode && id && (
+            <ContentBlocksEditor proposalId={id} />
+          )}
 
           {/* Addons */}
           <ProposalAddonSelector form={form} addonTemplates={addonTemplates} />
@@ -372,12 +437,29 @@ export default function ProposalBuilder() {
         <ProposalPreviewPanel
           title={watchedValues.title}
           summary={watchedValues.summary}
+          summaryJSON={watchedValues.summary_json}
           clientName={clientDisplayName || undefined}
           lineItems={watchedValues.line_items ?? []}
           addons={watchedValues.addons ?? []}
           validDays={watchedValues.valid_days}
         />
       </form>
+
+      <TemplateLibrary
+        open={templateLibraryOpen}
+        onClose={() => setTemplateLibraryOpen(false)}
+        onSelect={handleTemplateSelect}
+        templates={templates}
+        isLoading={templatesLoading}
+      />
+
+      <SaveTemplateDialog
+        open={saveTemplateOpen}
+        onClose={() => setSaveTemplateOpen(false)}
+        onSave={handleSaveAsTemplate}
+        contentJson={summaryEditorRef.current?.getJSON() ?? { type: 'doc', content: [] }}
+        isSaving={createTemplate.isPending}
+      />
     </Form>
   );
 }

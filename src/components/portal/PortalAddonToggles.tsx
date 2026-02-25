@@ -2,6 +2,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { BILLING_TYPE_LABELS } from '@/lib/constants';
+import { generateHTML } from '@/lib/tiptap-extensions';
+import type { JSONContent } from '@tiptap/react';
 import type { ProposalAddon } from '@/types/database';
 
 interface PortalAddonTogglesProps {
@@ -32,11 +34,29 @@ export function PortalAddonToggles({ addons, onToggle, disabled }: PortalAddonTo
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{addon.name}</p>
-                  {addon.description && (
+                  {addon.description_json && typeof addon.description_json === 'object' && 'type' in addon.description_json && addon.description_json.type === 'doc' ? (
+                    (() => {
+                      try {
+                        const html = generateHTML(addon.description_json as JSONContent);
+                        return (
+                          <div
+                            className="prose prose-xs max-w-none text-muted-foreground mt-0.5 line-clamp-2"
+                            dangerouslySetInnerHTML={{ __html: html }}
+                          />
+                        );
+                      } catch {
+                        return addon.description ? (
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                            {addon.description}
+                          </p>
+                        ) : null;
+                      }
+                    })()
+                  ) : addon.description ? (
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                       {addon.description}
                     </p>
-                  )}
+                  ) : null}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-semibold font-mono">${addon.price.toFixed(2)}</p>

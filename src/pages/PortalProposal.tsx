@@ -11,13 +11,17 @@ import { toast } from 'sonner';
 import { BILLING_TYPE_LABELS } from '@/lib/constants';
 import { differenceInDays, format } from 'date-fns';
 import type { AcceptProposalInput } from '@/lib/proposal-schemas';
-import type { ProposalLineItem, ProposalAddon, Agreement } from '@/types/database';
+import { generateHTML } from '@/lib/tiptap-extensions';
+import type { JSONContent } from '@tiptap/react';
+import type { ProposalLineItem, ProposalAddon, Agreement, ProposalContentBlock } from '@/types/database';
+import type { RichTextContent, ImageGalleryContent, VideoEmbedContent } from '@/lib/content-block-schemas';
 
 interface ProposalData {
   proposal: {
     id: string;
     title: string;
     summary: string | null;
+    summary_json: Record<string, unknown> | null;
     notes: string | null;
     status: string;
     expires_at: string | null;
@@ -26,6 +30,7 @@ interface ProposalData {
   };
   line_items: ProposalLineItem[];
   addons: ProposalAddon[];
+  content_blocks?: ProposalContentBlock[];
   client: {
     company_name: string;
     contact_name: string | null;
@@ -38,6 +43,90 @@ interface ProposalData {
 }
 
 type ViewState = 'loading' | 'error' | 'expired' | 'proposal' | 'accepted' | 'declined' | 'already_accepted';
+
+function PortalContentBlock({ block }: { block: ProposalContentBlock }) {
+  if (block.type === 'rich_text') {
+    const content = block.content_json as unknown as RichTextContent;
+    const html = (() => {
+      try {
+        return generateHTML(content.doc as JSONContent);
+      } catch {
+        return '';
+      }
+    })();
+    if (!html) return null;
+    return (
+      <Card className="border-border/40">
+        <CardContent className="py-4">
+          <div
+            className="prose prose-sm max-w-none text-muted-foreground leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (block.type === 'image_gallery') {
+    const content = block.content_json as unknown as ImageGalleryContent;
+    if (!content.images?.length) return null;
+    return (
+      <Card className="border-border/40">
+        <CardContent className="py-4">
+          <div className="grid grid-cols-2 gap-3">
+            {content.images.map((image, i) => (
+              <div key={`${image.url}-${i}`}>
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  className="w-full h-32 object-cover rounded-md"
+                />
+                {image.caption && (
+                  <p className="text-xs text-muted-foreground mt-1">{image.caption}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (block.type === 'video_embed') {
+    const content = block.content_json as unknown as VideoEmbedContent;
+    const ytMatch = content.url.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/,
+    );
+    const vimeoMatch = content.url.match(/vimeo\.com\/(\d+)/);
+    const embedUrl = ytMatch
+      ? `https://www.youtube.com/embed/${ytMatch[1]}`
+      : vimeoMatch
+        ? `https://player.vimeo.com/video/${vimeoMatch[1]}`
+        : null;
+
+    if (!embedUrl) return null;
+    return (
+      <Card className="border-border/40">
+        <CardContent className="py-4">
+          <div className="aspect-video rounded-md overflow-hidden">
+            <iframe
+              src={embedUrl}
+              title="Video"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          {content.caption && (
+            <p className="text-xs text-muted-foreground mt-2">{content.caption}</p>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return null;
+}
 
 export default function PortalProposal() {
   const { token, proposalId } = useParams<{ token: string; proposalId: string }>();
@@ -250,7 +339,7 @@ export default function PortalProposal() {
 
   if (!data) return null;
 
-  const { proposal, line_items, client, operator, agreement } = data;
+  const { proposal, line_items, content_blocks, client, operator, agreement } = data;
   const clientDisplayName = client.company_name || client.contact_name || 'Client';
   const includedAddons = addons.filter((a) => a.is_included);
 
@@ -276,9 +365,14 @@ export default function PortalProposal() {
         <p className="text-sm text-muted-foreground mt-1">
           Proposal for {clientDisplayName}
         </p>
-        {proposal.summary && (
+        {proposal.summary_json && typeof proposal.summary_json === 'object' && 'type' in proposal.summary_json && proposal.summary_json.type === 'doc' ? (
+          <div
+            className="prose prose-sm max-w-none text-muted-foreground mt-3 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: (() => { try { return generateHTML(proposal.summary_json as unknown as JSONContent); } catch { return ''; } })() }}
+          />
+        ) : proposal.summary ? (
           <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{proposal.summary}</p>
-        )}
+        ) : null}
       </section>
 
       {/* Service items */}
@@ -287,16 +381,26 @@ export default function PortalProposal() {
         <Card className="border-border/60">
           <CardContent className="py-4">
             <div className="divide-y divide-border/50">
-              {line_items.map((item) => (
+              {line_items.map((item) => {
+                const itemDescHtml = item.description_json && typeof item.description_json === 'object' && 'type' in item.description_json && item.description_json.type === 'doc'
+                  ? (() => { try { return generateHTML(item.description_json as JSONContent); } catch { return null; } })()
+                  : null;
+
+                return (
                 <div key={item.id} className="py-3 first:pt-0 last:pb-0">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{item.name}</p>
-                      {item.description && (
+                      {itemDescHtml ? (
+                        <div
+                          className="prose prose-xs max-w-none text-muted-foreground mt-0.5 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: itemDescHtml }}
+                        />
+                      ) : item.description ? (
                         <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                           {item.description}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-mono">
@@ -308,7 +412,8 @@ export default function PortalProposal() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <div className="flex items-center justify-between pt-3 mt-3 border-t border-border/50">
               <p className="text-sm font-medium">Subtotal</p>
@@ -317,6 +422,17 @@ export default function PortalProposal() {
           </CardContent>
         </Card>
       </section>
+
+      {/* Content Blocks */}
+      {content_blocks && content_blocks.length > 0 && (
+        <section className="space-y-4">
+          {content_blocks
+            .sort((a, b) => a.position - b.position)
+            .map((block) => (
+              <PortalContentBlock key={block.id} block={block} />
+            ))}
+        </section>
+      )}
 
       {/* Add-ons */}
       {includedAddons.length > 0 && (

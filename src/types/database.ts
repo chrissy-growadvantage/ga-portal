@@ -10,6 +10,7 @@ export type ApprovalAction = 'approved' | 'revision_requested';
 export type ProposalStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'declined' | 'expired';
 export type BillingType = 'one_time' | 'recurring';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue' | 'cancelled' | 'refunded';
+export type ContentBlockType = 'rich_text' | 'image_gallery' | 'video_embed';
 
 // Table interfaces
 export interface Operator {
@@ -121,6 +122,8 @@ export interface Proposal {
   client_id: string;
   title: string;
   summary: string | null;
+  summary_json: Record<string, unknown> | null;
+  content_version: number;
   notes: string | null;
   status: ProposalStatus;
   version: number;
@@ -143,6 +146,7 @@ export interface ProposalLineItem {
   proposal_id: string;
   name: string;
   description: string | null;
+  description_json: Record<string, unknown> | null;
   quantity: number;
   unit_price: number;
   billing_type: BillingType;
@@ -156,6 +160,7 @@ export interface ProposalAddon {
   addon_template_id: string | null;
   name: string;
   description: string | null;
+  description_json: Record<string, unknown> | null;
   price: number;
   billing_type: BillingType;
   is_included: boolean;
@@ -225,10 +230,38 @@ export interface PaymentRecord {
   updated_at: string;
 }
 
+export interface ProposalContentBlock {
+  id: string;
+  proposal_id: string;
+  type: ContentBlockType;
+  position: number;
+  content_json: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TemplateCategory = 'intro' | 'deliverables' | 'terms' | 'custom';
+
+export interface ProposalTemplate {
+  id: string;
+  operator_id: string | null;
+  name: string;
+  description: string | null;
+  content_json: Record<string, unknown>;
+  category: TemplateCategory | null;
+  is_system: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type InsertProposalTemplate = Pick<ProposalTemplate, 'name' | 'content_json'> &
+  Partial<Pick<ProposalTemplate, 'description' | 'category'>>;
+
 // Derived types
 export interface ProposalWithDetails extends Proposal {
   line_items: ProposalLineItem[];
   addons: ProposalAddon[];
+  content_blocks?: ProposalContentBlock[];
   client?: Client;
   agreement?: Agreement;
 }
@@ -262,13 +295,15 @@ export type InsertAddonTemplate = Pick<AddonTemplate, 'operator_id' | 'name' | '
   Partial<Pick<AddonTemplate, 'description' | 'is_active'>>;
 
 export type InsertProposal = Pick<Proposal, 'operator_id' | 'client_id' | 'title'> &
-  Partial<Pick<Proposal, 'summary' | 'notes' | 'status' | 'version' | 'parent_proposal_id' | 'valid_days' | 'expires_at'>>;
+  Partial<Pick<Proposal, 'summary' | 'summary_json' | 'content_version' | 'notes' | 'status' | 'version' | 'parent_proposal_id' | 'valid_days' | 'expires_at'>>;
 
 export type InsertProposalLineItem = Pick<ProposalLineItem, 'proposal_id' | 'name' | 'quantity' | 'unit_price' | 'billing_type'> &
-  Partial<Pick<ProposalLineItem, 'description' | 'sort_order'>>;
+  Partial<Pick<ProposalLineItem, 'description' | 'description_json' | 'sort_order'>>;
 
 export type InsertProposalAddon = Pick<ProposalAddon, 'proposal_id' | 'name' | 'price' | 'billing_type'> &
-  Partial<Pick<ProposalAddon, 'addon_template_id' | 'description' | 'is_included' | 'is_selected' | 'sort_order'>>;
+  Partial<Pick<ProposalAddon, 'addon_template_id' | 'description' | 'description_json' | 'is_included' | 'is_selected' | 'sort_order'>>;
 
 export type InsertWebhookEndpoint = Pick<WebhookEndpoint, 'operator_id' | 'url' | 'secret' | 'events'> &
   Partial<Pick<WebhookEndpoint, 'is_active'>>;
+
+export type InsertProposalContentBlock = Pick<ProposalContentBlock, 'proposal_id' | 'type' | 'position' | 'content_json'>;

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryKeys } from '@/lib/query-keys';
 import { useAuth } from '@/hooks/useAuth';
+import { deleteProposalImages } from '@/lib/image-upload';
 import type {
   Proposal,
   ProposalWithDetails,
@@ -68,6 +69,7 @@ interface CreateProposalInput {
   title: string;
   client_id: string;
   summary?: string | null;
+  summary_json?: Record<string, unknown> | null;
   notes?: string | null;
   valid_days?: number | null;
   line_items: Omit<InsertProposalLineItem, 'proposal_id'>[];
@@ -124,6 +126,7 @@ interface UpdateProposalInput {
   title?: string;
   client_id?: string;
   summary?: string | null;
+  summary_json?: Record<string, unknown> | null;
   notes?: string | null;
   status?: string;
   valid_days?: number | null;
@@ -190,9 +193,19 @@ export function useUpdateProposal() {
 
 export function useDeleteProposal() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Clean up uploaded images from storage before deleting proposal
+      if (user) {
+        try {
+          await deleteProposalImages(user.id, id);
+        } catch {
+          // Image cleanup is best-effort — don't block proposal deletion
+        }
+      }
+
       const { error } = await supabase.from('proposals').delete().eq('id', id);
       if (error) throw error;
     },
@@ -223,6 +236,8 @@ export function useDuplicateProposal() {
           client_id: source.client_id,
           title: `Copy of ${source.title}`,
           summary: source.summary,
+          summary_json: source.summary_json,
+          content_version: source.content_version,
           notes: source.notes,
           valid_days: source.valid_days,
           status: 'draft' as const,

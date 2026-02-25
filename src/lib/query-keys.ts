@@ -45,4 +45,12 @@ export const queryKeys = {
     list: () => ['webhooks', 'list'] as const,
     deliveries: (endpointId: string) => ['webhooks', 'deliveries', endpointId] as const,
   },
+  contentBlocks: {
+    all: ['content-blocks'] as const,
+    byProposal: (proposalId: string) => ['content-blocks', proposalId] as const,
+  },
+  proposalTemplates: {
+    all: ['proposal-templates'] as const,
+    list: (category?: string) => ['proposal-templates', 'list', category] as const,
+  },
 };
