@@ -7,6 +7,9 @@ export type DeliveryStatus = 'completed' | 'in_progress' | 'pending_approval' | 
 export type RequestSource = 'client' | 'operator';
 export type RequestStatus = 'pending' | 'approved' | 'declined' | 'completed';
 export type ApprovalAction = 'approved' | 'revision_requested';
+export type ProposalStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'declined' | 'expired';
+export type BillingType = 'one_time' | 'recurring';
+export type PaymentStatus = 'pending' | 'paid' | 'overdue' | 'cancelled' | 'refunded';
 
 // Table interfaces
 export interface Operator {
@@ -15,6 +18,9 @@ export interface Operator {
   full_name: string;
   business_name: string | null;
   avatar_url: string | null;
+  stripe_account_id: string | null;
+  stripe_onboarding_complete: boolean;
+  stripe_disconnected_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -97,7 +103,136 @@ export interface TimeEntry {
   updated_at: string;
 }
 
+export interface AddonTemplate {
+  id: string;
+  operator_id: string;
+  name: string;
+  description: string | null;
+  default_price: number;
+  billing_type: BillingType;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Proposal {
+  id: string;
+  operator_id: string;
+  client_id: string;
+  title: string;
+  summary: string | null;
+  notes: string | null;
+  status: ProposalStatus;
+  version: number;
+  parent_proposal_id: string | null;
+  valid_days: number | null;
+  expires_at: string | null;
+  sent_at: string | null;
+  viewed_at: string | null;
+  accepted_at: string | null;
+  declined_at: string | null;
+  decline_reason: string | null;
+  token_hash: string | null;
+  token_expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProposalLineItem {
+  id: string;
+  proposal_id: string;
+  name: string;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  billing_type: BillingType;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface ProposalAddon {
+  id: string;
+  proposal_id: string;
+  addon_template_id: string | null;
+  name: string;
+  description: string | null;
+  price: number;
+  billing_type: BillingType;
+  is_included: boolean;
+  is_selected: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
+export type AgreementBillingStatus = 'pending_billing' | 'billing_active' | 'billing_failed' | 'not_applicable';
+
+export interface Agreement {
+  id: string;
+  proposal_id: string;
+  client_id: string;
+  operator_id: string;
+  snapshot: Record<string, unknown>;
+  snapshot_hash: string | null;
+  signer_name: string;
+  signer_email: string | null;
+  signature_data: Record<string, unknown>;
+  signed_at: string;
+  billing_status: AgreementBillingStatus;
+  created_at: string;
+}
+
+export interface WebhookEndpoint {
+  id: string;
+  operator_id: string;
+  url: string;
+  secret: string;
+  events: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WebhookDelivery {
+  id: string;
+  webhook_endpoint_id: string;
+  event_type: string;
+  payload: Record<string, unknown>;
+  response_status: number | null;
+  response_body: string | null;
+  delivered_at: string | null;
+  attempts: number;
+  next_retry_at: string | null;
+  created_at: string;
+}
+
+export interface PaymentRecord {
+  id: string;
+  agreement_id: string;
+  client_id: string;
+  operator_id: string;
+  stripe_payment_intent_id: string | null;
+  stripe_invoice_id: string | null;
+  stripe_subscription_id: string | null;
+  amount: number;
+  currency: string;
+  payment_status: PaymentStatus;
+  billing_type: BillingType;
+  period_start: string | null;
+  period_end: string | null;
+  paid_at: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
 // Derived types
+export interface ProposalWithDetails extends Proposal {
+  line_items: ProposalLineItem[];
+  addons: ProposalAddon[];
+  client?: Client;
+  agreement?: Agreement;
+}
+
 export interface ClientWithScope extends Client {
   scope_allocations: ScopeAllocation[];
   delivery_items: DeliveryItem[];
@@ -122,3 +257,18 @@ export type InsertScopeRequest = Pick<ScopeRequest, 'client_id' | 'title'> &
 
 export type InsertTimeEntry = Pick<TimeEntry, 'operator_id' | 'client_id' | 'description' | 'started_at'> &
   Partial<Pick<TimeEntry, 'delivery_item_id' | 'ended_at' | 'duration_seconds' | 'is_manual'>>;
+
+export type InsertAddonTemplate = Pick<AddonTemplate, 'operator_id' | 'name' | 'default_price' | 'billing_type'> &
+  Partial<Pick<AddonTemplate, 'description' | 'is_active'>>;
+
+export type InsertProposal = Pick<Proposal, 'operator_id' | 'client_id' | 'title'> &
+  Partial<Pick<Proposal, 'summary' | 'notes' | 'status' | 'version' | 'parent_proposal_id' | 'valid_days' | 'expires_at'>>;
+
+export type InsertProposalLineItem = Pick<ProposalLineItem, 'proposal_id' | 'name' | 'quantity' | 'unit_price' | 'billing_type'> &
+  Partial<Pick<ProposalLineItem, 'description' | 'sort_order'>>;
+
+export type InsertProposalAddon = Pick<ProposalAddon, 'proposal_id' | 'name' | 'price' | 'billing_type'> &
+  Partial<Pick<ProposalAddon, 'addon_template_id' | 'description' | 'is_included' | 'is_selected' | 'sort_order'>>;
+
+export type InsertWebhookEndpoint = Pick<WebhookEndpoint, 'operator_id' | 'url' | 'secret' | 'events'> &
+  Partial<Pick<WebhookEndpoint, 'is_active'>>;

@@ -1,112 +1,95 @@
-# CLAUDE.md — Universal Project Instructions
+# Development Guidelines for Luma
 
-## Workflow Orchestration
+> **About this file (v1.0.0):** Lean core principles optimized for context efficiency, adapted from citypaul's progressive enhancement architecture.
+>
+> **Architecture:**
+> - **CLAUDE.md** (this file): Core philosophy + quick reference (~100 lines, always loaded)
+> - **Skills**: Detailed patterns loaded on-demand (tdd, testing, mutation-testing, test-design-reviewer, typescript-strict, functional, refactoring, expectations, planning, front-end-testing, react-testing)
+> - **Agents**: Specialized subprocesses for verification and analysis (tdd-guardian, ts-enforcer, refactor-scan, docs-guardian, pr-reviewer, progress-guardian, learn, adr, use-case-data-patterns)
 
-### 1. Plan Mode Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
+## Project Context
 
-### 2. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One task per subagent for focused execution
-- For complex multi-phase projects: propose a named agent team before starting
-  - **Orchestrator** — plans, delegates, and tracks overall progress
-  - **Researcher** — handles all context gathering, web research, and exploration
-  - **Builder** — writes and edits code, files, and implementation work
-  - **Reviewer** — verifies output, runs tests, and approves before marking done
+**Luma** is a business management platform (React 18 + TypeScript + Vite + Supabase + Tailwind CSS + shadcn/ui). Moving from MVP to production-grade application.
 
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
+**Stack:** React 18, TypeScript (strict), Vite, Supabase (auth + DB + RLS), TanStack Query, React Router v6, Tailwind CSS, shadcn/ui (Radix primitives), Zod, React Hook Form, Recharts, Framer Motion.
 
-### 4. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between before and after your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
+## Core Philosophy
 
-### 5. Demand Elegance (Balanced)
-- For non-trivial changes: pause and ask "is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes — don't over-engineer
-- Challenge your own work before presenting it
+**Test-Driven Development is the standard.** New features and bug fixes should be driven by tests. Write the test first, make it pass, then refactor. This is how we move from MVP to production-grade.
 
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests — then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
+**Quick Reference:**
+- Write tests first (TDD) for new features and bug fixes
+- Test behavior, not implementation
+- No `any` types — use `unknown` if truly unknown
+- TypeScript strict mode always
+- Immutable data patterns where practical
+- Small, pure functions
+- Use Zod schemas at trust boundaries (API responses, form inputs, URL params)
 
-### 7. When to Stop and Ask
-- If blocked or going in circles after 2 attempts on the same problem: STOP
-- Explain what you've tried, what's unclear, and what you need
-- Don't keep spinning — wasted compute is worse than a quick check-in
+## Testing Principles
 
----
+**Core principle**: Test behavior through the user's perspective. Coverage through business behavior.
 
-## Task Management
+- Write tests first for new features and bug fixes
+- Test through public API / component renders exclusively
+- Use factory functions for test data (no mutable `let`/`beforeEach` patterns)
+- Tests must document expected business behavior
 
-1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `tasks/todo.md`
-6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
+For detailed patterns, load the `testing`, `react-testing`, or `front-end-testing` skills.
 
-> At session start: create `tasks/` and `portfolio/` directories if they don't exist.
+## TypeScript Guidelines
 
----
+**Core principle**: Strict mode always. Schema-first at trust boundaries.
 
-## Core Principles
+- No `any` types — ever
+- No type assertions without justification
+- Prefer `type` over `interface` for data structures
+- Reserve `interface` for behavior contracts
+- Define Zod schemas first, derive types with `z.infer<>`
+- Validate at boundaries: Supabase responses, form inputs, URL params
 
-- **Simplicity First**: Make every change as simple as possible. Impact minimal code.
-- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
-- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
-- **Respect Conventions**: Before writing new code, scan the existing codebase for naming, structure, and style patterns — then match them.
-- **Dependency Discipline**: Prefer stdlib and existing dependencies. Never add a new package without flagging it explicitly to the user first.
-- **Security Baseline**: Never hardcode credentials, API keys, or secrets. Never commit `.env` files or sensitive config.
+For detailed patterns, load the `typescript-strict` skill.
 
----
+## Code Style
 
-## Communication Style
+**Core principle**: Clean, readable, functional-leaning code.
 
-- Be concise. Don't narrate every step — only flag decisions that need user input.
-- Prefer prose over bullet points for summaries and explanations.
-- Don't pad responses. If the answer is short, keep it short.
-- When presenting options, give a recommendation instead of leaving all choices open.
+- Prefer immutable patterns — avoid mutation where practical
+- Pure functions wherever possible
+- No nested if/else — use early returns or composition
+- Self-documenting code over comments
+- Prefer options objects over 3+ positional parameters
+- Use array methods (`map`, `filter`, `reduce`) over imperative loops
 
----
+For detailed patterns, load the `functional` skill.
 
-## Portfolio Building
+## Luma Conventions
 
-### Auto-Log (runs automatically after non-trivial work)
-After completing any meaningful feature, fix, refactor, or technical decision, append a brief entry to `portfolio/log.md` with:
+**Components**: shadcn/ui primitives in `src/components/ui/`, feature components in `src/components/`. Follow existing patterns.
 
-- **What**: One sentence describing what was built or fixed
-- **Why it mattered**: The problem it solved or outcome it enabled
-- **How**: Key technical approach or pattern used (2–3 sentences max)
-- **Stack/tools**: Relevant technologies involved
-- **Date** and **project name**
+**Data fetching**: TanStack Query for all server state. Supabase client via `src/lib/supabase.ts`. Custom hooks in `src/hooks/`.
 
-### On-Demand Write-Ups
-When asked to "generate a portfolio entry" or "write up this project":
+**Routing**: React Router v6 with route-based code splitting. Pages in `src/pages/`.
 
-1. Pull relevant entries from `portfolio/log.md`
-2. Produce a polished write-up in `portfolio/[project-name].md` covering:
-   - **Problem** — what you were solving and why it mattered
-   - **Approach** — key decisions, tradeoffs, architecture
-   - **Outcome** — results, improvements, what shipped
-   - **Learnings** — anything noteworthy you'd do differently
-3. Also generate a short `README.md`-style summary if the project doesn't already have one
+**Forms**: React Hook Form + Zod resolvers. Validate with Zod schemas.
 
-### Portfolio Hygiene
-- Never exaggerate outcomes — use accurate, specific language
-- If metrics exist (performance gains, time saved, errors reduced), include them
-- Flag entries with strong "story potential" using `[⭐ highlight]` in the log
-- Keep log entries concise — depth lives in the write-up, not the log
+**Styling**: Tailwind CSS utility classes. Use `cn()` helper from `src/lib/utils.ts` for conditional classes. Follow shadcn/ui patterns.
+
+**State**: TanStack Query for server state. React context for auth/theme. Local `useState` for UI state. No global state library needed.
+
+## Development Workflow
+
+**Core principle**: RED-GREEN-REFACTOR in small, known-good increments.
+
+- RED: Write failing test first
+- GREEN: Write minimum code to pass
+- REFACTOR: Clean up only if it adds value
+- Each increment leaves codebase in working state
+- **Wait for commit approval** before every commit
+
+For detailed TDD workflow, load the `tdd` skill.
+For planning methodology, load the `planning` skill.
+
+## Summary
+
+Write clean, testable, typed code that evolves through small, safe increments. Every new feature should be driven by tests. The implementation should be the simplest thing that works. When in doubt, favor simplicity and readability over cleverness.

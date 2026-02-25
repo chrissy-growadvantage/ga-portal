@@ -4,6 +4,7 @@ import { useClient, useDeleteClient } from '@/hooks/useClients';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useDeliveries } from '@/hooks/useDeliveries';
+import { useProposals } from '@/hooks/useProposals';
 import { useScope } from '@/hooks/useScope';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,8 +32,9 @@ import {
   CheckCircle2,
   Loader2,
   BarChart3,
+  FileText,
 } from 'lucide-react';
-import { CLIENT_STATUS_CONFIG } from '@/lib/constants';
+import { CLIENT_STATUS_CONFIG, PROPOSAL_STATUS_CONFIG, BILLING_TYPE_LABELS } from '@/lib/constants';
 import { LogDeliveryDialog } from '@/components/deliveries/LogDeliveryDialog';
 import { QuickAddDelivery } from '@/components/deliveries/QuickAddDelivery';
 import { DeliveryTimeline } from '@/components/deliveries/DeliveryTimeline';
@@ -40,7 +42,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ScopeTracker } from '@/components/scope/ScopeTracker';
 import { ScopeAllocationForm } from '@/components/scope/ScopeAllocationForm';
 import { MagicLinkPanel } from '@/components/clients/MagicLinkPanel';
-import type { ClientStatus } from '@/types/database';
+import type { ClientStatus, ProposalStatus } from '@/types/database';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -50,6 +52,7 @@ export default function ClientDetail() {
   const { data: client, isLoading } = useClient(id);
   const { data: deliveries, isLoading: deliveriesLoading } = useDeliveries(id);
   const { data: scopes } = useScope(id);
+  const { data: proposals, isLoading: proposalsLoading } = useProposals({ clientId: id });
   const deleteClient = useDeleteClient();
   const tanstackQueryClient = useQueryClient();
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
@@ -199,6 +202,7 @@ export default function ClientDetail() {
           <TabsList>
             <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
             <TabsTrigger value="scope">Scope</TabsTrigger>
+            <TabsTrigger value="proposals">Proposals</TabsTrigger>
           </TabsList>
           <Button size="sm" variant="outline" className="gap-2" onClick={() => setDeliveryDialogOpen(true)}>
             <Plus className="w-4 h-4" />
@@ -276,6 +280,67 @@ export default function ClientDetail() {
                   deliveries={deliveries ?? []}
                 />
               ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="proposals" className="mt-4 space-y-4">
+          <div className="flex justify-end">
+            <Link to={`/proposals/new?client=${id}`}>
+              <Button size="sm" variant="outline" className="gap-2">
+                <Plus className="w-4 h-4" />
+                New Proposal
+              </Button>
+            </Link>
+          </div>
+          {proposalsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-20 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : !proposals?.length ? (
+            <Card>
+              <CardContent className="p-0">
+                <EmptyState
+                  icon={FileText}
+                  title="No proposals yet"
+                  description="Create a proposal to outline your scope of work and pricing for this client."
+                  action={{
+                    label: 'Create your first proposal',
+                    onClick: () => navigate(`/proposals/new?client=${id}`),
+                  }}
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {proposals.map((proposal) => {
+                const statusCfg = PROPOSAL_STATUS_CONFIG[proposal.status as ProposalStatus];
+                const totalPrice = proposal.line_items.reduce(
+                  (sum, item) => sum + item.quantity * item.unit_price,
+                  0
+                );
+
+                return (
+                  <Link key={proposal.id} to={`/proposals/${proposal.id}`}>
+                    <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="font-medium text-foreground">{proposal.title}</p>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span>{format(new Date(proposal.created_at), 'MMM d, yyyy')}</span>
+                            <span>${totalPrice.toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <Badge variant="secondary" className={statusCfg?.color ?? ''}>
+                          {statusCfg?.label ?? proposal.status}
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </TabsContent>

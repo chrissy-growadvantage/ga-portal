@@ -43,6 +43,13 @@ serve(async (req) => {
       .eq('client_id', client.id)
       .order('period_start', { ascending: false });
 
+    // Fetch agreements for this client
+    const { data: agreements } = await supabase
+      .from('agreements')
+      .select('id, proposal_id, signer_name, signer_email, signed_at, snapshot, created_at')
+      .eq('client_id', client.id)
+      .order('signed_at', { ascending: false });
+
     return jsonResponse(
       {
         client: {
@@ -54,6 +61,7 @@ serve(async (req) => {
         operator: operator ?? { full_name: 'Your Operator', business_name: null },
         deliveries: deliveries ?? [],
         scope_allocations: scopeAllocations ?? [],
+        agreements: agreements ?? [],
       },
       200,
       { 'Cache-Control': 'public, max-age=30' }

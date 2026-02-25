@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Clock, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, DollarSign, Clock, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
@@ -16,6 +16,8 @@ import { useState } from 'react';
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/clients', icon: Users, label: 'Clients' },
+  { to: '/proposals', icon: FileText, label: 'Proposals' },
+  { to: '/revenue', icon: DollarSign, label: 'Revenue' },
   { to: '/timesheet', icon: Clock, label: 'Timesheet' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];

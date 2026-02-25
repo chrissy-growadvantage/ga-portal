@@ -1,9 +1,10 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { usePortalData } from '@/hooks/usePortalData';
 import { PortalLayout } from '@/components/portal/PortalLayout';
 import { PortalScopeCard } from '@/components/portal/PortalScopeCard';
 import { PortalTimeline } from '@/components/portal/PortalTimeline';
 import { ApprovalCard } from '@/components/portal/ApprovalCard';
+import { PortalAgreementCard } from '@/components/portal/PortalAgreementCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Loader2, ShieldAlert, Clock, ChevronDown } from 'lucide-react';
@@ -13,6 +14,7 @@ import { queryKeys } from '@/lib/query-keys';
 
 export default function Portal() {
   const { token } = useParams<{ token: string }>();
+  const navigate = useNavigate();
   const { data, isLoading, error } = usePortalData(token);
   const queryClient = useQueryClient();
 
@@ -64,7 +66,7 @@ export default function Portal() {
 
   if (!data) return null;
 
-  const { client, operator, deliveries, scope_allocations } = data;
+  const { client, operator, deliveries, scope_allocations, agreements } = data;
   const now = new Date();
 
   // Items pending approval (shown in their own section)
@@ -162,6 +164,22 @@ export default function Portal() {
                 key={scope.id}
                 allocation={scope}
                 deliveries={currentDeliveries}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Agreements */}
+      {agreements && agreements.length > 0 && (
+        <section>
+          <h2 className="text-base font-semibold mb-3">Agreements</h2>
+          <div className="space-y-3">
+            {agreements.map((agreement) => (
+              <PortalAgreementCard
+                key={agreement.id}
+                agreement={agreement}
+                onView={() => navigate(`/portal/${token}/agreements/${agreement.id}`)}
               />
             ))}
           </div>

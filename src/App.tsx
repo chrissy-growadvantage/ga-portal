@@ -14,6 +14,12 @@ const AuthCallback = lazy(() => import('@/pages/AuthCallback'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const Portal = lazy(() => import('@/pages/Portal'));
 const Timesheet = lazy(() => import('@/pages/Timesheet'));
+const ProposalList = lazy(() => import('@/pages/ProposalList'));
+const ProposalBuilder = lazy(() => import('@/pages/ProposalBuilder'));
+const ProposalDetail = lazy(() => import('@/pages/ProposalDetail'));
+const Revenue = lazy(() => import('@/pages/Revenue'));
+const PortalProposal = lazy(() => import('@/pages/PortalProposal'));
+const PortalAgreement = lazy(() => import('@/pages/PortalAgreement'));
 
 function PageLoader() {
   return (
@@ -48,6 +54,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/portal/:token" element={<Portal />} />
+          <Route path="/portal/:token/proposal/:proposalId" element={<PortalProposal />} />
+          <Route path="/portal/:token/agreements" element={<PortalAgreement />} />
+          <Route path="/portal/:token/agreements/:agreementId" element={<PortalAgreement />} />
 
           {/* Protected — inside AppShell */}
           <Route
@@ -60,6 +69,11 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="/clients" element={<ClientList />} />
             <Route path="/clients/:id" element={<ClientDetail />} />
+            <Route path="/proposals" element={<ProposalList />} />
+            <Route path="/proposals/new" element={<ProposalBuilder />} />
+            <Route path="/proposals/:id" element={<ProposalDetail />} />
+            <Route path="/proposals/:id/edit" element={<ProposalBuilder />} />
+            <Route path="/revenue" element={<Revenue />} />
             <Route path="/timesheet" element={<Timesheet />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
