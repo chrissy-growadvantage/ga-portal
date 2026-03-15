@@ -41,7 +41,7 @@ export function StatCard({ icon: Icon, iconClassName, label, value, trend, class
         <span className="text-muted-foreground/40 text-base leading-none select-none">···</span>
       </div>
 
-      <p className="text-[26px] font-bold tracking-tight leading-none mb-1.5">{value}</p>
+      <p className="text-[26px] font-bold tracking-tight leading-none mb-1.5 font-mono">{value}</p>
 
       {trend && TrendIcon && (
         <p className={cn('text-xs flex items-center gap-1', trendCfg?.className)}>
