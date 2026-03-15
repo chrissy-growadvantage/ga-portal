@@ -49,6 +49,11 @@ function AnimatedNumber({ value, className }: { value: number; className?: strin
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  useEffect(() => {
+    document.title = 'Dashboard — Luma';
+    return () => { document.title = 'Luma'; };
+  }, []);
   const { data: clients, isLoading } = useClients();
   const { alerts } = useScopeAlerts();
 
@@ -312,9 +317,7 @@ export default function Dashboard() {
                           <span className="text-[13.5px] font-semibold">{deliveryCount}</span>
                         </td>
                         <td className="px-4 py-3">
-                          {client.status !== 'active' && (
-                            <TypedStatusBadge type="client" status={client.status} className="text-xs" />
-                          )}
+                          <TypedStatusBadge type="client" status={client.status} className="text-xs" />
                         </td>
                       </tr>
                     );
