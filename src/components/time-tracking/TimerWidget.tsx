@@ -53,11 +53,11 @@ export function TimerWidget() {
     };
   }, [isDragging]);
 
-  // Idle state — show a small play button
+  // Idle state — show a small play button (mobile only; desktop uses keyboard shortcut Ctrl+T)
   if (!timer.isRunning) {
     return (
       <div
-        className="fixed bottom-6 right-6 z-50"
+        className="md:hidden fixed bottom-6 right-6 z-50"
         style={{
           transform: `translate(${position.x}px, ${position.y}px)`,
         }}
