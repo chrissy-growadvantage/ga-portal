@@ -45,20 +45,45 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-background">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground mb-3">
-            <Zap className="w-6 h-6" />
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Luma</h1>
-          <p className="text-sm text-muted-foreground mt-1">Client Delivery OS</p>
-        </div>
+    <div
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{ backgroundColor: 'hsl(var(--login-bg))' }}
+    >
+      {/* Grid background with radial fade */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(hsl(var(--login-grid)) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--login-grid)) 1px, transparent 1px)
+          `,
+          backgroundSize: '44px 44px',
+          WebkitMaskImage: 'radial-gradient(ellipse 60% 55% at 50% 50%, black 0%, transparent 100%)',
+          maskImage: 'radial-gradient(ellipse 60% 55% at 50% 50%, black 0%, transparent 100%)',
+          opacity: 0.55,
+        }}
+      />
 
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle>{isSignUp ? 'Create an account' : 'Welcome back'}</CardTitle>
+      {/* Top logo bar */}
+      <div className="absolute top-0 left-0 right-0 flex items-center px-8 py-4 z-10">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary text-primary-foreground">
+            <Zap className="w-3.5 h-3.5" />
+          </div>
+          <span className="font-bold text-base tracking-tight">Luma</span>
+        </div>
+      </div>
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-[400px] px-4">
+        <Card className="shadow-card border-border">
+          <CardHeader className="text-center pb-4">
+            <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 mx-auto mb-3">
+              <Zap className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle className="text-xl">
+              {isSignUp ? 'Create an account' : 'Welcome Back'}
+            </CardTitle>
             <CardDescription>
               {isSignUp
                 ? 'Start tracking delivery for your clients'
@@ -81,7 +106,7 @@ export default function Login() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
@@ -105,9 +130,13 @@ export default function Login() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={submitting}>
+              <Button
+                type="submit"
+                className="w-full bg-foreground text-background hover:bg-foreground/90"
+                disabled={submitting}
+              >
                 {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {isSignUp ? 'Create account' : 'Sign in'}
+                {isSignUp ? 'Create account' : 'Sign In'}
               </Button>
             </form>
 
@@ -125,6 +154,10 @@ export default function Login() {
           </CardContent>
         </Card>
       </div>
+
+      <p className="absolute bottom-5 text-[12px] text-muted-foreground z-10">
+        © 2026 Luma. All rights reserved.
+      </p>
     </div>
   );
 }
