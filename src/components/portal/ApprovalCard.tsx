@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import type { DeliveryItem } from '@/types/database';
-import { Check, Pencil, Loader2, CheckCircle2 } from 'lucide-react';
+import { Check, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface ApprovalCardProps {
   item: DeliveryItem;
   token: string;
   onAction: () => void;
+  isLast?: boolean;
 }
 
 async function submitAction(token: string, deliveryItemId: string, action: 'approved' | 'revision_requested', note?: string) {
@@ -40,17 +41,19 @@ async function submitAction(token: string, deliveryItemId: string, action: 'appr
   return response.json();
 }
 
-export function ApprovalCard({ item, token, onAction }: ApprovalCardProps) {
+type ResolvedAction = 'approved' | 'revision_requested' | null;
+
+export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProps) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [resolved, setResolved] = useState(false);
+  const [resolvedAction, setResolvedAction] = useState<ResolvedAction>(null);
 
   const handleApprove = async () => {
     setSubmitting(true);
     try {
       await submitAction(token, item.id, 'approved');
-      setResolved(true);
+      setResolvedAction('approved');
       toast.success('Approved!');
       onAction();
     } catch {
@@ -65,7 +68,7 @@ export function ApprovalCard({ item, token, onAction }: ApprovalCardProps) {
     setSubmitting(true);
     try {
       await submitAction(token, item.id, 'revision_requested', feedback.trim());
-      setResolved(true);
+      setResolvedAction('revision_requested');
       toast.success('Feedback submitted');
       onAction();
     } catch {
@@ -75,109 +78,93 @@ export function ApprovalCard({ item, token, onAction }: ApprovalCardProps) {
     }
   };
 
-  if (resolved) {
+  if (resolvedAction === 'approved') {
     return (
-      <Card className="border-border/60 bg-muted/30">
-        <CardContent className="py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-green-600" />
-            <span>Response submitted for <span className="font-medium text-foreground">{item.title}</span></span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={cn('flex items-center gap-2.5 px-5 py-4 bg-status-success/5', !isLast && 'border-b border-border')}>
+        <CheckCircle2 className="w-4 h-4 text-status-success shrink-0" aria-hidden="true" />
+        <div>
+          <p className="text-sm font-medium text-status-success">Approved</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{item.title}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (resolvedAction === 'revision_requested') {
+    return (
+      <div className={cn('flex items-center gap-2.5 px-5 py-4 bg-status-warning/5', !isLast && 'border-b border-border')}>
+        <AlertTriangle className="w-4 h-4 text-status-warning shrink-0" aria-hidden="true" />
+        <div>
+          <p className="text-sm font-medium text-status-warning">Feedback submitted</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{item.title}</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="border-border/60">
-      <CardContent className="pt-5 pb-5">
-        <div className="mb-1">
-          <p className="text-sm font-medium">{item.title}</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <Badge variant="outline" className="text-xs px-1.5 py-0">
-              {item.category}
-            </Badge>
-            {item.completed_at && (
-              <span className="text-xs text-muted-foreground">
-                Completed {format(new Date(item.completed_at), 'MMM d')}
-              </span>
-            )}
-          </div>
+    <div className={cn('px-5 py-4', !isLast && 'border-b border-border')}>
+      {/* Content */}
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-foreground">{item.title}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <Badge variant="outline" className="text-xs px-1.5 py-0 font-normal">
+            {item.category}
+          </Badge>
+          {item.completed_at && (
+            <span className="text-xs text-muted-foreground">
+              sent {format(new Date(item.completed_at), 'MMM d')}
+            </span>
+          )}
         </div>
-
         {item.description && (
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">
             {item.description}
           </p>
         )}
+      </div>
 
-        {!showFeedback ? (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4">
-            <Button
-              onClick={handleApprove}
-              disabled={submitting}
-              className="min-h-[44px] min-w-[44px] gap-2"
-              aria-label={`Approve: ${item.title}`}
-            >
-              {submitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Check className="w-4 h-4" />
-              )}
-              Approve
+      {/* Actions — always below content */}
+      {!showFeedback ? (
+        <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-border/50">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowFeedback(true)}
+            disabled={submitting}
+            className="text-xs h-8 text-muted-foreground hover:text-foreground"
+          >
+            Request Changes
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleApprove}
+            disabled={submitting}
+            className="text-xs h-8 gap-1.5 bg-status-success hover:bg-status-success/90 text-white"
+          >
+            {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+            Approve
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          <Textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="What would you like changed?"
+            className="min-h-[72px] resize-none text-sm"
+            autoFocus
+          />
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={handleRequestChanges} disabled={submitting || !feedback.trim()} className="gap-1.5">
+              {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Submit Feedback'}
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowFeedback(true)}
-              disabled={submitting}
-              className="min-h-[44px] min-w-[44px] gap-2"
-              aria-label={`Request changes to: ${item.title}`}
-            >
-              <Pencil className="w-4 h-4" />
-              Request Changes
+            <Button size="sm" variant="ghost" onClick={() => { setShowFeedback(false); setFeedback(''); }} disabled={submitting}>
+              Cancel
             </Button>
           </div>
-        ) : (
-          <div className="mt-4 space-y-3">
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">
-                What would you like changed?
-              </label>
-              <Textarea
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Describe the changes you'd like..."
-                className="min-h-[80px] resize-none"
-                autoFocus
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleRequestChanges}
-                disabled={submitting || !feedback.trim()}
-                className="min-h-[44px] gap-2"
-              >
-                {submitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  'Submit Feedback'
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setShowFeedback(false);
-                  setFeedback('');
-                }}
-                disabled={submitting}
-                className="min-h-[44px]"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }
