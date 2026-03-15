@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useClient, useDeleteClient } from '@/hooks/useClients';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
@@ -7,7 +7,7 @@ import { useDeliveries } from '@/hooks/useDeliveries';
 import { useProposals } from '@/hooks/useProposals';
 import { useScope } from '@/hooks/useScope';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { TypedStatusBadge, StatusBadge } from '@/components/ui/status-badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,41 +23,91 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   Mail,
   Phone,
-  Calendar,
   CheckCircle2,
   Loader2,
   BarChart3,
   FileText,
+  Link2,
 } from 'lucide-react';
-import { CLIENT_STATUS_CONFIG, PROPOSAL_STATUS_CONFIG, BILLING_TYPE_LABELS } from '@/lib/constants';
+import { PROPOSAL_STATUS_CONFIG } from '@/lib/constants';
 import { LogDeliveryDialog } from '@/components/deliveries/LogDeliveryDialog';
 import { QuickAddDelivery } from '@/components/deliveries/QuickAddDelivery';
 import { DeliveryTimeline } from '@/components/deliveries/DeliveryTimeline';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ScopeTracker } from '@/components/scope/ScopeTracker';
 import { ScopeAllocationForm } from '@/components/scope/ScopeAllocationForm';
+import { ScopeRequestsTab } from '@/components/scope/ScopeRequestsTab';
 import { MagicLinkPanel } from '@/components/clients/MagicLinkPanel';
-import type { ClientStatus, ProposalStatus } from '@/types/database';
+import { ClientNotes } from '@/components/clients/ClientNotes';
+import type { ProposalStatus } from '@/types/database';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { LumaGA4Dashboard } from '@/components/ga4/LumaGA4Dashboard';
+import { OnboardingStagesEditor } from '@/components/clients/OnboardingStagesEditor';
+import { ClientTasksManager } from '@/components/clients/ClientTasksManager';
+import { PortalLinksEditor } from '@/components/clients/PortalLinksEditor';
+import { ClientCommunicationTimeline } from '@/components/clients/ClientCommunicationTimeline';
+
+function SectionHeading({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="mb-4">
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+    </div>
+  );
+}
 
 export default function ClientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: client, isLoading } = useClient(id);
   const { data: deliveries, isLoading: deliveriesLoading } = useDeliveries(id);
-  const { data: scopes } = useScope(id);
+  const { data: scopes, isLoading: scopesLoading } = useScope(id);
   const { data: proposals, isLoading: proposalsLoading } = useProposals({ clientId: id });
   const deleteClient = useDeleteClient();
   const tanstackQueryClient = useQueryClient();
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
   const [deliveryPrefillTitle, setDeliveryPrefillTitle] = useState('');
   const [scopeFormOpen, setScopeFormOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') ?? 'deliveries';
+
+  // Set page title once client data is available
+  useEffect(() => {
+    if (client) {
+      const name = client.company_name || client.contact_name || 'Client';
+      document.title = `${name} — Luma`;
+    }
+    return () => { document.title = 'Luma'; };
+  }, [client]);
+
+  // Handle ga4_connected / ga4_error params injected by the OAuth callback redirect
+  const ga4CallbackHandled = useRef(false);
+  useEffect(() => {
+    if (ga4CallbackHandled.current) return;
+    const connected = searchParams.get('ga4_connected');
+    const ga4Error = searchParams.get('ga4_error');
+    if (!connected && !ga4Error) return;
+    ga4CallbackHandled.current = true;
+    if (connected === 'true') {
+      toast.success('Google Analytics connected successfully!');
+    } else if (ga4Error) {
+      toast.error('Google Analytics connection failed');
+    }
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('ga4_connected');
+        next.delete('ga4_error');
+        return next;
+      },
+      { replace: true },
+    );
+  }, [searchParams, setSearchParams]);
 
   // Derive last-used category from most recent delivery for quick-add defaults
   const lastCategory = useMemo(() => {
@@ -80,13 +130,11 @@ export default function ClientDetail() {
       <div className="text-center py-16">
         <p className="text-muted-foreground">Client not found.</p>
         <Link to="/clients" className="text-primary hover:underline text-sm mt-2 inline-block">
-          ← Back to clients
+          Back to clients
         </Link>
       </div>
     );
   }
-
-  const statusCfg = CLIENT_STATUS_CONFIG[client.status as ClientStatus];
 
   const handleDelete = async () => {
     try {
@@ -108,142 +156,194 @@ export default function ClientDetail() {
     if (!open) setDeliveryPrefillTitle('');
   };
 
+  const displayName = client.company_name || client.contact_name;
+  const initials = displayName.slice(0, 2).toUpperCase();
+  const deliveryCount = deliveries?.length ?? 0;
+  const activeScope = scopes?.[0];
+  const hoursUsed = deliveries?.reduce((sum, d) => sum + (d.hours_spent ?? 0), 0) ?? 0;
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/clients">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
+    <div className="space-y-6">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1 text-[12.5px] text-muted-foreground" aria-label="Breadcrumb">
+        <Link to="/clients" className="hover:text-foreground transition-colors">
+          Clients
+        </Link>
+        <span className="mx-1">›</span>
+        <span className="text-foreground font-medium">{displayName}</span>
+      </nav>
+
+      {/* Client Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          {/* Avatar */}
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-base font-bold text-primary shrink-0">
+            {initials}
+          </div>
+
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-extrabold tracking-tight">
-                {client.company_name || client.contact_name}
-              </h1>
-              <Badge variant="secondary" className={`gap-1.5 ${statusCfg?.color ?? ''}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${statusCfg?.dot ?? ''}`} aria-hidden="true" />
-                {statusCfg?.label ?? client.status}
-              </Badge>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-xl font-bold tracking-tight">{displayName}</h1>
+              <TypedStatusBadge type="client" status={client.status} />
             </div>
-            {client.company_name && client.contact_name && (
-              <p className="text-muted-foreground mt-0.5">{client.contact_name}</p>
-            )}
+            <div className="flex items-center gap-4 mt-1 text-[12.5px] text-muted-foreground flex-wrap">
+              {client.company_name && client.contact_name && (
+                <span>{client.contact_name}</span>
+              )}
+              {client.contact_email && (
+                <span className="flex items-center gap-1.5">
+                  <Mail className="w-3 h-3" />
+                  {client.contact_email}
+                </span>
+              )}
+              {client.contact_phone && (
+                <span className="flex items-center gap-1.5">
+                  <Phone className="w-3 h-3" />
+                  {client.contact_phone}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete client?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently remove {client.company_name || client.contact_name} and all associated delivery records. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                {deleteClient.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 text-[13px]"
+            onClick={() => setSearchParams({ tab: 'portal' }, { replace: true })}
+          >
+            <Link2 className="w-3.5 h-3.5" />
+            Share Portal
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" aria-label="Delete client">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete client?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently remove {displayName} and all associated delivery records. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  {deleteClient.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
 
-      {/* Contact Info */}
-      <Card>
-        <CardContent className="p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {client.contact_email && (
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
-                <span className="truncate">{client.contact_email}</span>
-              </div>
-            )}
-            {client.contact_phone && (
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
-                <span>{client.contact_phone}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-2 text-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span>Added {format(new Date(client.created_at), 'MMM d, yyyy')}</span>
-            </div>
-          </div>
-          {client.notes && (
-            <p className="text-sm text-muted-foreground mt-4 pt-4 border-t border-border">
-              {client.notes}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {/* Summary stat strip */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-card border border-border rounded-lg px-4 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Deliveries</p>
+          <p className="text-2xl font-bold tracking-tight mt-1">{deliveryCount}</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg px-4 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Scope Used</p>
+          <p className="text-2xl font-bold tracking-tight mt-1">
+            {activeScope
+              ? `${Math.round((hoursUsed / activeScope.total_allocated) * 100)}%`
+              : '—'}
+          </p>
+        </div>
+        <div className="bg-card border border-border rounded-lg px-4 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Hours Logged</p>
+          <p className="text-2xl font-bold tracking-tight mt-1">{hoursUsed.toFixed(1)}</p>
+        </div>
+      </div>
 
-      {/* Magic Link Panel */}
-      <MagicLinkPanel
-        clientId={client.id}
-        hasExistingLink={!!client.magic_link_token_hash}
-        expiresAt={client.magic_link_expires_at}
-        onTokenUpdated={() => {
-          tanstackQueryClient.invalidateQueries({ queryKey: queryKeys.clients.detail(client.id) });
+      {/* Tabs */}
+      <Tabs
+        value={activeTab}
+        onValueChange={(tab) => {
+          setSearchParams({ tab }, { replace: true });
         }}
-      />
+      >
+        <div className="flex items-center justify-between gap-2">
+          <div className="relative min-w-0 flex-1">
+            <TabsList className="overflow-x-auto flex-nowrap scrollbar-none">
+              <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
+              <TabsTrigger value="scope">Scope</TabsTrigger>
+              <TabsTrigger value="requests">Requests</TabsTrigger>
+              <TabsTrigger value="proposals">Proposals</TabsTrigger>
+              <TabsTrigger value="portal">Portal</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            </TabsList>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" />
+          </div>
 
-      {/* Tabs: Deliveries & Scope */}
-      <Tabs defaultValue="deliveries">
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
-            <TabsTrigger value="scope">Scope</TabsTrigger>
-            <TabsTrigger value="proposals">Proposals</TabsTrigger>
-          </TabsList>
-          <Button size="sm" variant="outline" className="gap-2" onClick={() => setDeliveryDialogOpen(true)}>
-            <Plus className="w-4 h-4" />
-            Log Delivery
-          </Button>
+          {activeTab === 'deliveries' && (
+            <Button size="sm" variant="outline" className="gap-2 shrink-0" onClick={() => setDeliveryDialogOpen(true)}>
+              <Plus className="w-4 h-4" />
+              Log Delivery
+            </Button>
+          )}
         </div>
 
-        <TabsContent value="deliveries" className="mt-4 space-y-4">
-          <QuickAddDelivery
-            clientId={id!}
-            lastCategory={lastCategory}
-            onExpandToDialog={handleExpandToDialog}
-          />
-          {deliveriesLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : !deliveries?.length ? (
-            <Card>
-              <CardContent className="p-0">
-                <EmptyState
-                  icon={CheckCircle2}
-                  title="No deliveries logged yet"
-                  description="Log your first delivery to start building this client's record."
-                  tip="Most operators start by logging this week's completed work."
-                  action={{
-                    label: 'Log your first delivery',
-                    onClick: () => setDeliveryDialogOpen(true),
-                  }}
+        <TabsContent value="deliveries" className="mt-4">
+          <div className="flex gap-6 items-start">
+            {/* Main delivery content */}
+            <main className="flex-1 min-w-0 space-y-4">
+              <QuickAddDelivery
+                clientId={id!}
+                lastCategory={lastCategory}
+                onExpandToDialog={handleExpandToDialog}
+              />
+              {deliveriesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-16 w-full rounded-xl" />
+                  ))}
+                </div>
+              ) : !deliveries?.length ? (
+                <Card>
+                  <CardContent className="p-0">
+                    <EmptyState
+                      icon={CheckCircle2}
+                      title="No deliveries logged yet"
+                      description="Log your first delivery to start building this client's record."
+                      tip="Most operators start by logging this week's completed work."
+                      action={{
+                        label: 'Log your first delivery',
+                        onClick: () => setDeliveryDialogOpen(true),
+                      }}
+                    />
+                  </CardContent>
+                </Card>
+              ) : (
+                <DeliveryTimeline deliveries={deliveries} />
+              )}
+            </main>
+
+            {/* Scope Tracker sidebar */}
+            {scopes?.[0] && (
+              <aside className="w-72 shrink-0 hidden lg:block sticky top-4">
+                <ScopeTracker
+                  allocation={scopes[0]}
+                  deliveries={deliveries ?? []}
                 />
-              </CardContent>
-            </Card>
-          ) : (
-            <DeliveryTimeline deliveries={deliveries} />
-          )}
+              </aside>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="scope" className="mt-4">
-          {!scopes?.length ? (
+          {scopesLoading ? (
+            <div className="space-y-3 animate-pulse">
+              <span className="sr-only">Loading scope data</span>
+              <div className="h-4 bg-muted rounded w-3/4" />
+              <div className="h-4 bg-muted rounded w-1/2" />
+            </div>
+          ) : !scopes?.length ? (
             <Card>
               <CardContent className="py-10 text-center">
                 <BarChart3 className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
@@ -282,6 +382,10 @@ export default function ClientDetail() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="requests" className="mt-4">
+          <ScopeRequestsTab clientId={id!} />
         </TabsContent>
 
         <TabsContent value="proposals" className="mt-4 space-y-4">
@@ -333,9 +437,10 @@ export default function ClientDetail() {
                             <span>${totalPrice.toLocaleString()}</span>
                           </div>
                         </div>
-                        <Badge variant="secondary" className={statusCfg?.color ?? ''}>
-                          {statusCfg?.label ?? proposal.status}
-                        </Badge>
+                        <StatusBadge
+                          label={statusCfg?.label ?? proposal.status}
+                          colorClasses={statusCfg?.color ?? ''}
+                        />
                       </CardContent>
                     </Card>
                   </Link>
@@ -343,6 +448,92 @@ export default function ClientDetail() {
               })}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="portal" className="mt-4 space-y-8">
+          <section>
+            <SectionHeading
+              title="Portal Access"
+              description="Generate and manage the client's magic link."
+            />
+            <MagicLinkPanel
+              clientId={client.id}
+              companyName={client.company_name}
+              contactEmail={client.contact_email}
+              contactName={client.contact_name}
+              hasExistingLink={!!client.magic_link_token_hash}
+              expiresAt={client.magic_link_expires_at}
+              onTokenUpdated={() => {
+                tanstackQueryClient.invalidateQueries({ queryKey: queryKeys.clients.detail(client.id) });
+              }}
+            />
+          </section>
+
+          <section>
+            <SectionHeading
+              title="Portal Links"
+              description="Quick links shown to the client in their portal."
+            />
+            <PortalLinksEditor clientId={id!} client={client} />
+          </section>
+
+          <section>
+            <SectionHeading
+              title="Onboarding"
+              description="Track onboarding stages for this client."
+            />
+            <OnboardingStagesEditor clientId={id!} />
+          </section>
+
+          <section>
+            <SectionHeading
+              title="Client Tasks"
+              description="Tasks assigned to or visible by this client."
+            />
+            <ClientTasksManager clientId={id!} />
+          </section>
+        </TabsContent>
+
+        <TabsContent value="reports" className="mt-4 space-y-8">
+          <section>
+            <SectionHeading
+              title="Analytics"
+              description="Google Analytics data for this client."
+            />
+            <LumaGA4Dashboard
+              clientId={client.id}
+              returnUrl={`${window.location.origin}/clients/${client.id}?tab=reports`}
+            />
+          </section>
+
+          <section>
+            <SectionHeading
+              title="Monthly Snapshots"
+              description="View and manage monthly review notes."
+            />
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Monthly Review History</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">Export reports and review past months.</p>
+                </div>
+                <Link to={`/clients/${id}/snapshots`}>
+                  <Button variant="outline" size="sm">Open Snapshots</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </section>
+
+          <section>
+            <SectionHeading
+              title="Notes"
+              description="Internal notes about this client."
+            />
+            <ClientNotes clientId={id!} />
+          </section>
+        </TabsContent>
+        <TabsContent value="timeline" className="mt-4">
+          <ClientCommunicationTimeline clientId={id!} />
         </TabsContent>
       </Tabs>
 
@@ -358,6 +549,18 @@ export default function ClientDetail() {
         open={scopeFormOpen}
         onOpenChange={setScopeFormOpen}
       />
+
+      {/* Log Delivery FAB — mobile only (desktop has the tab header button) */}
+      {activeTab === 'deliveries' && (
+        <button
+          className="md:hidden fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-full shadow-lg hover:bg-primary/90 active:scale-95 transition-all font-medium text-sm"
+          onClick={() => setDeliveryDialogOpen(true)}
+          aria-label="Log delivery"
+        >
+          <Plus className="w-4 h-4" />
+          Log Delivery
+        </button>
+      )}
     </div>
   );
 }
