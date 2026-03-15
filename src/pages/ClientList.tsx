@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,13 @@ type StatusFilter = ClientStatus | 'all';
 
 export default function ClientList() {
   const { data: clients, isLoading } = useClients();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    document.title = 'Clients — Luma';
+    return () => { document.title = 'Luma'; };
+  }, []);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -178,7 +184,6 @@ export default function ClientList() {
                 <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-4 py-2.5">Client</th>
                 <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-4 py-2.5 hidden sm:table-cell">Scope</th>
                 <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-4 py-2.5 hidden md:table-cell">Status</th>
-                <th className="text-right text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-4 py-2.5">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -190,7 +195,7 @@ export default function ClientList() {
                   <tr
                     key={client.id}
                     className="border-b border-border/40 last:border-0 hover:bg-muted/40 transition-colors cursor-pointer"
-                    onClick={() => { window.location.href = `/clients/${client.id}`; }}
+                    onClick={() => navigate(`/clients/${client.id}`)}
                   >
                     {/* Client name + email */}
                     <td className="px-4 py-3">
@@ -237,17 +242,6 @@ export default function ClientList() {
                           Active
                         </span>
                       )}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        to={`/clients/${client.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border text-[12px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      >
-                        View
-                      </Link>
                     </td>
                   </tr>
                 );
