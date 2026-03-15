@@ -95,6 +95,7 @@ export default function Dashboard() {
     (user?.user_metadata?.full_name as string | undefined) ??
     user?.email?.split('@')[0] ??
     'there';
+  const firstName = operatorName.split(' ')[0];
 
   const hour = new Date().getHours();
   const timeGreeting =
@@ -145,7 +146,8 @@ export default function Dashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-[22px] font-bold tracking-tight">
-            {timeGreeting}, {operatorName} 👋
+            <span className="sm:hidden">{timeGreeting}, {firstName} 👋</span>
+            <span className="hidden sm:inline">{timeGreeting}, {operatorName} 👋</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">Here's your business at a glance</p>
         </div>
