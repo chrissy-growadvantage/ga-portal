@@ -13,11 +13,12 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { token, title, description, category } = body as {
+    const { token, title, description, category, attachment_url } = body as {
       token: string;
       title: string;
       description?: string;
       category?: string;
+      attachment_url?: string;
     };
 
     if (!token) {
@@ -56,6 +57,7 @@ serve(async (req) => {
         requested_by: 'client',
         status: 'pending',
         category: category ?? null,
+        attachment_url: attachment_url ?? null,
         ga_status: 'submitted',
       })
       .select('id')

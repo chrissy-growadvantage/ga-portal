@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grow Advantage Portal — Interactive Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'system-ui'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            primary: { DEFAULT: '#5B4DC7', light: '#7B6FD4' },
+            success: '#25A576',
+            'accent-warm': '#E8853A',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background-color: hsl(0 0% 99%); }
+    .anchor-pill.active { background: rgba(91,77,199,0.1); color: #5B4DC7; }
+    .anchor-pill { transition: all 0.15s ease; }
+    .section-fade { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .task-done .task-title { text-decoration: line-through; color: #9ca3af; }
+    .red-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: #EF4444; }
+    [data-view] { display: none; }
+    [data-view].visible { display: block; }
+    .nav-bottom { box-shadow: 0 -1px 3px rgba(0,0,0,0.08); }
+
+    /* Dialog overlay */
+    .dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; display: none; align-items: center; justify-content: center; }
+    .dialog-overlay.open { display: flex; }
+  </style>
+</head>
+<body class="font-sans text-gray-900 antialiased">
+
+  <!-- ===== CLIENT PORTAL ===== -->
+  <div id="client-portal">
+    <div class="max-w-2xl mx-auto px-4 pt-6 pb-24 sm:pb-12">
+
+      <!-- Trust Banner (sticky) -->
+      <header class="mb-4">
+        <div class="flex items-center gap-2 mb-1">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+            <span class="text-sm font-bold text-emerald-700">GA</span>
+          </div>
+          <span class="text-sm font-medium text-gray-500">Grow Advantage</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight mt-3">Delivery Summary for TechStartup Inc.</h1>
+        <p class="text-sm text-gray-500 mt-1">March 2026</p>
+      </header>
+
+      <!-- Anchor Nav (sticky) -->
+      <nav class="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 -mx-4 px-4 py-2 mb-6 flex gap-1.5 overflow-x-auto scrollbar-hide" id="anchor-nav">
+        <button onclick="scrollToSection('home')" class="anchor-pill active rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap" data-nav="home">Home</button>
+        <button onclick="scrollToSection('onboarding')" class="anchor-pill rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 whitespace-nowrap relative" data-nav="onboarding">
+          Onboarding
+        </button>
+        <button onclick="scrollToSection('requests')" class="anchor-pill rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 whitespace-nowrap" data-nav="requests">Requests</button>
+        <button onclick="scrollToSection('tasks')" class="anchor-pill rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 whitespace-nowrap relative" data-nav="tasks">
+          Tasks
+          <span class="red-dot"></span>
+        </button>
+        <button onclick="scrollToSection('work')" class="anchor-pill rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 whitespace-nowrap" data-nav="work">Work</button>
+        <button onclick="scrollToSection('docs')" class="anchor-pill rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 whitespace-nowrap" data-nav="docs">Docs</button>
+      </nav>
+
+      <!-- ======================== HOME SECTION ======================== -->
+      <section id="section-home" class="space-y-6 mb-12">
+
+        <!-- Welcome Banner -->
+        <div class="rounded-xl bg-primary/5 border border-primary/10 px-4 py-3">
+          <p class="text-sm font-medium text-gray-900">Welcome, Sarah — your Ops Partnership is in Week 3</p>
+          <p class="text-xs text-gray-500 mt-0.5">Primary comms: Slack</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="flex flex-wrap gap-2">
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+            Slack
+          </button>
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            Drive
+          </button>
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Book a call
+          </button>
+          <button onclick="openRequestDialog()" class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Request
+          </button>
+        </div>
+
+        <!-- Outstanding Actions (RED) -->
+        <div class="rounded-xl border-2 border-red-200 bg-red-50/30 overflow-hidden">
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-red-700">Outstanding Actions</span>
+            <span class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
+          </div>
+          <div class="border-t border-red-100">
+            <div class="px-4 py-3 flex items-center gap-3 border-b border-red-100/50 hover:bg-red-50/50 cursor-pointer" onclick="scrollToSection('tasks')">
+              <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary" onclick="event.stopPropagation(); completeTask(this)">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium">Complete intake form</p>
+                <p class="text-xs text-red-600 font-medium">Due Mar 5 · Overdue</p>
+              </div>
+              <button class="text-xs text-primary hover:underline shrink-0">Open form</button>
+            </div>
+            <div class="px-4 py-3 flex items-center gap-3 hover:bg-red-50/50 cursor-pointer" onclick="scrollToSection('tasks')">
+              <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary" onclick="event.stopPropagation(); completeTask(this)">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium">Review kickoff agenda</p>
+                <p class="text-xs text-gray-500">Due Mar 6</p>
+              </div>
+              <button class="text-xs text-primary hover:underline shrink-0">View doc</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Requests -->
+        <div class="rounded-xl border border-gray-200 bg-white overflow-hidden cursor-pointer" onclick="scrollToSection('requests')">
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Open Requests</span>
+            <span class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">1</span>
+          </div>
+          <div class="border-t border-gray-100 px-4 py-3">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium">Blog content brief</p>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-700">Received</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- This Month (Right Now) -->
+        <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+          <div class="px-5 pt-5 pb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">Scope</span>
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  On Track
+                </span>
+              </div>
+              <span class="text-xs font-mono text-gray-500">12 / 20 deliverables</span>
+            </div>
+            <div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+              <div class="h-full rounded-full bg-emerald-500 transition-all" style="width: 60%"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1.5">60% used · 8 remaining</p>
+          </div>
+          <div class="border-t border-gray-100 px-5 py-4 space-y-3">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">This Month's Focus</p>
+                <p class="text-sm mt-0.5">Launch new onboarding flow and migrate existing users to v2 dashboard</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium">Thursday, 6 March 2026</p>
+                  <p class="text-xs text-gray-500">2:00 PM</p>
+                </div>
+              </div>
+              <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90">
+                Join <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-100">
+            <div class="bg-white px-4 py-3 text-center"><p class="text-xl font-bold font-mono text-primary">8</p><p class="text-xs text-gray-500 mt-0.5">Delivered</p></div>
+            <div class="bg-white px-4 py-3 text-center"><p class="text-xl font-bold font-mono text-emerald-600">60%</p><p class="text-xs text-gray-500 mt-0.5">Scope</p></div>
+            <div class="bg-white px-4 py-3 text-center"><p class="text-xl font-bold font-mono text-amber-600">2</p><p class="text-xs text-gray-500 mt-0.5">Pending</p></div>
+            <div class="bg-white px-4 py-3 text-center"><p class="text-xl font-bold font-mono text-gray-900">14.5</p><p class="text-xs text-gray-500 mt-0.5">Hours</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== ONBOARDING SECTION ======================== -->
+      <section id="section-onboarding" class="mb-12">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Onboarding Progress <span class="text-gray-900">6 of 8 complete</span></h2>
+
+        <div class="relative pl-8">
+          <!-- Vertical line -->
+          <div class="absolute left-3 top-3 bottom-3 w-0.5 bg-gray-200"></div>
+
+          <!-- Stage 1: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Sanity Call</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Feb 12 · Operator</p>
+            </div>
+          </div>
+
+          <!-- Stage 2: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Proposal Sent</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Accepted Feb 15 · Operator</p>
+            </div>
+          </div>
+
+          <!-- Stage 3: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Contract Signed</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Signed Feb 16 · You</p>
+            </div>
+          </div>
+
+          <!-- Stage 4: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Payment Setup</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Stripe connected Feb 17 · You</p>
+            </div>
+          </div>
+
+          <!-- Stage 5: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Intake Form</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Submitted Feb 18 · You</p>
+            </div>
+          </div>
+
+          <!-- Stage 6: Done -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center z-10">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-600">Tech Setup</p>
+                <span class="text-xs text-emerald-700 font-medium">Complete</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Access granted Feb 20 · Operator</p>
+            </div>
+          </div>
+
+          <!-- Stage 7: Active (current) -->
+          <div class="relative mb-4">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center z-10 ring-2 ring-primary/30 ring-offset-1">
+              <div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+            </div>
+            <div class="rounded-lg border-2 border-primary/30 bg-primary/5 p-4">
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-sm font-semibold text-primary">Kickoff Meeting</p>
+                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary">Scheduled</span>
+              </div>
+              <p class="text-sm text-gray-600">Thursday, March 6 at 2:00 PM</p>
+              <p class="text-xs text-gray-500 mt-1">Owner: Operator</p>
+              <button class="mt-3 inline-flex items-center gap-1.5 h-9 px-4 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90">
+                Join Meeting <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stage 8: Not started -->
+          <div class="relative">
+            <div class="absolute -left-5 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center z-10">
+              <div class="w-2.5 h-2.5 rounded-full border-2 border-gray-300"></div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-400">Week 1 Started</p>
+                <span class="text-xs text-gray-400">Not started</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Due: March 13 · You</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== REQUESTS SECTION ======================== -->
+      <section id="section-requests" class="mb-12">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Requests</h2>
+          <button onclick="openRequestDialog()" class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Request Something
+          </button>
+        </div>
+
+        <!-- March 2026 -->
+        <p class="text-xs font-semibold text-gray-500 mb-2 mt-4">March 2026</p>
+        <div class="space-y-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-medium">Blog content brief</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Content</span>
+                  <span class="text-xs text-gray-500">Mar 1</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-700 shrink-0">Received</span>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-medium">Update pricing page copy</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Marketing</span>
+                  <span class="text-xs text-gray-500">Mar 2</span>
+                </div>
+                <div class="mt-2 pl-3 border-l-2 border-gray-200">
+                  <p class="text-xs text-gray-500 italic">"We'll get to this after the homepage refresh. ~Sarah"</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 shrink-0">In Progress</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- February 2026 -->
+        <p class="text-xs font-semibold text-gray-500 mb-2 mt-6">February 2026</p>
+        <div class="space-y-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-medium">Social media content calendar</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Content</span>
+                  <span class="text-xs text-gray-500">Feb 15</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 shrink-0">Done</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4 border-l-4 border-l-red-400">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-medium">Add dark mode toggle</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Tech</span>
+                  <span class="text-xs text-gray-500">Feb 20</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-red-50 text-red-700 shrink-0">Waiting on You</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== TASKS SECTION ======================== -->
+      <section id="section-tasks" class="mb-12">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Your Tasks</h2>
+
+        <div class="rounded-xl border border-gray-200 bg-white divide-y divide-gray-100">
+          <!-- Overdue task -->
+          <div class="px-4 py-3 flex items-center gap-3 bg-red-50/30" id="task-1">
+            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary cursor-pointer" onclick="completeTask(this)">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium task-title">Complete intake form</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xs text-red-600 font-medium">Due Mar 5 · Overdue</span>
+              </div>
+            </div>
+            <a href="#" class="text-xs text-primary hover:underline shrink-0">Open form</a>
+          </div>
+
+          <!-- Normal task -->
+          <div class="px-4 py-3 flex items-center gap-3" id="task-2">
+            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary cursor-pointer" onclick="completeTask(this)">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium task-title">Review kickoff agenda</p>
+              <p class="text-xs text-gray-500 mt-0.5">Due Mar 6</p>
+            </div>
+            <a href="#" class="text-xs text-primary hover:underline shrink-0">View doc</a>
+          </div>
+
+          <!-- Completed task -->
+          <div class="px-4 py-3 flex items-center gap-3 task-done opacity-60">
+            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary cursor-pointer" checked disabled>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium task-title">Sign contract</p>
+              <p class="text-xs text-gray-400 mt-0.5">Completed Feb 16</p>
+            </div>
+          </div>
+
+          <!-- Completed task -->
+          <div class="px-4 py-3 flex items-center gap-3 task-done opacity-60">
+            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary cursor-pointer" checked disabled>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium task-title">Submit brand guidelines</p>
+              <p class="text-xs text-gray-400 mt-0.5">Completed Feb 14</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== WORK VISIBILITY SECTION ======================== -->
+      <section id="section-work" class="mb-12">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">What We're Working On</h2>
+
+        <div class="space-y-2 mb-6">
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <p class="text-sm font-medium">Email automation setup</p>
+            <div class="flex flex-wrap items-center gap-1.5 mt-2">
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-primary/20 text-primary/80">Month 2 – Optimise</span>
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Automation</span>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700">In Progress</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <p class="text-sm font-medium">Social content calendar template</p>
+            <div class="flex flex-wrap items-center gap-1.5 mt-2">
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-primary/20 text-primary/80">Month 2 – Optimise</span>
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Process improvement</span>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700">In Progress</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4 border-l-4 border-l-red-400">
+            <p class="text-sm font-medium">Dashboard reporting setup</p>
+            <div class="flex flex-wrap items-center gap-1.5 mt-2">
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-primary/20 text-primary/80">Month 2 – Optimise</span>
+              <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Reporting & dashboards</span>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-red-50 text-red-700">Waiting on Client</span>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Completed This Month <span class="text-gray-900">(5)</span></h2>
+        <div class="space-y-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-3 flex items-center gap-3">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium">Monthly analytics report</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-500">Strategy</span>
+                <span class="text-xs text-gray-400">Mar 1</span>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-3 flex items-center gap-3">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium">SEO audit + recommendations</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-500">Audit & findings</span>
+                <span class="text-xs text-gray-400">Feb 28</span>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-3 flex items-center gap-3">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium">Email template redesign</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-500">Process improvement</span>
+                <span class="text-xs text-gray-400">Mar 3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Past months collapsible -->
+        <div class="mt-4">
+          <button onclick="togglePastMonth(this)" class="w-full flex items-center justify-between py-3 px-4 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+            <div class="text-left"><p class="text-sm font-medium">February 2026</p><p class="text-xs text-gray-500">6/7 completed · 18 units</p></div>
+            <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="hidden mt-2 space-y-1.5 pl-2" id="past-feb">
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>CRM integration phase 1</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>User onboarding flow v2</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>Weekly report automation</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>Team capacity dashboard</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>Client feedback loop setup</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>Invoice automation</div>
+            <div class="flex items-center gap-2 py-1.5 text-sm text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0"></span>API rate limit fix (deferred)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== DOCUMENTS SECTION ======================== -->
+      <section id="section-docs" class="mb-12">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Documents & Links</h2>
+
+        <div class="space-y-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div><p class="text-sm font-medium">Ops Partnership Proposal</p><p class="text-xs text-gray-500">Accepted Feb 15</p></div>
+            </div>
+            <button class="text-xs text-primary hover:underline font-medium">View</button>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-4 border-l-4 border-l-[#6B8E6F] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div><p class="text-sm font-medium">Service Agreement</p><p class="text-xs text-gray-500">Signed Feb 16 by Sarah Johnson</p><p class="text-sm font-semibold font-mono mt-0.5">$3,500.00</p></div>
+            </div>
+            <button class="text-xs text-primary hover:underline font-medium">View</button>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div><p class="text-sm font-medium">Stripe Payment Portal</p><p class="text-xs text-gray-500">Active subscription · $2,500/mo</p></div>
+            </div>
+            <button class="text-xs text-primary hover:underline font-medium">Manage</button>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+              </div>
+              <div><p class="text-sm font-medium">Intake Form</p><p class="text-xs text-gray-500">Submitted Feb 18</p></div>
+            </div>
+            <button class="text-xs text-primary hover:underline font-medium">View</button>
+          </div>
+        </div>
+
+        <!-- Monthly summaries -->
+        <h3 class="text-xs font-semibold text-gray-400 mt-6 mb-2">Monthly Summaries</h3>
+        <div class="space-y-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div><p class="text-sm font-medium">February 2026</p><p class="text-xs text-gray-500">28 Feb 2026</p></div>
+            </div>
+            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <h3 class="text-xs font-semibold text-gray-400 mt-6 mb-2">Quick Links</h3>
+        <div class="flex flex-wrap gap-2">
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+            Slack Channel
+          </button>
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            Google Drive
+          </button>
+          <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Book a Call
+          </button>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-gray-200/50 text-center mb-8">
+        <p class="text-xs text-gray-400">Powered by Grow Advantage</p>
+        <p class="text-xs text-gray-300 mt-1">
+          <button onclick="switchToAdmin()" class="text-primary/60 hover:text-primary underline">View Admin Mockup</button>
+        </p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== REQUEST DIALOG ===== -->
+  <div class="dialog-overlay" id="request-dialog" onclick="if(event.target===this) closeRequestDialog()">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6 section-fade">
+      <h3 class="text-lg font-semibold mb-1">Request Something</h3>
+      <p class="text-sm text-gray-500 mb-4">Submit a request to your service provider.</p>
+      <div class="space-y-4">
+        <div>
+          <label class="text-sm font-medium mb-1.5 block">What do you need? <span class="text-red-500">*</span></label>
+          <input type="text" placeholder="e.g., Update homepage banner" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+        </div>
+        <div>
+          <label class="text-sm font-medium mb-1.5 block">Category</label>
+          <select class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+            <option value="">Select a category...</option>
+            <option>Audit & findings</option>
+            <option>Process improvement</option>
+            <option>Automation</option>
+            <option>Systems / tech stack</option>
+            <option>Team & roles</option>
+            <option>Cadence & comms</option>
+            <option>Reporting & dashboards</option>
+            <option>Delivery quality</option>
+            <option>Capacity / scaling</option>
+            <option>Strategy reset</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm font-medium mb-1.5 block">Details (optional)</label>
+          <textarea placeholder="Add any context..." rows="3" class="w-full px-3 py-2 rounded-md border border-gray-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button onclick="closeRequestDialog()" class="h-10 px-4 text-sm font-medium rounded-md hover:bg-gray-100">Cancel</button>
+          <button onclick="submitRequest()" class="h-10 px-4 text-sm font-medium rounded-md bg-primary text-white hover:bg-primary/90">Submit Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN PORTAL MOCKUP ===== -->
+  <div id="admin-portal" style="display:none">
+    <div class="max-w-5xl mx-auto px-4 py-8">
+      <header class="mb-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <button onclick="switchToClient()" class="text-sm text-primary hover:underline mb-2 inline-block">&larr; Back to Client Portal View</button>
+            <h1 class="text-2xl font-bold tracking-tight">TechStartup Inc. — Portal Configuration</h1>
+            <p class="text-sm text-gray-500 mt-1">Operator Admin View</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Admin Tabs -->
+      <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto">
+        <button onclick="showAdminTab('onboarding')" class="admin-tab px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary" data-admin-tab="onboarding">Onboarding</button>
+        <button onclick="showAdminTab('tasks')" class="admin-tab px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-admin-tab="tasks">Tasks</button>
+        <button onclick="showAdminTab('requests')" class="admin-tab px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-admin-tab="requests">Requests</button>
+        <button onclick="showAdminTab('links')" class="admin-tab px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-admin-tab="links">Links & Docs</button>
+        <button onclick="showAdminTab('picklists')" class="admin-tab px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-admin-tab="picklists">Pick-lists</button>
+      </div>
+
+      <!-- Onboarding Admin Tab -->
+      <div data-admin-content="onboarding">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Onboarding Stages</h2>
+          <button class="h-9 px-4 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">Apply Template: Ops Partnership</button>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+              <p class="text-sm font-medium">1. Sanity Call</p>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200 bg-emerald-50 text-emerald-700"><option selected>Done</option><option>Not Started</option><option>In Progress</option><option>Waiting on Client</option><option>Blocked</option></select>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200"><option selected>Operator</option><option>Client</option></select>
+              <input type="date" value="2026-02-12" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+              <p class="text-sm font-medium">2. Proposal Sent</p>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200 bg-emerald-50 text-emerald-700"><option selected>Done</option><option>Not Started</option><option>In Progress</option><option>Waiting on Client</option><option>Blocked</option></select>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200"><option selected>Operator</option><option>Client</option></select>
+              <input type="date" value="2026-02-15" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+              <p class="text-sm font-medium">7. Kickoff Meeting</p>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200 bg-primary/10 text-primary"><option>Done</option><option>Not Started</option><option selected>In Progress</option><option>Waiting on Client</option><option>Blocked</option></select>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200"><option selected>Operator</option><option>Client</option></select>
+              <input type="date" value="2026-03-06" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            </div>
+            <textarea placeholder="Notes..." rows="2" class="mt-2 w-full px-3 py-2 text-sm rounded-md border border-gray-200 resize-none">Kickoff call booked for March 6 at 2pm. Agenda shared.</textarea>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+              <p class="text-sm font-medium">8. Week 1 Started</p>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200"><option selected>Not Started</option><option>In Progress</option><option>Waiting on Client</option><option>Blocked</option><option>Done</option></select>
+              <select class="h-9 px-2 text-sm rounded-md border border-gray-200"><option>Operator</option><option selected>Client</option></select>
+              <input type="date" value="2026-03-13" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks Admin Tab -->
+      <div data-admin-content="tasks" style="display:none">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Client Tasks</h2>
+          <button class="h-9 px-4 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90 gap-1.5 inline-flex items-center">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Task
+          </button>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white divide-y">
+          <div class="p-4 grid grid-cols-1 sm:grid-cols-5 gap-3 items-center">
+            <input value="Complete intake form" class="text-sm font-medium col-span-2 h-9 px-2 rounded-md border border-gray-200">
+            <input type="date" value="2026-03-05" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            <input value="https://forms.google.com/..." class="h-9 px-2 text-sm rounded-md border border-gray-200 text-gray-500">
+            <div class="flex items-center gap-2"><span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-red-50 text-red-700">Overdue</span><button class="text-gray-400 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>
+          </div>
+          <div class="p-4 grid grid-cols-1 sm:grid-cols-5 gap-3 items-center">
+            <input value="Review kickoff agenda" class="text-sm font-medium col-span-2 h-9 px-2 rounded-md border border-gray-200">
+            <input type="date" value="2026-03-06" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            <input value="https://docs.google.com/..." class="h-9 px-2 text-sm rounded-md border border-gray-200 text-gray-500">
+            <div class="flex items-center gap-2"><span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700">Pending</span><button class="text-gray-400 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>
+          </div>
+          <div class="p-4 grid grid-cols-1 sm:grid-cols-5 gap-3 items-center opacity-50">
+            <input value="Sign contract" class="text-sm font-medium col-span-2 h-9 px-2 rounded-md border border-gray-200 line-through">
+            <input type="date" value="2026-02-16" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            <input value="" class="h-9 px-2 text-sm rounded-md border border-gray-200">
+            <div class="flex items-center gap-2"><span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">Done</span><button class="text-gray-400 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Admin Tab -->
+      <div data-admin-content="requests" style="display:none">
+        <h2 class="text-lg font-semibold mb-4">Client Requests</h2>
+        <div class="rounded-lg border border-gray-200 bg-white divide-y">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div><p class="text-sm font-medium">Blog content brief</p><p class="text-xs text-gray-500">Content · Submitted Mar 1</p></div>
+              <select class="h-8 px-2 text-xs rounded-md border border-gray-200 bg-blue-50 text-blue-700"><option>Submitted</option><option selected>Received</option><option>In Progress</option><option>Waiting on Client</option><option>Done</option></select>
+            </div>
+            <div class="mt-2"><textarea placeholder="Add a response note for the client..." rows="2" class="w-full px-3 py-2 text-sm rounded-md border border-gray-200 resize-none"></textarea></div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div><p class="text-sm font-medium">Update pricing page copy</p><p class="text-xs text-gray-500">Marketing · Submitted Mar 2</p></div>
+              <select class="h-8 px-2 text-xs rounded-md border border-gray-200 bg-indigo-50 text-indigo-700"><option>Submitted</option><option>Received</option><option selected>In Progress</option><option>Waiting on Client</option><option>Done</option></select>
+            </div>
+            <div class="mt-2"><textarea rows="2" class="w-full px-3 py-2 text-sm rounded-md border border-gray-200 resize-none">We'll get to this after the homepage refresh. ~Sarah</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links Admin Tab -->
+      <div data-admin-content="links" style="display:none">
+        <h2 class="text-lg font-semibold mb-4">Portal Links & Documents</h2>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 space-y-4">
+          <div><label class="text-sm font-medium mb-1.5 block">Stripe Payment URL</label><input value="https://billing.stripe.com/p/session/abc123" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Intake Form URL</label><input value="https://forms.google.com/d/1abc/viewform" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Slack Channel URL</label><input value="https://workspace.slack.com/archives/C05XYZ" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Google Drive Folder URL</label><input value="https://drive.google.com/drive/folders/1abc" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Booking URL</label><input value="https://calendly.com/growadvantage/strategy" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Integrator Name</label><input value="Sarah Chen" class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm"></div>
+          <div><label class="text-sm font-medium mb-1.5 block">Primary Comms Channel</label>
+            <select class="w-full h-10 px-3 rounded-md border border-gray-200 text-sm bg-white"><option selected>Slack</option><option>Email</option><option>Other</option></select>
+          </div>
+          <button class="h-10 px-6 text-sm font-medium rounded-md bg-primary text-white hover:bg-primary/90">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Pick-lists Admin Tab -->
+      <div data-admin-content="picklists" style="display:none">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Pick-lists</h2>
+          <button class="h-9 px-4 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50">Seed Defaults</button>
+        </div>
+        <div class="space-y-4">
+          <div class="rounded-lg border border-gray-200 bg-white">
+            <button onclick="togglePickList(this)" class="w-full px-4 py-3 flex items-center justify-between text-sm font-semibold hover:bg-gray-50">
+              <span>Phase (Roadmap)</span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hidden border-t border-gray-100 p-4 space-y-2">
+              <div class="flex items-center gap-2"><span class="text-sm flex-1">Month 1 – Strategise (Audit & Align)</span><button class="text-gray-400 hover:text-red-500 text-xs">Remove</button></div>
+              <div class="flex items-center gap-2"><span class="text-sm flex-1">Month 2 – Optimise (Simplify & Systemise)</span><button class="text-gray-400 hover:text-red-500 text-xs">Remove</button></div>
+              <div class="flex items-center gap-2"><span class="text-sm flex-1">Month 3 – Maximise (Measure & Strengthen)</span><button class="text-gray-400 hover:text-red-500 text-xs">Remove</button></div>
+              <div class="flex items-center gap-2"><span class="text-sm flex-1">Month 4–6 – Scale (Growth Engine Phase)</span><button class="text-gray-400 hover:text-red-500 text-xs">Remove</button></div>
+              <div class="flex items-center gap-2"><span class="text-sm flex-1">Month 7–12 – Sustain (Partnership Phase)</span><button class="text-gray-400 hover:text-red-500 text-xs">Remove</button></div>
+              <button class="text-xs text-primary hover:underline font-medium mt-1">+ Add phase</button>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white">
+            <button onclick="togglePickList(this)" class="w-full px-4 py-3 flex items-center justify-between text-sm font-semibold hover:bg-gray-50">
+              <span>Category (Workstream) — 10 items</span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hidden border-t border-gray-100 p-4"><p class="text-sm text-gray-500">Audit & findings, Process improvement, Automation, Systems / tech stack, Team & roles, Cadence & comms, Reporting & dashboards, Delivery quality, Capacity / scaling, Strategy reset</p></div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white">
+            <button onclick="togglePickList(this)" class="w-full px-4 py-3 flex items-center justify-between text-sm font-semibold hover:bg-gray-50">
+              <span>Uplift — 9 items</span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hidden border-t border-gray-100 p-4"><p class="text-sm text-gray-500">As-is audit completed, Operational gaps identified, Reduce admin/inbox fatigue, Automate workflows, Dashboards established, SOPs refined, Leadership rhythms, Growth KPIs, Quarterly strategy reset</p></div>
+          </div>
+          <div class="rounded-lg border border-gray-200 bg-white">
+            <button onclick="togglePickList(this)" class="w-full px-4 py-3 flex items-center justify-between text-sm font-semibold hover:bg-gray-50">
+              <span>Work Status — 5 items</span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hidden border-t border-gray-100 p-4 space-y-1">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-300"></span><span class="text-sm">Not started</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-500"></span><span class="text-sm">In progress</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-sm">Waiting on client</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-sm">Blocked</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-sm">Done</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Scroll to section
+    function scrollToSection(id) {
+      const el = document.getElementById('section-' + id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      // Update active pill
+      document.querySelectorAll('.anchor-pill').forEach(p => {
+        p.classList.remove('active');
+        p.classList.add('text-gray-500');
+      });
+      const pill = document.querySelector(`[data-nav="${id}"]`);
+      if (pill) {
+        pill.classList.add('active');
+        pill.classList.remove('text-gray-500');
+      }
+    }
+
+    // Scroll spy
+    const sections = ['home', 'onboarding', 'requests', 'tasks', 'work', 'docs'];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id.replace('section-', '');
+          document.querySelectorAll('.anchor-pill').forEach(p => {
+            p.classList.remove('active');
+            p.classList.add('text-gray-500');
+          });
+          const pill = document.querySelector(`[data-nav="${id}"]`);
+          if (pill) {
+            pill.classList.add('active');
+            pill.classList.remove('text-gray-500');
+          }
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(id => {
+      const el = document.getElementById('section-' + id);
+      if (el) observer.observe(el);
+    });
+
+    // Request dialog
+    function openRequestDialog() { document.getElementById('request-dialog').classList.add('open'); }
+    function closeRequestDialog() { document.getElementById('request-dialog').classList.remove('open'); }
+    function submitRequest() {
+      closeRequestDialog();
+      showToast('Request submitted!');
+    }
+
+    // Task completion
+    function completeTask(checkbox) {
+      const row = checkbox.closest('[id^="task-"], .flex');
+      if (row) {
+        row.classList.add('task-done', 'opacity-60');
+        checkbox.disabled = true;
+        showToast('Task marked complete!');
+      }
+    }
+
+    // Past month toggle
+    function togglePastMonth(btn) {
+      const content = btn.nextElementSibling;
+      content.classList.toggle('hidden');
+      const svg = btn.querySelector('svg');
+      svg.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
+    }
+
+    // Pick-list toggle
+    function togglePickList(btn) {
+      const content = btn.nextElementSibling;
+      content.classList.toggle('hidden');
+    }
+
+    // Switch between client/admin views
+    function switchToAdmin() {
+      document.getElementById('client-portal').style.display = 'none';
+      document.getElementById('admin-portal').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+    function switchToClient() {
+      document.getElementById('admin-portal').style.display = 'none';
+      document.getElementById('client-portal').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    // Admin tabs
+    function showAdminTab(tab) {
+      document.querySelectorAll('[data-admin-content]').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.admin-tab').forEach(t => {
+        t.classList.remove('border-primary', 'text-primary');
+        t.classList.add('border-transparent', 'text-gray-500');
+      });
+      const content = document.querySelector(`[data-admin-content="${tab}"]`);
+      if (content) content.style.display = 'block';
+      const tabBtn = document.querySelector(`[data-admin-tab="${tab}"]`);
+      if (tabBtn) {
+        tabBtn.classList.add('border-primary', 'text-primary');
+        tabBtn.classList.remove('border-transparent', 'text-gray-500');
+      }
+    }
+
+    // Toast notification
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg z-50 section-fade';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+  </script>
+</body>
+</html>

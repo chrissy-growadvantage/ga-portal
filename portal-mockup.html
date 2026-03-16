@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Mockup — Luma Redesign</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            primary: { DEFAULT: '#5B4DC7', light: '#7B6FD4' },
+            success: '#25A576',
+            'accent-warm': '#E8853A',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background-color: hsl(0 0% 99%); }
+    .scope-bar-track { background-color: #f1f5f9; }
+  </style>
+</head>
+<body class="font-sans text-gray-900 antialiased">
+  <div class="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <span class="text-sm font-bold text-primary">A</span>
+        </div>
+        <span class="text-sm font-medium text-gray-500">Acme Ops Co.</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight mt-3">Delivery Summary for TechStartup Inc.</h1>
+      <p class="text-sm text-gray-500 mt-1">March 2026</p>
+    </header>
+
+    <div class="space-y-8">
+
+      <!-- Welcome Banner -->
+      <section class="rounded-xl bg-primary/5 border border-primary/10 px-4 py-3">
+        <p class="text-sm font-medium text-gray-900">Welcome — your integrator is Sarah Chen</p>
+        <p class="text-xs text-gray-500 mt-0.5">Primary comms: Slack</p>
+      </section>
+
+      <!-- Quick Links -->
+      <section class="flex flex-wrap gap-2">
+        <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+          Slack
+        </button>
+        <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Drive
+        </button>
+        <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book a call
+        </button>
+      </section>
+
+      <!-- ❶ RIGHT NOW -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Right Now</h2>
+        <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+          <!-- Scope bar -->
+          <div class="px-5 pt-5 pb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">Scope</span>
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  On Track
+                </span>
+              </div>
+              <span class="text-xs font-mono text-gray-500">12 / 20 deliverables</span>
+            </div>
+            <div class="h-2 w-full rounded-full scope-bar-track overflow-hidden">
+              <div class="h-full rounded-full bg-emerald-500 transition-all" style="width: 60%"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1.5">60% used · 8 remaining</p>
+          </div>
+
+          <div class="border-t border-gray-100" />
+
+          <!-- Focus + Meeting + Stats -->
+          <div class="px-5 py-4 space-y-3">
+            <!-- Focus -->
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">This Month's Focus</p>
+                <p class="text-sm mt-0.5">Launch new onboarding flow and migrate existing users to v2 dashboard</p>
+              </div>
+            </div>
+
+            <!-- Next Meeting -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium">Thursday, 6 March 2026</p>
+                  <p class="text-xs text-gray-500">2:00 PM</p>
+                </div>
+              </div>
+              <button class="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90 transition-colors">
+                Join
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-100" />
+
+          <!-- Stat pills -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-100">
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-xl font-bold font-mono text-primary">8</p>
+              <p class="text-xs text-gray-500 mt-0.5">Delivered</p>
+            </div>
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-xl font-bold font-mono text-success">60%</p>
+              <p class="text-xs text-gray-500 mt-0.5">Scope Used</p>
+            </div>
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-xl font-bold font-mono text-accent-warm">2</p>
+              <p class="text-xs text-gray-500 mt-0.5">Pending</p>
+            </div>
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-xl font-bold font-mono text-gray-900">14.5</p>
+              <p class="text-xs text-gray-500 mt-0.5">Hours Used</p>
+            </div>
+          </div>
+
+          <!-- Collapsible details (shown expanded for mockup) -->
+          <div class="border-t border-gray-100">
+            <button class="w-full px-5 py-3 flex items-center justify-between text-xs font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+              <span>This Month Details</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="px-5 pb-4 space-y-3">
+              <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Outcomes</p>
+                <p class="text-sm text-gray-600">Complete user migration, launch v2 dashboard to 100% of users</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Deliverables</p>
+                <p class="text-sm text-gray-600">Migration script, dashboard redesign, email templates, analytics setup</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Improvements</p>
+                <p class="text-sm text-gray-600">Streamline onboarding from 7 steps to 3</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-amber-600/80 uppercase tracking-wide mb-1">Risks</p>
+                <p class="text-sm text-red-600/80">API rate limits may slow migration batch processing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ❷ NEEDS YOUR ATTENTION -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Needs Your Attention <span class="text-gray-900 ml-1">(3)</span></h2>
+        <div class="space-y-3">
+          <!-- Approval card 1 -->
+          <div class="rounded-xl border border-gray-200 bg-white p-5">
+            <div class="mb-1">
+              <p class="text-sm font-medium">Homepage redesign — final mockup</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Design</span>
+                <span class="text-xs text-gray-500">Completed Mar 1</span>
+              </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 leading-relaxed">Final desktop + mobile mockups for the homepage refresh. Includes hero section update and new testimonial carousel.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4">
+              <button class="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve
+              </button>
+              <button class="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Request Changes
+              </button>
+            </div>
+          </div>
+
+          <!-- Approval card 2 -->
+          <div class="rounded-xl border border-gray-200 bg-white p-5">
+            <div class="mb-1">
+              <p class="text-sm font-medium">Q1 analytics report</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Strategy</span>
+                <span class="text-xs text-gray-500">Completed Feb 28</span>
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4">
+              <button class="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve
+              </button>
+              <button class="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Request Changes
+              </button>
+            </div>
+          </div>
+
+          <!-- Request update card -->
+          <div class="rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium">Add dark mode toggle</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Your request was <span class="font-medium text-emerald-700">approved</span> — Feb 27</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">Approved</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ❸ ACTIVITY -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Activity</h2>
+        <div class="space-y-5">
+          <!-- This Week -->
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">This Week</p>
+            <div class="space-y-2">
+              <!-- Delivery event -->
+              <div class="flex items-start gap-3 py-3 px-4 rounded-lg bg-white border border-gray-100">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-medium">Email template redesign</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 shrink-0">Delivery</span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Design</span>
+                    <span class="text-xs text-gray-500">Mar 3</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Request event -->
+              <div class="flex items-start gap-3 py-3 px-4 rounded-lg bg-white border border-gray-100">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-medium">Add dark mode toggle</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 shrink-0">Request</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-0.5">Approved · scope cost: 2 units</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs text-gray-500">Mar 2</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delivery event -->
+              <div class="flex items-start gap-3 py-3 px-4 rounded-lg bg-white border border-gray-100">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-medium">CRM integration — phase 1</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 shrink-0">Delivery</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">Connected HubSpot contacts sync with bi-directional data flow</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Tech</span>
+                    <span class="text-xs text-gray-500">Mar 1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Earlier This Month -->
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Earlier This Month</p>
+            <div class="space-y-2">
+              <div class="flex items-start gap-3 py-3 px-4 rounded-lg bg-white border border-gray-100">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-medium">User onboarding flow v2</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 shrink-0">Delivery</span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="inline-flex items-center px-1.5 py-0 text-xs rounded border border-gray-200 text-gray-600">Operations</span>
+                    <span class="text-xs text-gray-500">Feb 25</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 py-3 px-4 rounded-lg bg-white border border-gray-100">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-medium">Update pricing page copy</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700 shrink-0">Request</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-0.5">Pending review</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs text-gray-500">Feb 20</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Request Something button -->
+        <div class="mt-5 text-center">
+          <button class="inline-flex items-center gap-2 h-10 px-5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Need something else? Request it here
+          </button>
+        </div>
+
+        <!-- Past Months (collapsible) -->
+        <div class="mt-6">
+          <button class="w-full flex items-center justify-between py-3 px-4 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+            <div>
+              <p class="text-sm font-medium text-left">February 2026</p>
+              <p class="text-xs text-gray-500">6/7 completed · 18 units</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="w-full flex items-center justify-between py-3 px-4 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors mt-2">
+            <div>
+              <p class="text-sm font-medium text-left">January 2026</p>
+              <p class="text-xs text-gray-500">5/5 completed · 15 units</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ❹ REPORTS & DOCUMENTS -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Reports & Documents</h2>
+        <div class="space-y-3">
+          <!-- Monthly summaries -->
+          <div class="rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium">February 2026</p>
+                  <p class="text-xs text-gray-500">28 Feb 2026</p>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium">January 2026</p>
+                  <p class="text-xs text-gray-500">31 Jan 2026</p>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <!-- Agreement card -->
+          <div class="rounded-xl border border-gray-200 bg-white p-4 border-l-4 border-l-[#6B8E6F]">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium">Monthly Retainer — Q1 2026</p>
+                <p class="text-xs text-gray-500 mt-0.5">Accepted Jan 5, 2026 by Alex Johnson</p>
+                <p class="text-sm font-semibold font-mono mt-1">$3,500.00</p>
+              </div>
+              <button class="inline-flex items-center gap-1.5 h-10 px-3 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 pt-6 border-t border-gray-200/50 text-center">
+      <p class="text-xs text-gray-400">Powered by Luma</p>
+    </footer>
+  </div>
+</body>
+</html>

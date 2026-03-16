@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luma MVP — Manual Test Script</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+    header { background: #1a1a2e; color: white; padding: 28px 40px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header p { font-size: 14px; color: #aaa; margin-top: 4px; }
+
+    .meta { background: white; border-bottom: 1px solid #e5e5e5; padding: 16px 40px; display: flex; gap: 32px; align-items: center; }
+    .meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; }
+    .meta-item strong { color: #1a1a1a; }
+    .badge { background: #f0f0f0; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 600; }
+    .badge.green { background: #dcfce7; color: #166534; }
+    .badge.amber { background: #fef9c3; color: #854d0e; }
+
+    .progress-bar-wrap { background: white; border-bottom: 1px solid #e5e5e5; padding: 12px 40px; display: flex; align-items: center; gap: 16px; }
+    .progress-bar { flex: 1; height: 8px; background: #e5e5e5; border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #4f46e5; border-radius: 99px; transition: width 0.3s; width: 0%; }
+    .progress-label { font-size: 13px; color: #666; white-space: nowrap; }
+    #progress-count { font-weight: 600; color: #1a1a1a; }
+
+    main { max-width: 900px; margin: 32px auto; padding: 0 24px 80px; }
+
+    .section { margin-bottom: 40px; }
+    .section-header { display: flex; align-items: center; gap-12px; margin-bottom: 16px; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+    .section-title .icon { font-size: 20px; }
+    .section-desc { font-size: 13px; color: #666; margin-bottom: 16px; padding-left: 30px; }
+
+    .test-card { background: white; border: 1.5px solid #e5e5e5; border-radius: 10px; margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s; }
+    .test-card.pass { border-color: #22c55e; }
+    .test-card.fail { border-color: #ef4444; }
+    .test-card.skip { border-color: #f59e0b; opacity: 0.7; }
+
+    .test-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; cursor: pointer; }
+    .test-row:hover { background: #fafafa; }
+
+    .checkbox { width: 20px; height: 20px; border: 2px solid #d1d5db; border-radius: 5px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; cursor: pointer; }
+    .checkbox.checked { background: #22c55e; border-color: #22c55e; }
+    .checkbox.failed { background: #ef4444; border-color: #ef4444; }
+    .checkbox svg { display: none; }
+    .checkbox.checked svg, .checkbox.failed svg { display: block; }
+
+    .test-content { flex: 1; min-width: 0; }
+    .test-title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+    .test-steps { margin-top: 8px; padding-left: 0; list-style: none; }
+    .test-steps li { font-size: 13px; color: #555; padding: 3px 0; display: flex; gap: 8px; }
+    .test-steps li::before { content: attr(data-n) "."; color: #999; font-size: 12px; min-width: 16px; padding-top: 1px; }
+    .test-steps li code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: 'SF Mono', monospace; color: #374151; }
+    .test-steps li strong { color: #1a1a1a; }
+
+    .test-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .btn { padding: 6px 14px; border-radius: 6px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .btn-pass { background: #dcfce7; color: #166534; }
+    .btn-pass:hover { background: #bbf7d0; }
+    .btn-fail { background: #fee2e2; color: #991b1b; }
+    .btn-fail:hover { background: #fecaca; }
+    .btn-skip { background: #fef9c3; color: #854d0e; }
+    .btn-skip:hover { background: #fef08a; }
+
+    .notes-input { width: 100%; margin-top: 10px; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 52px; color: #333; }
+    .notes-input:focus { outline: none; border-color: #4f46e5; }
+
+    .status-tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-left: 8px; }
+    .status-tag.pass { background: #dcfce7; color: #166534; }
+    .status-tag.fail { background: #fee2e2; color: #991b1b; }
+    .status-tag.skip { background: #fef9c3; color: #854d0e; }
+
+    .url-tag { font-size: 12px; color: #4f46e5; font-family: 'SF Mono', monospace; background: #eef2ff; padding: 2px 7px; border-radius: 4px; }
+
+    .summary-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e5e5; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
+    .summary-stats { display: flex; gap: 24px; }
+    .stat { text-align: center; }
+    .stat .num { font-size: 20px; font-weight: 700; }
+    .stat .lbl { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat.green .num { color: #22c55e; }
+    .stat.red .num { color: #ef4444; }
+    .stat.amber .num { color: #f59e0b; }
+    .btn-export { background: #4f46e5; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-export:hover { background: #4338ca; }
+
+    .env-box { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 8px; font-family: 'SF Mono', monospace; font-size: 12px; margin-bottom: 20px; line-height: 1.8; }
+    .env-box .key { color: #89b4fa; }
+    .env-box .val { color: #a6e3a1; }
+    .env-box .comment { color: #6c7086; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Luma — MVP Manual Test Script</h1>
+  <p>Grow Advantage Portal · End-to-end QA checklist</p>
+</header>
+
+<div class="meta">
+  <div class="meta-item">App: <strong><span class="url-tag">https://luma-mocha.vercel.app</span></strong></div>
+  <div class="meta-item">Tester: <strong id="tester-name">—</strong> <button class="btn btn-skip" onclick="setTester()" style="margin-left:6px">Set name</button></div>
+  <div class="meta-item">Date: <strong id="test-date"></strong></div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <span class="progress-label"><span id="progress-count">0</span> / <span id="progress-total">0</span> completed</span>
+</div>
+
+<main>
+
+  <!-- ── SECTION 1 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🔐</span> 1. Authentication</div>
+    <div class="section-desc">Verify login works and the operator lands on the dashboard.</div>
+
+    <div class="test-card" id="t1">
+      <div class="test-row" onclick="toggleExpand('t1')">
+        <div class="checkbox" id="cb-t1" onclick="event.stopPropagation()"></div>
+        <div class="test-content">
+          <div class="test-title">Login as operator <span id="st-t1"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Go to <code>/login</code></li>
+            <li data-n="2">Enter email + password</li>
+            <li data-n="3">Click <strong>Sign In</strong></li>
+            <li data-n="4">✅ Should land on Dashboard — not stuck on login</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t1','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t1','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t1" placeholder="Notes (optional)…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">👤</span> 2. Client Setup</div>
+    <div class="section-desc">Admin can add a client and configure their portal in under 10 minutes.</div>
+
+    <div class="test-card" id="t2">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t2"></div>
+        <div class="test-content">
+          <div class="test-title">Add a new client <span id="st-t2"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Go to <code>/clients</code> → click <strong>Add Client</strong></li>
+            <li data-n="2">Fill in name, email, service type</li>
+            <li data-n="3">Click Save</li>
+            <li data-n="4">✅ Client appears in the list</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t2','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t2','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t2" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t3">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t3"></div>
+        <div class="test-content">
+          <div class="test-title">Set up portal links (intake, contract, payment, access) <span id="st-t3"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open the client → <strong>Portal</strong> tab</li>
+            <li data-n="2">Add an intake form URL, contract URL, payment URL</li>
+            <li data-n="3">Click Save</li>
+            <li data-n="4">✅ Links are saved and visible</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t3','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t3','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t3" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t4">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t4"></div>
+        <div class="test-content">
+          <div class="test-title">Set up onboarding stages <span id="st-t4"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open the client → <strong>Portal</strong> tab → Onboarding Stages section</li>
+            <li data-n="2">Add stages: e.g. Contract Signed, Kickoff Call, Access Granted</li>
+            <li data-n="3">Mark one stage as complete</li>
+            <li data-n="4">✅ Stages save and show correct status</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t4','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t4','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t4" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t5">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t5"></div>
+        <div class="test-content">
+          <div class="test-title">Generate magic link for client portal <span id="st-t5"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open the client → <strong>Portal</strong> tab</li>
+            <li data-n="2">Click <strong>Generate Magic Link</strong></li>
+            <li data-n="3">Copy the link</li>
+            <li data-n="4">✅ Link is generated and copyable</li>
+            <li data-n="5">Open link in an incognito window → ✅ Portal loads without login</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t5','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t5','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t5" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📦</span> 3. Deliveries</div>
+    <div class="section-desc">Operator can log work and the client sees it in the portal.</div>
+
+    <div class="test-card" id="t6">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t6"></div>
+        <div class="test-content">
+          <div class="test-title">Log a delivery <span id="st-t6"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open client → <strong>Deliveries</strong> tab</li>
+            <li data-n="2">Click <strong>Log Delivery</strong></li>
+            <li data-n="3">Fill in title, category, status</li>
+            <li data-n="4">✅ Delivery appears in the list</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t6','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t6','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t6" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t7">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t7"></div>
+        <div class="test-content">
+          <div class="test-title">Client sees delivery in portal (Work Done) <span id="st-t7"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open the portal link in incognito</li>
+            <li data-n="2">Go to <strong>Work Done</strong> section</li>
+            <li data-n="3">✅ Delivery logged above appears here</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t7','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t7','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t7" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t8">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t8"></div>
+        <div class="test-content">
+          <div class="test-title">Client approves a delivery <span id="st-t8"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Log a delivery with status <strong>Pending Approval</strong></li>
+            <li data-n="2">Open portal in incognito → Home section</li>
+            <li data-n="3">✅ Delivery shows in <strong>Awaiting You</strong> stat card</li>
+            <li data-n="4">Click <strong>Approve</strong></li>
+            <li data-n="5">✅ Counter drops to 0, delivery moves to approved</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t8','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t8','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t8" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">💬</span> 4. Client Requests (Brain Dump)</div>
+    <div class="section-desc">Client can submit a request from the portal and operator can manage it.</div>
+
+    <div class="test-card" id="t9">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t9"></div>
+        <div class="test-content">
+          <div class="test-title">Client submits a request from portal <span id="st-t9"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open portal in incognito</li>
+            <li data-n="2">Click <strong>Request Something</strong> button</li>
+            <li data-n="3">Fill in title + description → Submit</li>
+            <li data-n="4">✅ Success confirmation shown</li>
+            <li data-n="5">Go to <strong>Ask Your Team</strong> section → ✅ Request appears with status <strong>Pending</strong></li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t9','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t9','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t9" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t10">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t10"></div>
+        <div class="test-content">
+          <div class="test-title">Operator sees and updates the request <span id="st-t10"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Go to operator app → client → <strong>Requests</strong> tab</li>
+            <li data-n="2">✅ Request submitted above appears here</li>
+            <li data-n="3">Change status to <strong>In Review</strong></li>
+            <li data-n="4">Open portal in incognito → ✅ Status reflects the change</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t10','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t10','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t10" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📊</span> 5. Scope & Plan</div>
+    <div class="section-desc">Scope usage is tracked and shown to the client.</div>
+
+    <div class="test-card" id="t11">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t11"></div>
+        <div class="test-content">
+          <div class="test-title">Scope tracker shows correct usage <span id="st-t11"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open client → <strong>Scope</strong> tab</li>
+            <li data-n="2">✅ Allocated hours/budget and used amount shown</li>
+            <li data-n="3">✅ Progress bar fills correctly</li>
+            <li data-n="4">Open portal → Home → <strong>Plan Usage</strong> card → ✅ Matches</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t11','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t11','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t11" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t12">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t12"></div>
+        <div class="test-content">
+          <div class="test-title">Scope alert shows at 80%+ usage <span id="st-t12"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Set a client's scope allocation low enough that usage is over 80%</li>
+            <li data-n="2">✅ Amber warning banner appears in Scope tab</li>
+            <li data-n="3">✅ Dashboard shows the client in the alerts section</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t12','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t12','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t12" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 6 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🎨</span> 6. Portal Experience</div>
+    <div class="section-desc">Portal is branded, mobile-friendly, and shows the right info.</div>
+
+    <div class="test-card" id="t13">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t13"></div>
+        <div class="test-content">
+          <div class="test-title">Portal loads without login via magic link <span id="st-t13"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open magic link in incognito / private browser</li>
+            <li data-n="2">✅ Portal loads — no login screen</li>
+            <li data-n="3">✅ Client name and branding shown in header</li>
+            <li data-n="4">✅ Stat cards (Deliveries, Plan Usage, Awaiting You) visible</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t13','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t13','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t13" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t14">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t14"></div>
+        <div class="test-content">
+          <div class="test-title">Portal is usable on mobile <span id="st-t14"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open portal link on your phone (or DevTools → iPhone 14)</li>
+            <li data-n="2">✅ No horizontal scrolling</li>
+            <li data-n="3">✅ Buttons are large enough to tap</li>
+            <li data-n="4">✅ Navigation works</li>
+            <li data-n="5">✅ Request form opens and submits on mobile</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t14','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t14','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t14" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card" id="t15">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t15"></div>
+        <div class="test-content">
+          <div class="test-title">Invalid or expired portal link shows a clear error <span id="st-t15"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Open <code>/portal/this-is-not-real</code> in browser</li>
+            <li data-n="2">✅ Error page shown — not a blank screen</li>
+            <li data-n="3">✅ Message says the link isn't valid</li>
+            <li data-n="4">✅ Try again button visible</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t15','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t15','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t15" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">⚙️</span> 7. Settings & Pick Lists</div>
+    <div class="section-desc">Operator can manage pick lists for deliverables and uplifts.</div>
+
+    <div class="test-card" id="t16">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t16"></div>
+        <div class="test-content">
+          <div class="test-title">Pick lists can be managed in Settings <span id="st-t16"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Go to <code>/settings</code></li>
+            <li data-n="2">Find the <strong>Pick Lists</strong> section</li>
+            <li data-n="3">Add a new deliverable item</li>
+            <li data-n="4">✅ Item saves and appears in the list</li>
+            <li data-n="5">Delete it → ✅ Item removed</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t16','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t16','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t16" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 8 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📝</span> 8. Proposals</div>
+
+    <div class="test-card" id="t17">
+      <div class="test-row">
+        <div class="checkbox" id="cb-t17"></div>
+        <div class="test-content">
+          <div class="test-title">Create and send a proposal <span id="st-t17"></span></div>
+          <ol class="test-steps">
+            <li data-n="1">Go to <code>/proposals/new</code></li>
+            <li data-n="2">Fill in client, title, add a content block</li>
+            <li data-n="3">Click <strong>Save</strong></li>
+            <li data-n="4">✅ Proposal saved and appears in proposals list</li>
+            <li data-n="5">Open proposal → copy portal link → open in incognito → ✅ Proposal visible to client</li>
+          </ol>
+          <div class="test-actions">
+            <button class="btn btn-pass" onclick="markTest('t17','pass')">✓ Pass</button>
+            <button class="btn btn-fail" onclick="markTest('t17','fail')">✗ Fail</button>
+          </div>
+          <textarea class="notes-input" id="note-t17" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="summary-bar">
+  <div class="summary-stats">
+    <div class="stat green"><div class="num" id="count-pass">0</div><div class="lbl">Passed</div></div>
+    <div class="stat red"><div class="num" id="count-fail">0</div><div class="lbl">Failed</div></div>
+    <div class="stat amber"><div class="num" id="count-skip">0</div><div class="lbl">Skipped</div></div>
+    <div class="stat"><div class="num" id="count-total">17</div><div class="lbl">Total</div></div>
+  </div>
+  <button class="btn-export" onclick="exportReport()">Export Report</button>
+</div>
+
+<script>
+  const TESTS = ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12','t13','t14','t15','t16','t17'];
+  const state = {};
+  TESTS.forEach(id => state[id] = { status: null, note: '' });
+
+  document.getElementById('test-date').textContent = new Date().toLocaleDateString('en-AU', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('progress-total').textContent = TESTS.length;
+
+  function setTester() {
+    const name = prompt('Enter your name:');
+    if (name) document.getElementById('tester-name').textContent = name;
+  }
+
+  function markTest(id, status) {
+    state[id].status = status;
+    const card = document.getElementById(id);
+    const cb = document.getElementById('cb-' + id);
+    const st = document.getElementById('st-' + id);
+    card.className = 'test-card ' + status;
+    cb.className = 'checkbox ' + (status === 'pass' ? 'checked' : status === 'fail' ? 'failed' : '');
+    cb.innerHTML = status === 'pass'
+      ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : status === 'fail'
+      ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
+      : '';
+    st.className = 'status-tag ' + status;
+    st.textContent = status === 'pass' ? '✓ Pass' : status === 'fail' ? '✗ Fail' : '— Skip';
+    state[id].note = document.getElementById('note-' + id).value;
+    updateCounts();
+  }
+
+  function updateCounts() {
+    const pass = TESTS.filter(id => state[id].status === 'pass').length;
+    const fail = TESTS.filter(id => state[id].status === 'fail').length;
+    const skip = TESTS.filter(id => state[id].status === 'skip').length;
+    const done = pass + fail + skip;
+    document.getElementById('count-pass').textContent = pass;
+    document.getElementById('count-fail').textContent = fail;
+    document.getElementById('count-skip').textContent = skip;
+    document.getElementById('progress-count').textContent = done;
+    document.getElementById('progress-fill').style.width = (done / TESTS.length * 100) + '%';
+  }
+
+  function exportReport() {
+    const tester = document.getElementById('tester-name').textContent;
+    const date = document.getElementById('test-date').textContent;
+    const pass = TESTS.filter(id => state[id].status === 'pass').length;
+    const fail = TESTS.filter(id => state[id].status === 'fail').length;
+    const titles = {
+      t1:'Login as operator', t2:'Add a new client', t3:'Set up portal links',
+      t4:'Set up onboarding stages', t5:'Generate magic link', t6:'Log a delivery',
+      t7:'Client sees delivery in portal', t8:'Client approves a delivery',
+      t9:'Client submits a request', t10:'Operator updates request',
+      t11:'Scope tracker shows usage', t12:'Scope alert at 80%+',
+      t13:'Portal loads via magic link', t14:'Portal on mobile',
+      t15:'Invalid link shows error', t16:'Pick lists in Settings',
+      t17:'Create and send a proposal'
+    };
+    let rows = TESTS.map(id => {
+      const s = state[id].status || 'not run';
+      const note = document.getElementById('note-' + id).value;
+      return `| ${titles[id]} | ${s.toUpperCase()} | ${note || '—'} |`;
+    }).join('\n');
+    const md = `# Luma MVP Test Report\n**Tester:** ${tester}\n**Date:** ${date}\n**Result:** ${pass} passed / ${fail} failed / ${TESTS.length} total\n\n| Test | Status | Notes |\n|------|--------|-------|\n${rows}`;
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `luma-test-report-${new Date().toISOString().slice(0,10)}.md`;
+    a.click();
+  }
+
+  updateCounts();
+</script>
+</body>
+</html>

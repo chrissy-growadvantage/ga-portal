@@ -130,3 +130,13 @@ Append to `/Users/mervindecastro/Cowork/repapips/data/projects/luma/logbook.json
 ### Check the message queue before starting
 
 Read `/Users/mervindecastro/Cowork/repapips/data/projects/luma/messages.json` for any notes from Mervin before beginning work. Mark messages read by setting `"read": true`.
+
+### NON-NEGOTIABLE: Session close checklist
+
+Before ending ANY session, write all three — no exceptions:
+
+1. **Logbook** — one entry per commit/decision to `/Users/mervindecastro/Cowork/repapips/data/projects/luma/logbook.json`
+2. **Obsidian daily note** — append session work to `/Users/mervindecastro/Cowork/mervin-vault/00-inbox/daily/[YYYY-MM-DD].md` (create if missing)
+3. **Obsidian portfolio log** — append to `/Users/mervindecastro/Cowork/mervin-vault/40-portfolio/log.md` for any meaningful feature or fix
+
+Obsidian is Mervin's second brain and morning recap source. If it's not there, it doesn't exist.

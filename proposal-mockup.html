@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luma Proposal Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5B4DC7;
+      --primary-dark: #4A3DB0;
+      --primary-light: #6E5FD8;
+      --accent: #E8853A;
+      --accent-dark: #D67528;
+      --success: #25A576;
+      --bg: #FAFAFA;
+      --bg-white: #FFFFFF;
+      --border: #E5E5E5;
+      --text: #1A1A1A;
+      --text-muted: #6B6B6B;
+      --text-light: #9B9B9B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: var(--bg-white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .toggle-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--border);
+      background: transparent;
+      border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .toggle-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(91, 77, 199, 0.2);
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Operator View Styles */
+    .operator-view {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-sent {
+      background: rgba(232, 133, 58, 0.1);
+      color: var(--accent-dark);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .client-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .client-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .summary-content {
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .summary-content p {
+      margin-bottom: 1rem;
+    }
+
+    .summary-content ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .summary-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-content strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .line-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .line-items-table thead {
+      border-bottom: 2px solid var(--border);
+    }
+
+    .line-items-table th {
+      text-align: left;
+      padding: 1rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .line-items-table th:last-child {
+      text-align: right;
+    }
+
+    .line-items-table td {
+      padding: 1.25rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .line-items-table td:last-child {
+      text-align: right;
+    }
+
+    .line-items-table tbody tr:hover {
+      background: rgba(91, 77, 199, 0.02);
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .item-description {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .item-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .billing-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .billing-recurring {
+      background: rgba(37, 165, 118, 0.1);
+      color: var(--success);
+    }
+
+    .billing-onetime {
+      background: rgba(107, 107, 107, 0.1);
+      color: var(--text-muted);
+    }
+
+    .addons-section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--border);
+    }
+
+    .addon-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      border: 2px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .addon-item.selected {
+      background: rgba(91, 77, 199, 0.03);
+      border-color: var(--primary-light);
+    }
+
+    .addon-item.not-selected {
+      opacity: 0.6;
+    }
+
+    .addon-info {
+      flex: 1;
+    }
+
+    .addon-name {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .addon-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .addon-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .addon-status.included {
+      background: rgba(91, 77, 199, 0.1);
+      color: var(--primary);
+    }
+
+    .addon-status.optional {
+      background: rgba(107, 107, 107, 0.05);
+      color: var(--text-light);
+    }
+
+    .total-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, rgba(91, 77, 199, 0.05), rgba(110, 95, 216, 0.05));
+      border-radius: 12px;
+      border: 2px solid rgba(91, 77, 199, 0.1);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .total-row:last-child {
+      margin-bottom: 0;
+      padding-top: 0.75rem;
+      border-top: 2px solid rgba(91, 77, 199, 0.15);
+    }
+
+    .total-label {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .total-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .total-row.grand-total .total-label {
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .total-row.grand-total .total-amount {
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .actions-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(91, 77, 199, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(91, 77, 199, 0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(91, 77, 199, 0.02);
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .info-value {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .activity-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 10px;
+    }
+
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Client Portal View */
+    .portal-view {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
+
+    .portal-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .portal-logo {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .portal-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .portal-meta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .portal-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .portal-section {
+      margin-bottom: 3rem;
+    }
+
+    .portal-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .portal-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .portal-footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--border);
+      text-align: center;
+    }
+
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      padding: 2.5rem;
+      border-radius: 16px;
+      text-align: center;
+      color: white;
+      margin: 3rem 0;
+    }
+
+    .cta-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .cta-subtitle {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .btn-cta {
+      background: white;
+      color: var(--primary);
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .expires-notice {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(232, 133, 58, 0.1);
+      color: var(--accent-dark);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .operator-view {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: -1;
+      }
+
+      .actions-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .portal-title {
+        font-size: 1.75rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+      }
+
+      .portal-card {
+        padding: 1.5rem;
+      }
+
+      .line-items-table th,
+      .line-items-table td {
+        padding: 0.75rem 0.25rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- View Toggle -->
+    <div class="view-toggle">
+      <button class="toggle-btn active" onclick="switchView('operator')">
+        <span>👨‍💼 Operator View</span>
+      </button>
+      <button class="toggle-btn" onclick="switchView('portal')">
+        <span>👤 Client Portal View</span>
+      </button>
+    </div>
+
+    <!-- OPERATOR VIEW -->
+    <div id="operator" class="view-section active">
+      <div class="operator-view">
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Header Card -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h1>Monthly Marketing & Content Management Retainer</h1>
+                <div class="client-info">
+                  <div class="client-avatar">W</div>
+                  <div>
+                    <strong>Wellness Co.</strong> · Sarah Johnson
+                  </div>
+                </div>
+              </div>
+              <span class="badge badge-sent">
+                <span class="badge-dot"></span>
+                Sent
+              </span>
+            </div>
+
+            <div class="summary-content">
+              <p><strong>Thank you for the opportunity to partner with Wellness Co!</strong></p>
+
+              <p>We're excited to propose a comprehensive marketing and content management retainer designed to elevate your brand presence, engage your wellness community, and drive sustainable growth across all digital channels.</p>
+
+              <p><strong>Our approach includes:</strong></p>
+              <ul>
+                <li><strong>Strategic social media management</strong> with community-focused content that resonates with your wellness audience</li>
+                <li><strong>Email marketing campaigns</strong> designed to nurture relationships and drive conversions</li>
+                <li><strong>SEO-optimized website updates</strong> to improve search visibility and user experience</li>
+                <li><strong>Data-driven insights</strong> and monthly reporting to track performance and refine strategies</li>
+              </ul>
+
+              <p>This retainer provides you with dedicated marketing support, consistent content delivery, and the flexibility to scale as your business grows. We'll work as an extension of your team, bringing expertise, creativity, and results-focused execution to every project.</p>
+            </div>
+          </div>
+
+          <!-- Line Items -->
+          <div class="card">
+            <h2>Services & Pricing</h2>
+
+            <table class="line-items-table">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th style="text-align: right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Social Media Management
+                      <span class="billing-badge billing-recurring">Recurring</span>
+                    </div>
+                    <div class="item-description">
+                      Content calendar planning, 4 posts per week across Instagram and Facebook, community management and engagement, monthly analytics report
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$2,500/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Email Marketing
+                      <span class="billing-badge billing-recurring">Recurring</span>
+                    </div>
+                    <div class="item-description">
+                      2 email campaigns per month, list segmentation and management, A/B testing, performance analytics and optimization
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$1,200/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Website Content Updates
+                      <span class="billing-badge billing-recurring">Recurring</span>
+                    </div>
+                    <div class="item-description">
+                      Up to 4 page updates per month, SEO optimization, image sourcing and editing, blog post formatting and publishing
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$800/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Initial Strategy Session
+                      <span class="billing-badge billing-onetime">One-time</span>
+                    </div>
+                    <div class="item-description">
+                      2-hour kickoff meeting to align on goals, brand voice, and content strategy. Includes comprehensive strategy document and 90-day roadmap.
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$500</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Add-ons -->
+            <div class="addons-section">
+              <h3>Optional Add-ons</h3>
+
+              <div class="addon-item not-selected">
+                <div class="addon-info">
+                  <div class="addon-name">Paid Ad Management</div>
+                  <div class="item-description">Facebook & Instagram ads management, creative development, budget optimization (excludes ad spend)</div>
+                </div>
+                <div>
+                  <div class="addon-price">$1,500/mo</div>
+                  <span class="addon-status optional">Optional</span>
+                </div>
+              </div>
+
+              <div class="addon-item selected">
+                <div class="addon-info">
+                  <div class="addon-name">Graphic Design Package</div>
+                  <div class="item-description">5 custom graphics per month for social media, email headers, or web banners</div>
+                </div>
+                <div>
+                  <div class="addon-price">$750/mo</div>
+                  <span class="addon-status included">Included</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total -->
+            <div class="total-section">
+              <div class="total-row">
+                <span class="total-label">Monthly Recurring</span>
+                <span class="total-amount">$5,250/mo</span>
+              </div>
+              <div class="total-row">
+                <span class="total-label">One-time Setup</span>
+                <span class="total-amount">$500</span>
+              </div>
+              <div class="total-row grand-total">
+                <span class="total-label">Total Investment</span>
+                <span class="total-amount">$5,750</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div class="actions-card">
+            <button class="btn btn-primary">
+              <span>📧</span>
+              Resend to Client
+            </button>
+            <button class="btn btn-secondary">
+              <span>✏️</span>
+              Edit Proposal
+            </button>
+            <button class="btn btn-secondary">
+              <span>📋</span>
+              Duplicate
+            </button>
+            <button class="btn btn-secondary">
+              <span>🔗</span>
+              Copy Portal Link
+            </button>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Created</span>
+                <span class="info-value">Feb 18, 2026</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Sent</span>
+                <span class="info-value">Feb 18, 2026</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Expires</span>
+                <span class="info-value">Mar 20, 2026</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Valid For</span>
+                <span class="info-value">30 days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Activity Timeline</h3>
+            <div class="activity-timeline">
+              <div class="activity-item">
+                <div class="activity-icon">📧</div>
+                <div class="activity-content">
+                  <div class="activity-title">Proposal sent to client</div>
+                  <div class="activity-time">Feb 18, 2026 at 2:34 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">📝</div>
+                <div class="activity-content">
+                  <div class="activity-title">Proposal created</div>
+                  <div class="activity-time">Feb 18, 2026 at 1:45 PM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT PORTAL VIEW -->
+    <div id="portal" class="view-section">
+      <div class="portal-view">
+        <div class="portal-header">
+          <div class="portal-logo">LUMA</div>
+          <h1 class="portal-title">Monthly Marketing & Content Management Retainer</h1>
+          <div class="portal-meta">
+            <div class="portal-meta-item">
+              <span>📅</span>
+              <span>Prepared for Wellness Co.</span>
+            </div>
+            <div class="portal-meta-item">
+              <span>📅</span>
+              <span>February 18, 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="portal-section">
+          <div class="portal-card">
+            <div class="summary-content">
+              <p><strong>Thank you for the opportunity to partner with Wellness Co!</strong></p>
+
+              <p>We're excited to propose a comprehensive marketing and content management retainer designed to elevate your brand presence, engage your wellness community, and drive sustainable growth across all digital channels.</p>
+
+              <p><strong>Our approach includes:</strong></p>
+              <ul>
+                <li><strong>Strategic social media management</strong> with community-focused content that resonates with your wellness audience</li>
+                <li><strong>Email marketing campaigns</strong> designed to nurture relationships and drive conversions</li>
+                <li><strong>SEO-optimized website updates</strong> to improve search visibility and user experience</li>
+                <li><strong>Data-driven insights</strong> and monthly reporting to track performance and refine strategies</li>
+              </ul>
+
+              <p>This retainer provides you with dedicated marketing support, consistent content delivery, and the flexibility to scale as your business grows. We'll work as an extension of your team, bringing expertise, creativity, and results-focused execution to every project.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="portal-section">
+          <h2 class="portal-section-title">Services & Investment</h2>
+          <div class="portal-card">
+            <table class="line-items-table">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th style="text-align: right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Social Media Management
+                      <span class="billing-badge billing-recurring">Monthly</span>
+                    </div>
+                    <div class="item-description">
+                      Content calendar planning, 4 posts per week across Instagram and Facebook, community management and engagement, monthly analytics report
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$2,500/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Email Marketing
+                      <span class="billing-badge billing-recurring">Monthly</span>
+                    </div>
+                    <div class="item-description">
+                      2 email campaigns per month, list segmentation and management, A/B testing, performance analytics and optimization
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$1,200/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Website Content Updates
+                      <span class="billing-badge billing-recurring">Monthly</span>
+                    </div>
+                    <div class="item-description">
+                      Up to 4 page updates per month, SEO optimization, image sourcing and editing, blog post formatting and publishing
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$800/mo</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="item-name">
+                      Initial Strategy Session
+                      <span class="billing-badge billing-onetime">One-time</span>
+                    </div>
+                    <div class="item-description">
+                      2-hour kickoff meeting to align on goals, brand voice, and content strategy. Includes comprehensive strategy document and 90-day roadmap.
+                    </div>
+                  </td>
+                  <td>
+                    <div class="item-price">$500</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="addons-section">
+              <h3>Included Add-on</h3>
+              <div class="addon-item selected">
+                <div class="addon-info">
+                  <div class="addon-name">Graphic Design Package</div>
+                  <div class="item-description">5 custom graphics per month for social media, email headers, or web banners</div>
+                </div>
+                <div>
+                  <div class="addon-price">$750/mo</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="total-section">
+              <div class="total-row">
+                <span class="total-label">Monthly Recurring</span>
+                <span class="total-amount">$5,250/mo</span>
+              </div>
+              <div class="total-row">
+                <span class="total-label">One-time Setup</span>
+                <span class="total-amount">$500</span>
+              </div>
+              <div class="total-row grand-total">
+                <span class="total-label">Total Investment</span>
+                <span class="total-amount">$5,750</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+          <div class="cta-title">Ready to Get Started?</div>
+          <div class="cta-subtitle">Accept this proposal to begin our partnership</div>
+          <button class="btn-cta">
+            <span>✓</span>
+            Accept Proposal
+          </button>
+          <div class="expires-notice">
+            <span>⏰</span>
+            This proposal expires on March 20, 2026
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="portal-footer">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">
+            Questions about this proposal? Contact us at hello@yourcompany.com
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchView(view) {
+      // Update button states
+      document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.closest('.toggle-btn').classList.add('active');
+
+      // Toggle views
+      document.querySelectorAll('.view-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(view).classList.add('active');
+    }
+  </script>
+</body>
+</html>

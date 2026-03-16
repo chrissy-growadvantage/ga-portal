@@ -36,10 +36,6 @@ export function PortalRightNow({
   pendingCount,
   isLoading = false,
 }: PortalRightNowProps) {
-  if (isLoading) {
-    return <SkeletonPortalSection />;
-  }
-
   const scopeCalc = useMemo(() => {
     if (currentScopes.length === 0) return null;
     return calculateScope(currentScopes[0], currentDeliveries);
@@ -54,6 +50,10 @@ export function PortalRightNow({
   const approvedCount = currentDeliveries.filter(
     (d) => d.status === 'completed' || d.status === 'approved',
   ).length;
+
+  if (isLoading) {
+    return <SkeletonPortalSection />;
+  }
 
   return (
     <section>
