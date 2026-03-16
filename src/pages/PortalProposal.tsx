@@ -294,7 +294,7 @@ export default function PortalProposal() {
   // Loading state
   if (viewState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'hsl(0 0% 99%)' }}>
+      <div className="min-h-screen flex items-center justify-center" className="bg-portal-background">
         <div className="text-center">
           <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Loading proposal...</p>
@@ -306,7 +306,7 @@ export default function PortalProposal() {
   // Error state
   if (viewState === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'hsl(0 0% 99%)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
         <div className="text-center max-w-sm">
           <ShieldAlert className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <h1 className="text-lg font-semibold mb-1">
@@ -325,7 +325,7 @@ export default function PortalProposal() {
   // Expired state
   if (viewState === 'expired') {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'hsl(0 0% 99%)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
         <div className="text-center max-w-sm">
           <Clock className="w-10 h-10 text-amber-500 mx-auto mb-3" />
           <h1 className="text-lg font-semibold mb-1">Proposal Expired</h1>
@@ -351,11 +351,14 @@ export default function PortalProposal() {
     >
       {/* Expiration warning */}
       {viewState === 'proposal' && expirationInfo && expirationInfo.daysLeft <= 7 && expirationInfo.daysLeft > 0 && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <p className="text-sm">
-            This proposal expires in {expirationInfo.daysLeft} day{expirationInfo.daysLeft !== 1 ? 's' : ''}
-          </p>
+        <div className="flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-900">Expiring Soon</p>
+            <p className="text-sm text-amber-800">
+              This proposal expires in {expirationInfo.daysLeft} day{expirationInfo.daysLeft !== 1 ? 's' : ''}
+            </p>
+          </div>
         </div>
       )}
 
@@ -378,9 +381,9 @@ export default function PortalProposal() {
       {/* Service items */}
       <section>
         <h2 className="text-base font-semibold mb-3">Services</h2>
-        <Card className="border-border/60">
+        <Card className="border-border/60 shadow-sm">
           <CardContent className="py-4">
-            <div className="divide-y divide-border/50">
+            <div className="divide-y divide-border/40">
               {line_items.map((item) => {
                 const itemDescHtml = item.description_json && typeof item.description_json === 'object' && 'type' in item.description_json && item.description_json.type === 'doc'
                   ? (() => { try { return generateHTML(item.description_json as JSONContent); } catch { return null; } })()
@@ -389,7 +392,7 @@ export default function PortalProposal() {
                 return (
                 <div key={item.id} className="py-3 first:pt-0 last:pb-0">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">{item.name}</p>
                       {itemDescHtml ? (
                         <div
@@ -403,10 +406,19 @@ export default function PortalProposal() {
                       ) : null}
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-sm font-mono">
+                      <p className="text-sm font-mono font-medium">
+                        ${(item.quantity * item.unit_price).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-mono mt-0.5">
                         {item.quantity} x ${item.unit_price.toFixed(2)}
                       </p>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 mt-1">
+                      <Badge
+                        variant="secondary"
+                        className={item.billing_type === 'recurring'
+                          ? 'text-[10px] px-1.5 py-0 mt-1 border-primary/30 bg-primary/5 text-primary'
+                          : 'text-[10px] px-1.5 py-0 mt-1 border-border bg-muted/50 text-muted-foreground'
+                        }
+                      >
                         {BILLING_TYPE_LABELS[item.billing_type]}
                       </Badge>
                     </div>
@@ -415,9 +427,9 @@ export default function PortalProposal() {
                 );
               })}
             </div>
-            <div className="flex items-center justify-between pt-3 mt-3 border-t border-border/50">
+            <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/40">
               <p className="text-sm font-medium">Subtotal</p>
-              <p className="text-sm font-semibold font-mono">${baseTotal.toFixed(2)}</p>
+              <p className="text-lg font-mono font-bold">${baseTotal.toFixed(2)}</p>
             </div>
           </CardContent>
         </Card>
@@ -447,32 +459,34 @@ export default function PortalProposal() {
 
       {/* Pricing summary */}
       <section>
-        <Card className="border-border/60">
-          <CardContent className="py-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Base services</span>
-                <span className="font-mono">${baseTotal.toFixed(2)}</span>
-              </div>
-              {addonsTotal > 0 && (
+        <Card className="border-none shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-br from-primary/8 via-primary/4 to-accent-warm/8">
+            <CardContent className="py-5">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Add-ons</span>
-                  <span className="font-mono">${addonsTotal.toFixed(2)}</span>
+                  <span className="text-muted-foreground">Base services</span>
+                  <span className="font-mono">${baseTotal.toFixed(2)}</span>
                 </div>
-              )}
-              <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                <span className="text-base font-semibold">Total</span>
-                <span className="text-xl font-bold font-mono text-primary transition-all duration-300">
-                  ${grandTotal.toFixed(2)}
-                </span>
+                {addonsTotal > 0 && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Add-ons</span>
+                    <span className="font-mono">${addonsTotal.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between pt-3 mt-3 border-t border-border/40">
+                  <span className="text-lg font-semibold">Total Investment</span>
+                  <span className="text-3xl font-bold font-mono text-primary transition-all duration-300">
+                    ${grandTotal.toFixed(2)}
+                  </span>
+                </div>
+                {expirationInfo && (
+                  <p className="text-xs text-muted-foreground text-right pt-1">
+                    Valid until {format(expirationInfo.expiresAt, 'MMMM d, yyyy')}
+                  </p>
+                )}
               </div>
-              {expirationInfo && (
-                <p className="text-xs text-muted-foreground text-right">
-                  Valid until {format(expirationInfo.expiresAt, 'MMMM d, yyyy')}
-                </p>
-              )}
-            </div>
-          </CardContent>
+            </CardContent>
+          </div>
         </Card>
       </section>
 

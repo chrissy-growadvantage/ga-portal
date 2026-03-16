@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
+import { useEffect, useMemo, useCallback, useRef, useState, type ReactNode } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,10 +53,44 @@ const DEFAULT_LINE_ITEM = {
   sort_order: 0,
 };
 
+// --- Form Section Helper ---
+
+function FormSection({
+  step,
+  title,
+  children,
+}: {
+  step: number;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-mono font-bold flex items-center justify-center shrink-0">
+          {step}
+        </span>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          {title}
+        </h3>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+      <div className="pl-9">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function ProposalBuilder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditMode = !!id;
+
+  useEffect(() => {
+    document.title = 'Proposals — Luma';
+    return () => { document.title = 'Luma'; };
+  }, []);
 
   const { user } = useAuth();
   const { data: existingProposal, isLoading: proposalLoading } = useProposal(id ?? '');
@@ -279,53 +313,51 @@ export default function ProposalBuilder() {
             </div>
           </div>
 
-          {/* Client Selection */}
-          <Card className="border-border/60">
-            <CardContent className="p-5">
-              <FormField
-                control={form.control}
-                name="client_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Client *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+          {/* Sectioned Form */}
+          <div className="space-y-8">
+            <FormSection step={1} title="Details">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="client_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={clientsLoading ? 'Loading clients...' : 'Select a client'} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {clients?.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.company_name || client.contact_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Proposal Title *</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={clientsLoading ? 'Loading clients...' : 'Select a client'} />
-                        </SelectTrigger>
+                        <Input placeholder="e.g. Monthly Marketing Retainer" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {clients?.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.company_name || client.contact_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </FormSection>
 
-          {/* Proposal Details */}
-          <Card className="border-border/60">
-            <CardContent className="p-5 space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Proposal Title *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Monthly Marketing Retainer" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+            <FormSection step={2} title="Summary">
               <TiptapFormField
                 name="summary_json"
                 label="Summary"
@@ -336,7 +368,22 @@ export default function ProposalBuilder() {
                 onSaveAsTemplate={() => setSaveTemplateOpen(true)}
                 editorRef={(editor) => { summaryEditorRef.current = editor; }}
               />
+            </FormSection>
 
+            <FormSection step={3} title="Service Line Items">
+              <ProposalLineItems form={form} />
+            </FormSection>
+
+            {/* Content Blocks (edit mode only) */}
+            {isEditMode && id && (
+              <ContentBlocksEditor proposalId={id} />
+            )}
+
+            <FormSection step={4} title="Optional Add-ons">
+              <ProposalAddonSelector form={form} addonTemplates={addonTemplates} />
+            </FormSection>
+
+            <FormSection step={5} title="Validity Period">
               <FormField
                 control={form.control}
                 name="valid_days"
@@ -361,42 +408,31 @@ export default function ProposalBuilder() {
                   </FormItem>
                 )}
               />
-            </CardContent>
-          </Card>
+            </FormSection>
 
-          {/* Service Line Items */}
-          <ProposalLineItems form={form} />
-
-          {/* Content Blocks */}
-          {isEditMode && id && (
-            <ContentBlocksEditor proposalId={id} />
-          )}
-
-          {/* Addons */}
-          <ProposalAddonSelector form={form} addonTemplates={addonTemplates} />
-
-          {/* Internal Notes */}
-          <Card className="border-border/60">
-            <CardContent className="p-5">
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Internal Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Notes for your reference (not shown to client)"
-                        className="min-h-[80px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+            {/* Internal Notes */}
+            <Card className="border-border/60">
+              <CardContent className="p-5">
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Internal Notes</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Notes for your reference (not shown to client)"
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Sticky Footer */}
           <div className="sticky bottom-0 bg-background border-t border-border p-4 flex justify-between items-center -mx-6 -mb-6 mt-6 z-10">

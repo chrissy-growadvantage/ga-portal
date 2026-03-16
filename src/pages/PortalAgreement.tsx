@@ -5,9 +5,16 @@ import { PortalSignatureDisplay } from '@/components/portal/PortalSignatureDispl
 import { PortalAgreementCard } from '@/components/portal/PortalAgreementCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ShieldAlert, Clock } from 'lucide-react';
+import { Loader2, ShieldAlert, Clock, ShieldCheck } from 'lucide-react';
 import { BILLING_TYPE_LABELS } from '@/lib/constants';
 import type { Agreement } from '@/types/database';
+
+function formatSignedAt(dateStr: string): string {
+  const d = new Date(dateStr);
+  const datePart = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const timePart = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${datePart} at ${timePart}`;
+}
 
 interface AgreementSnapshot {
   title: string;
@@ -94,7 +101,7 @@ export default function PortalAgreement() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'hsl(0 0% 99%)' }}>
+      <div className="min-h-screen flex items-center justify-center" className="bg-portal-background">
         <div className="text-center">
           <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Loading agreement...</p>
@@ -106,7 +113,7 @@ export default function PortalAgreement() {
   if (error) {
     const isExpired = error === 'EXPIRED_TOKEN';
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'hsl(0 0% 99%)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
         <div className="text-center max-w-sm">
           {isExpired ? (
             <>
@@ -295,6 +302,28 @@ export default function PortalAgreement() {
               )}
             </CardContent>
           </Card>
+        </section>
+
+        {/* Audit trail */}
+        <section>
+          <div className="rounded-lg border border-[#6B8E6F]/30 bg-[#6B8E6F]/5 p-4">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-[#6B8E6F] shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="space-y-1 text-sm">
+                <p className="font-semibold text-[#6B8E6F]">Electronically signed</p>
+                <p className="text-foreground">{selectedAgreement.signer_name}</p>
+                <p className="text-muted-foreground">{formatSignedAt(selectedAgreement.signed_at)}</p>
+                {typeof selectedAgreement.signature_data['ip_address'] === 'string' && (
+                  <p className="text-xs text-muted-foreground">
+                    IP: {selectedAgreement.signature_data['ip_address']}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground pt-2 mt-1 border-t border-[#6B8E6F]/20">
+                  This document is legally binding. A copy has been recorded.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
       </PortalLayout>
     );

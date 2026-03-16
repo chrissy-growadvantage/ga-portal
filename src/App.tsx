@@ -18,8 +18,16 @@ const ProposalList = lazy(() => import('@/pages/ProposalList'));
 const ProposalBuilder = lazy(() => import('@/pages/ProposalBuilder'));
 const ProposalDetail = lazy(() => import('@/pages/ProposalDetail'));
 const Revenue = lazy(() => import('@/pages/Revenue'));
+const Invoices = lazy(() => import('@/pages/Invoices'));
+const InvoiceDetail = lazy(() => import('@/pages/InvoiceDetail'));
 const PortalProposal = lazy(() => import('@/pages/PortalProposal'));
 const PortalAgreement = lazy(() => import('@/pages/PortalAgreement'));
+const EditorTest = lazy(() => import('@/pages/EditorTest'));
+const SnapshotList = lazy(() => import('@/pages/SnapshotList'));
+const SnapshotDetail = lazy(() => import('@/pages/SnapshotDetail'));
+const GrantEvidence = lazy(() => import('@/pages/GrantEvidence'));
+const Approvals = lazy(() => import('@/pages/Approvals'));
+const DeadlineView = lazy(() => import('@/pages/DeadlineView'));
 
 function PageLoader() {
   return (
@@ -69,13 +77,21 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="/clients" element={<ClientList />} />
             <Route path="/clients/:id" element={<ClientDetail />} />
+            <Route path="/clients/:id/snapshots" element={<SnapshotList />} />
+            <Route path="/clients/:id/snapshots/:monthSlug" element={<SnapshotDetail />} />
             <Route path="/proposals" element={<ProposalList />} />
             <Route path="/proposals/new" element={<ProposalBuilder />} />
             <Route path="/proposals/:id" element={<ProposalDetail />} />
             <Route path="/proposals/:id/edit" element={<ProposalBuilder />} />
             <Route path="/revenue" element={<Revenue />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoices/:id" element={<InvoiceDetail />} />
             <Route path="/timesheet" element={<Timesheet />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/approvals" element={<Approvals />} />
+            <Route path="/schedule" element={<DeadlineView />} />
+            <Route path="/grant-evidence" element={<GrantEvidence />} />
+            <Route path="/test-editor" element={<EditorTest />} />
           </Route>
 
           {/* Catch-all */}

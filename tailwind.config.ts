@@ -53,6 +53,16 @@ export default {
           DEFAULT: "hsl(var(--accent-warm))",
           foreground: "hsl(var(--accent-warm-foreground))",
         },
+        status: {
+          success: "hsl(var(--status-success))",
+          warning: "hsl(var(--status-warning))",
+          danger: "hsl(var(--status-danger))",
+          info: "hsl(var(--status-info))",
+          neutral: "hsl(var(--status-neutral))",
+        },
+        portal: {
+          background: "hsl(var(--portal-background))",
+        },
         scope: {
           "on-track": "hsl(var(--scope-on-track))",
           active: "hsl(var(--scope-active))",

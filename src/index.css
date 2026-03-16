@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  overflow-y: scroll;
+}
+
 @layer base {
   :root {
     --background: 220 14% 96%;           /* #F5F6F7 neutral app bg */
