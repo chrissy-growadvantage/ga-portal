@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { brandingFormResponseSchema } from '@/lib/schemas';
 
 type BrandingForm = {
   portal_logo_url: string;
@@ -37,7 +38,7 @@ export function BrandingSettings() {
         .eq('id', user!.id)
         .single();
       if (error) throw error;
-      return data as BrandingForm;
+      return brandingFormResponseSchema.parse(data);
     },
     enabled: !!user,
     staleTime: 60_000,

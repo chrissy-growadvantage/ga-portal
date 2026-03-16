@@ -2,8 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryKeys } from '@/lib/query-keys';
 import { useAuth } from '@/hooks/useAuth';
+import { grantEvidenceRowSchema } from '@/lib/schemas';
 import type {
-  GrantEvidence,
   GrantEvidencePilotClient,
   GrantEvidenceChecklist,
   GrantEvidenceKPIs,
@@ -55,7 +55,7 @@ export function useGrantEvidence() {
         throw error;
       }
 
-      return rowToForm(data as GrantEvidence);
+      return rowToForm(grantEvidenceRowSchema.parse(data));
     },
     enabled: !!user,
     staleTime: 30_000,

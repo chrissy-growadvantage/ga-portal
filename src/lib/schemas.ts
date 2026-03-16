@@ -47,6 +47,42 @@ export const createScopeRequestSchema = z.object({
   description: z.string().max(2000).optional(),
 });
 
+// Supabase response schemas (trust boundary validation)
+export const brandingFormResponseSchema = z.object({
+  portal_logo_url: z.string().nullable().transform(v => v ?? ''),
+  portal_primary_color: z.string().nullable().transform(v => v ?? '#5B4DC7'),
+  portal_accent_color: z.string().nullable().transform(v => v ?? '#E8853A'),
+});
+
+const grantEvidencePilotClientSchema = z.object({
+  name: z.string().default(''),
+  startDate: z.string().default(''),
+  currentStage: z.string().default(''),
+  notes: z.string().default(''),
+  endorsementStatus: z.enum(['not_requested', 'requested', 'received']).default('not_requested'),
+  endorsementLink: z.string().default(''),
+});
+
+export const grantEvidenceRowSchema = z.object({
+  id: z.string(),
+  operator_id: z.string(),
+  client_a: grantEvidencePilotClientSchema,
+  client_b: grantEvidencePilotClientSchema,
+  checklist: z.object({
+    screenshotsSaved: z.boolean().default(false),
+    loomRecorded: z.boolean().default(false),
+    usageNotesWritten: z.boolean().default(false),
+  }),
+  kpis: z.object({
+    requestsSubmitted: z.string().default(''),
+    requestsResolved: z.string().default(''),
+    overdueActionsCount: z.string().default(''),
+    estimatedTimeSavedHours: z.string().default(''),
+  }),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
 export type CreateClientInput = z.infer<typeof createClientSchema>;
 export type CreateDeliveryItemInput = z.infer<typeof createDeliveryItemSchema>;
 export type CreateScopeAllocationInput = z.infer<typeof createScopeAllocationSchema>;
