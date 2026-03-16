@@ -246,8 +246,8 @@ function PortalContent({
       new Date(r.created_at) >= sevenDaysAgo,
   );
 
-  // Open requests (pending — not yet approved/declined)
-  const openRequestsCount = scopeRequests.filter((r) => r.status === 'pending').length;
+  // Open requests — client-facing: any request not marked done by the operator
+  const openRequestsCount = scopeRequests.filter((r) => r.ga_status !== 'done').length;
 
   // Section visibility
   const hasOnboarding = onboardingStages.length > 0;
