@@ -21,6 +21,8 @@ export type PortalClient = Pick<
   | 'hours_used_this_month'
   | 'next_meeting_at'
   | 'next_meeting_link'
+  | 'completed_this_month'
+  | 'monthly_plan_notes'
 > & {
   portal_stripe_url: string | null;
   portal_intake_url: string | null;

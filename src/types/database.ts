@@ -58,6 +58,9 @@ export interface Client {
   portal_stripe_url: string | null;
   portal_intake_url: string | null;
   onboarding_stage: number | null;
+  // Portal content fields (added in migration 033)
+  completed_this_month: string | null;
+  monthly_plan_notes: string | null;
   created_at: string;
   updated_at: string;
 }
