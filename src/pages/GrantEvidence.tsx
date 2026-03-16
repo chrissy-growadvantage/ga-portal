@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Save, ClipboardList, Loader2 } from 'lucide-react';
+import { Save, ClipboardList, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGrantEvidence, useSaveGrantEvidence, defaultGrantEvidence } from '@/hooks/useGrantEvidence';
 import type { GrantEvidencePilotClient, GrantEvidenceEndorsementStatus } from '@/types/database';
@@ -113,19 +113,27 @@ export default function GrantEvidence() {
   const { data: remote, isLoading } = useGrantEvidence();
   const { mutateAsync: saveToSupabase, isPending: isSaving } = useSaveGrantEvidence();
   const [data, setData] = useState<GrantEvidenceData>(defaultGrantEvidence);
+  const [savedData, setSavedData] = useState<GrantEvidenceData>(defaultGrantEvidence);
   const [synced, setSynced] = useState(false);
 
   // Populate local state once remote data arrives
   useEffect(() => {
     if (remote && !synced) {
       setData(remote);
+      setSavedData(remote);
       setSynced(true);
     }
   }, [remote, synced]);
 
+  const isDirty = useMemo(
+    () => JSON.stringify(data) !== JSON.stringify(savedData),
+    [data, savedData],
+  );
+
   const save = async () => {
     try {
       await saveToSupabase(data);
+      setSavedData(data);
       toast.success('Grant evidence saved');
     } catch {
       toast.error('Failed to save — please try again');
@@ -145,10 +153,18 @@ export default function GrantEvidence() {
           </div>
           <p className="text-sm text-muted-foreground">Internal pilot tracking — not visible to clients.</p>
         </div>
-        <Button onClick={save} className="gap-2" disabled={isLoading || isSaving}>
-          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Save
-        </Button>
+        <div className="flex items-center gap-3">
+          {isDirty && (
+            <span className="flex items-center gap-1.5 text-sm text-amber-600">
+              <AlertCircle className="w-4 h-4" />
+              Unsaved changes
+            </span>
+          )}
+          <Button onClick={save} className="gap-2" disabled={isLoading || isSaving || !isDirty}>
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Save
+          </Button>
+        </div>
       </div>
 
       {/* Pilot Clients */}
