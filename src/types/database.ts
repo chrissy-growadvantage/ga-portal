@@ -57,6 +57,8 @@ export interface Client {
   next_meeting_link: string | null;
   portal_stripe_url: string | null;
   portal_intake_url: string | null;
+  portal_proposal_url: string | null;
+  portal_contract_url: string | null;
   onboarding_stage: number | null;
   // Portal content fields (added in migration 033)
   completed_this_month: string | null;
@@ -544,3 +546,44 @@ export interface PickListItem {
 
 export type InsertPickListItem = Pick<PickListItem, 'operator_id' | 'list_type' | 'label'> &
   Partial<Pick<PickListItem, 'colour' | 'sort_order' | 'is_active'>>;
+
+// ============================================================
+// Grant Evidence (migration 034)
+// ============================================================
+
+export type GrantEvidenceEndorsementStatus = 'not_requested' | 'requested' | 'received';
+
+export type GrantEvidencePilotClient = {
+  name: string;
+  startDate: string;
+  currentStage: string;
+  notes: string;
+  endorsementStatus: GrantEvidenceEndorsementStatus;
+  endorsementLink: string;
+};
+
+export type GrantEvidenceChecklist = {
+  screenshotsSaved: boolean;
+  loomRecorded: boolean;
+  usageNotesWritten: boolean;
+};
+
+export type GrantEvidenceKPIs = {
+  requestsSubmitted: string;
+  requestsResolved: string;
+  overdueActionsCount: string;
+  estimatedTimeSavedHours: string;
+};
+
+export interface GrantEvidence {
+  id: string;
+  operator_id: string;
+  client_a: GrantEvidencePilotClient;
+  client_b: GrantEvidencePilotClient;
+  checklist: GrantEvidenceChecklist;
+  kpis: GrantEvidenceKPIs;
+  created_at: string;
+  updated_at: string;
+}
+
+export type UpsertGrantEvidence = Pick<GrantEvidence, 'operator_id' | 'client_a' | 'client_b' | 'checklist' | 'kpis'>;

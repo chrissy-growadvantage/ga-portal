@@ -7,59 +7,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Save, ClipboardList } from 'lucide-react';
+import { Save, ClipboardList, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useGrantEvidence, useSaveGrantEvidence, defaultGrantEvidence } from '@/hooks/useGrantEvidence';
+import type { GrantEvidencePilotClient, GrantEvidenceEndorsementStatus } from '@/types/database';
 
-type EndorsementStatus = 'not_requested' | 'requested' | 'received';
+type GrantEvidenceData = typeof defaultGrantEvidence;
 
-type PilotClient = {
-  name: string;
-  startDate: string;
-  currentStage: string;
-  notes: string;
-  endorsementStatus: EndorsementStatus;
-  endorsementLink: string;
-};
-
-type EvidenceChecklist = {
-  screenshotsSaved: boolean;
-  loomRecorded: boolean;
-  usageNotesWritten: boolean;
-};
-
-type KPIs = {
-  requestsSubmitted: string;
-  requestsResolved: string;
-  overdueActionsCount: string;
-  estimatedTimeSavedHours: string;
-};
-
-type GrantEvidenceData = {
-  clientA: PilotClient;
-  clientB: PilotClient;
-  checklist: EvidenceChecklist;
-  kpis: KPIs;
-};
-
-const STORAGE_KEY = 'luma_grant_evidence';
-
-const defaultClient = (): PilotClient => ({
-  name: '',
-  startDate: '',
-  currentStage: '',
-  notes: '',
-  endorsementStatus: 'not_requested',
-  endorsementLink: '',
-});
-
-const defaultData = (): GrantEvidenceData => ({
-  clientA: defaultClient(),
-  clientB: defaultClient(),
-  checklist: { screenshotsSaved: false, loomRecorded: false, usageNotesWritten: false },
-  kpis: { requestsSubmitted: '', requestsResolved: '', overdueActionsCount: '', estimatedTimeSavedHours: '' },
-});
-
-const endorsementBadge: Record<EndorsementStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
+const endorsementBadge: Record<GrantEvidenceEndorsementStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
   not_requested: { label: 'Not Requested', variant: 'secondary' },
   requested: { label: 'Requested', variant: 'default' },
   received: { label: 'Received ✓', variant: 'default' },
@@ -71,8 +26,8 @@ function PilotClientCard({
   onChange,
 }: {
   label: string;
-  data: PilotClient;
-  onChange: (updated: PilotClient) => void;
+  data: GrantEvidencePilotClient;
+  onChange: (updated: GrantEvidencePilotClient) => void;
 }) {
   const { label: badgeLabel, variant } = endorsementBadge[data.endorsementStatus];
 
@@ -128,7 +83,7 @@ function PilotClientCard({
             <Label>Endorsement Status</Label>
             <Select
               value={data.endorsementStatus}
-              onValueChange={(v) => onChange({ ...data, endorsementStatus: v as EndorsementStatus })}
+              onValueChange={(v) => onChange({ ...data, endorsementStatus: v as GrantEvidenceEndorsementStatus })}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -155,20 +110,26 @@ function PilotClientCard({
 }
 
 export default function GrantEvidence() {
-  const [data, setData] = useState<GrantEvidenceData>(defaultData);
+  const { data: remote, isLoading } = useGrantEvidence();
+  const { mutateAsync: saveToSupabase, isPending: isSaving } = useSaveGrantEvidence();
+  const [data, setData] = useState<GrantEvidenceData>(defaultGrantEvidence);
+  const [synced, setSynced] = useState(false);
 
+  // Populate local state once remote data arrives
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setData(JSON.parse(saved) as GrantEvidenceData);
-    } catch {
-      // ignore parse errors
+    if (remote && !synced) {
+      setData(remote);
+      setSynced(true);
     }
-  }, []);
+  }, [remote, synced]);
 
-  const save = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    toast.success('Grant evidence saved');
+  const save = async () => {
+    try {
+      await saveToSupabase(data);
+      toast.success('Grant evidence saved');
+    } catch {
+      toast.error('Failed to save — please try again');
+    }
   };
 
   const completedChecklist = Object.values(data.checklist).filter(Boolean).length;
@@ -184,8 +145,8 @@ export default function GrantEvidence() {
           </div>
           <p className="text-sm text-muted-foreground">Internal pilot tracking — not visible to clients.</p>
         </div>
-        <Button onClick={save} className="gap-2">
-          <Save className="w-4 h-4" />
+        <Button onClick={save} className="gap-2" disabled={isLoading || isSaving}>
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save
         </Button>
       </div>
