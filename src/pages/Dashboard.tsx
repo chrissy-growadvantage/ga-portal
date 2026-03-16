@@ -98,8 +98,11 @@ export default function Dashboard() {
   const firstName = operatorName.split(' ')[0];
 
   const hour = new Date().getHours();
-  const timeGreeting =
-    hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const morningGreetings = ['Good morning', 'Rise and shine', 'Morning'];
+  const afternoonGreetings = ['Good afternoon', 'Hey there', 'Welcome back'];
+  const eveningGreetings = ['Good evening', 'Evening', 'Hey there'];
+  const greetingPool = hour < 12 ? morningGreetings : hour < 17 ? afternoonGreetings : eveningGreetings;
+  const timeGreeting = greetingPool[Math.floor(Math.random() * greetingPool.length)];
 
   // Cross-client pending approvals for the dashboard action list
   const pendingApprovalItems = useMemo(() => {
@@ -146,8 +149,8 @@ export default function Dashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-[22px] font-bold tracking-tight">
-            <span className="sm:hidden">{timeGreeting}, {firstName} 👋</span>
-            <span className="hidden sm:inline">{timeGreeting}, {operatorName} 👋</span>
+            <span className="sm:hidden">{timeGreeting}, {firstName}</span>
+            <span className="hidden sm:inline">{timeGreeting}, {operatorName}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">Here's your business at a glance</p>
         </div>
