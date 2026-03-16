@@ -67,7 +67,7 @@ export function PortalQuickLinks({
       {visibleLinks.map((link) => {
         const Icon = link.icon;
         const baseClass = cn(
-          'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2',
+          'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 min-h-[44px]',
           'text-sm font-medium text-foreground hover:bg-muted/60 transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         );

@@ -21,6 +21,7 @@ type PortalDocumentsLinksProps = {
   agreements: Agreement[];
   monthlySnapshots: MonthlySnapshotIndex[];
   onViewAgreement: (agreement: Agreement) => void;
+  onViewSnapshot?: (snapshot: MonthlySnapshotIndex) => void;
   /** Filter to show only a subset: 'agreements' (docs + agreements) or 'links' (quick links + snapshots) */
   showOnly?: 'agreements' | 'links';
 };
@@ -83,6 +84,7 @@ export function PortalDocumentsLinks({
   agreements,
   monthlySnapshots,
   onViewAgreement,
+  onViewSnapshot,
   showOnly,
 }: PortalDocumentsLinksProps) {
   const hasDocs =
@@ -173,16 +175,30 @@ export function PortalDocumentsLinks({
           <div className="space-y-2">
             {monthlySnapshots.map((snapshot) => (
               <Card key={snapshot.id} className="border-border/60">
-                <CardContent className="py-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                    <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                <CardContent className="py-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                      <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{snapshot.month_label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(snapshot.created_at), 'd MMM yyyy')}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">{snapshot.month_label}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(snapshot.created_at), 'd MMM yyyy')}
-                    </p>
-                  </div>
+                  {onViewSnapshot && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 shrink-0 min-h-[44px]"
+                      onClick={() => onViewSnapshot(snapshot)}
+                      aria-label={`Open ${snapshot.month_label} report`}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                      Open
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}

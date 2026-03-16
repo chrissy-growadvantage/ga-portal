@@ -22,6 +22,15 @@ const STATUS_ICONS: Record<OnboardingStageStatus, React.ElementType> = {
   not_started: Circle,
 };
 
+function getActionLabel(stageLabel: string): string {
+  const lower = stageLabel.toLowerCase();
+  if (lower.includes('contract')) return 'Sign Contract';
+  if (lower.includes('intake')) return 'Complete Form';
+  if (lower.includes('payment')) return 'Set Up Payment';
+  if (lower.includes('kickoff')) return 'Book Kickoff';
+  return 'Take Action';
+}
+
 function formatDate(dateStr: string | null) {
   if (!dateStr) return null;
   try {
@@ -166,7 +175,7 @@ export function PortalOnboardingStepper({ stages, isLoading = false }: PortalOnb
                                 size="sm"
                                 className="gap-1.5 h-9 text-xs mt-1 min-h-[44px]"
                               >
-                                Take Action
+                                {getActionLabel(stage.stage_label)}
                                 <ExternalLink className="w-3 h-3" aria-hidden="true" />
                                 <span className="sr-only">(opens in new tab)</span>
                               </Button>

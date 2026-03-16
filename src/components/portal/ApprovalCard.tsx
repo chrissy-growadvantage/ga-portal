@@ -132,7 +132,7 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
             size="sm"
             onClick={() => setShowFeedback(true)}
             disabled={submitting}
-            className="text-xs h-8 text-muted-foreground hover:text-foreground"
+            className="text-xs min-h-[44px] text-muted-foreground hover:text-foreground"
           >
             Request Changes
           </Button>
@@ -140,7 +140,7 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
             size="sm"
             onClick={handleApprove}
             disabled={submitting}
-            className="text-xs h-8 gap-1.5 bg-status-success hover:bg-status-success/90 text-white"
+            className="text-xs min-h-[44px] gap-1.5 bg-status-success hover:bg-status-success/90 text-white"
           >
             {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
             Approve
@@ -156,10 +156,10 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
             autoFocus
           />
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={handleRequestChanges} disabled={submitting || !feedback.trim()} className="gap-1.5">
+            <Button size="sm" onClick={handleRequestChanges} disabled={submitting || !feedback.trim()} className="gap-1.5 min-h-[44px]">
               {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Submit Feedback'}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => { setShowFeedback(false); setFeedback(''); }} disabled={submitting}>
+            <Button size="sm" variant="ghost" onClick={() => { setShowFeedback(false); setFeedback(''); }} disabled={submitting} className="min-h-[44px]">
               Cancel
             </Button>
           </div>

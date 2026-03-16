@@ -137,7 +137,7 @@ export function PortalMobileNav(
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9"
+          className="h-11 w-11"
           aria-label="Open navigation"
         >
           <Menu className="w-5 h-5" />

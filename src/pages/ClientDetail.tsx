@@ -209,6 +209,8 @@ export default function ClientDetail() {
   const [scopeFormOpen, setScopeFormOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') ?? 'deliveries';
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  const [tabsScrolled, setTabsScrolled] = useState(false);
 
   // Set page title once client data is available
   useEffect(() => {
@@ -403,15 +405,24 @@ export default function ClientDetail() {
       >
         <div className="flex items-center justify-between gap-2">
           <div className="relative min-w-0 flex-1">
-            <TabsList className="overflow-x-auto flex-nowrap scrollbar-none">
-              <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
-              <TabsTrigger value="scope">Scope</TabsTrigger>
-              <TabsTrigger value="requests">Requests</TabsTrigger>
-              <TabsTrigger value="proposals">Proposals</TabsTrigger>
-              <TabsTrigger value="portal">Portal</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="timeline">Timeline</TabsTrigger>
-            </TabsList>
+            <div
+              ref={tabsScrollRef}
+              className="overflow-x-auto scrollbar-none"
+              onScroll={(e) => setTabsScrolled((e.currentTarget as HTMLDivElement).scrollLeft > 4)}
+            >
+              <TabsList className="flex-nowrap w-max">
+                <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
+                <TabsTrigger value="scope">Scope</TabsTrigger>
+                <TabsTrigger value="requests">Requests</TabsTrigger>
+                <TabsTrigger value="proposals">Proposals</TabsTrigger>
+                <TabsTrigger value="portal">Portal</TabsTrigger>
+                <TabsTrigger value="reports">Reports</TabsTrigger>
+                <TabsTrigger value="timeline">Timeline</TabsTrigger>
+              </TabsList>
+            </div>
+            {tabsScrolled && (
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent" />
+            )}
             <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" />
           </div>
 

@@ -5,7 +5,7 @@ type PortalHoursUsedProps = {
 };
 
 export function PortalHoursUsed({ hoursUsed }: PortalHoursUsedProps) {
-  const display = hoursUsed && hoursUsed > 0 ? `${hoursUsed}` : null;
+  if (!hoursUsed || hoursUsed <= 0) return null;
 
   return (
     <div className="rounded-xl border border-border/60 bg-background px-5 py-4 flex items-center gap-3">
@@ -17,7 +17,7 @@ export function PortalHoursUsed({ hoursUsed }: PortalHoursUsedProps) {
           Hours used this month
         </p>
         <p className="text-lg font-bold tracking-tight mt-0.5">
-          {display !== null ? `${display} hrs` : '—'}
+          {hoursUsed} hrs
         </p>
       </div>
     </div>

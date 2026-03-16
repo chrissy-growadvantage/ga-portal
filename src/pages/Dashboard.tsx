@@ -102,7 +102,7 @@ export default function Dashboard() {
   const afternoonGreetings = ['Good afternoon', 'Hey there', 'Welcome back'];
   const eveningGreetings = ['Good evening', 'Evening', 'Hey there'];
   const greetingPool = hour < 12 ? morningGreetings : hour < 17 ? afternoonGreetings : eveningGreetings;
-  const timeGreeting = greetingPool[Math.floor(Math.random() * greetingPool.length)];
+  const timeGreeting = greetingPool[new Date().getDate() % greetingPool.length];
 
   // Cross-client pending approvals for the dashboard action list
   const pendingApprovalItems = useMemo(() => {

@@ -22,7 +22,6 @@ import { PortalDocumentsLinks } from '@/components/portal/PortalDocumentsLinks';
 import { PortalRequestForm } from '@/components/portal/PortalRequestForm';
 import { PortalWhatToDoNext } from '@/components/portal/PortalWhatToDoNext';
 import { PortalQuickLinks } from '@/components/portal/PortalQuickLinks';
-import { PortalMonthlyFocus } from '@/components/portal/PortalMonthlyFocus';
 import { PortalHoursUsed } from '@/components/portal/PortalHoursUsed';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -247,6 +246,9 @@ function PortalContent({
       new Date(r.created_at) >= sevenDaysAgo,
   );
 
+  // Open requests (pending — not yet approved/declined)
+  const openRequestsCount = scopeRequests.filter((r) => r.status === 'pending').length;
+
   // Section visibility
   const hasOnboarding = onboardingStages.length > 0;
   const hasTasks = clientTasks.length > 0;
@@ -281,7 +283,7 @@ function PortalContent({
 
   // Greeting narrative — plain English summary for the client
   const greeting = useMemo(() => {
-    const hour = now.getHours();
+    const hour = new Date().getHours();
     const timeGreeting =
       hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     const firstName = (client.contact_name ?? client.company_name)?.split(' ')[0] ?? 'there';
@@ -292,9 +294,9 @@ function PortalContent({
       `, ${firstName} — everything's in one place.`,
       `. Good to have you here, ${firstName}.`,
     ];
-    const idx = Math.floor(Math.random() * suffixes.length);
+    const idx = client.id.charCodeAt(0) % suffixes.length;
     return `${timeGreeting}${suffixes[idx]}`;
-  }, [client, now]);
+  }, [client]);
 
   const narrativeSentence = useMemo(() => {
     const monthName = format(now, 'MMMM');
@@ -430,6 +432,21 @@ function PortalContent({
               </div>
             </div>
 
+            {/* Open requests count — red when > 0 */}
+            {openRequestsCount > 0 && (
+              <button
+                onClick={() => setSearchParams({ section: 'requests' })}
+                className="w-full flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-3 text-left hover:bg-destructive/10 transition-colors"
+              >
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold shrink-0">
+                  {openRequestsCount}
+                </span>
+                <span className="text-sm font-medium text-destructive">
+                  {openRequestsCount === 1 ? '1 open request' : `${openRequestsCount} open requests`} — tap to view
+                </span>
+              </button>
+            )}
+
             {/* Quick links row */}
             <PortalQuickLinks
               slackUrl={client.portal_slack_url}
@@ -438,30 +455,39 @@ function PortalContent({
               onRequestSomething={() => setRequestDialogOpen(true)}
             />
 
-            {/* This month's focus — operator message */}
-            <PortalMonthlyFocus focus={client.this_month_focus} />
-
-            {/* Completed this month */}
-            {client.completed_this_month && (
-              <div className="rounded-xl border border-border bg-card px-5 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                  Completed This Month
-                </p>
-                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                  {client.completed_this_month}
-                </p>
-              </div>
-            )}
-
-            {/* Monthly plan / catch-up notes */}
-            {client.monthly_plan_notes && (
-              <div className="rounded-xl border border-border bg-card px-5 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                  Monthly Plan
-                </p>
-                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                  {client.monthly_plan_notes}
-                </p>
+            {/* Monthly summary — focus + completed + plan collapsed into one card */}
+            {(client.this_month_focus || client.completed_this_month || client.monthly_plan_notes) && (
+              <div className="rounded-xl border border-border bg-card divide-y divide-border/50">
+                {client.this_month_focus && (
+                  <div className="px-5 py-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-1">
+                      From Your Team
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {client.this_month_focus}
+                    </p>
+                  </div>
+                )}
+                {client.completed_this_month && (
+                  <div className="px-5 py-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                      Completed This Month
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                      {client.completed_this_month}
+                    </p>
+                  </div>
+                )}
+                {client.monthly_plan_notes && (
+                  <div className="px-5 py-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                      Monthly Plan
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                      {client.monthly_plan_notes}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -472,18 +498,6 @@ function PortalContent({
                 meetingLink={client.next_meeting_link ?? null}
               />
             )}
-
-            {/* Hours used this month */}
-            <PortalHoursUsed hoursUsed={client.hours_used_this_month} />
-
-            {/* 3 stat cards */}
-            <PortalRightNow
-              client={client}
-              currentDeliveries={currentDeliveries}
-              currentScopes={currentScopes}
-              pendingCount={pendingApproval.length}
-              scopePercentage={scopePercentage}
-            />
 
             {/* Tasks — max 3, then link to full tasks */}
             {hasTasks && pendingTasks.length > 0 && (
@@ -555,6 +569,7 @@ function PortalContent({
         return (
           <section className="space-y-3">
             <h2 className="text-lg font-semibold tracking-tight">My Plan</h2>
+            <PortalHoursUsed hoursUsed={client.hours_used_this_month} />
             <PortalRightNow
               client={client}
               currentDeliveries={currentDeliveries}

@@ -183,7 +183,10 @@ export function ScopeRequestsTab({ clientId }: Props) {
                           : request.description}
                       </p>
                     )}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+                        Internal:
+                      </span>
                       <Badge variant="secondary" className={REQUEST_STATUS_CONFIG[request.status].color}>
                         {REQUEST_STATUS_CONFIG[request.status].label}
                       </Badge>
@@ -205,8 +208,16 @@ export function ScopeRequestsTab({ clientId }: Props) {
 
                     {/* GA status + admin note */}
                     <div className="pt-2 space-y-2 border-t border-border/40 mt-2">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+                          Client-Facing Status
+                        </p>
+                        <p className="text-[10px] text-muted-foreground/60">
+                          This status is shown to the client
+                        </p>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-20 shrink-0">GA Status</span>
+                        <span className="sr-only">GA Status</span>
                         <Select
                           value={request.ga_status ?? ''}
                           onValueChange={(v) => void handleGaStatusChange(request.id, v as GaRequestStatus)}
