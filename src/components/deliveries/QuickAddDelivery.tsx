@@ -1,5 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useCreateDelivery } from '@/hooks/useDeliveries';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCreateDelivery, useDeleteDelivery } from '@/hooks/useDeliveries';
+import { queryKeys } from '@/lib/query-keys';
+import type { DeliveryItem } from '@/types/database';
 import { Input } from '@/components/ui/input';
 import { Plus, Check, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -22,7 +25,9 @@ export function QuickAddDelivery({
   const [isFocused, setIsFocused] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
   const createDelivery = useCreateDelivery();
+  const deleteDelivery = useDeleteDelivery();
 
   // Global "n" shortcut to focus quick-add (when not in another input)
   useEffect(() => {
@@ -44,26 +49,81 @@ export function QuickAddDelivery({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Parse optional "+Xh" or "+X.Xh" suffix from title for hours
+  const parseHoursFromTitle = (raw: string): { cleanTitle: string; hours: number | null } => {
+    const match = raw.match(/^(.*?)\s*\+(\d+(?:\.\d+)?)h\s*$/i);
+    if (match) {
+      return { cleanTitle: match[1].trim(), hours: parseFloat(match[2]) };
+    }
+    return { cleanTitle: raw, hours: null };
+  };
+
   const handleSubmit = useCallback(async () => {
     const trimmed = title.trim();
     if (!trimmed || createDelivery.isPending) return;
 
+    const { cleanTitle, hours } = parseHoursFromTitle(trimmed);
+
+    // Snapshot previous cache value for rollback
+    const previousData = queryClient.getQueryData<DeliveryItem[]>(
+      queryKeys.clients.deliveries(clientId),
+    );
+
+    // Build optimistic item so the list updates instantly
+    const now = new Date().toISOString();
+    const optimisticItem: DeliveryItem = {
+      id: crypto.randomUUID(),
+      client_id: clientId,
+      scope_allocation_id: null,
+      title: cleanTitle,
+      description: null,
+      category: lastCategory || 'General',
+      status: 'completed',
+      scope_cost: 0,
+      hours_spent: hours,
+      is_out_of_scope: isOutOfScope,
+      phase: null,
+      uplift: null,
+      completed_at: now,
+      created_at: now,
+      updated_at: now,
+    };
+
+    // Prepend optimistic item to cache
+    queryClient.setQueryData<DeliveryItem[]>(
+      queryKeys.clients.deliveries(clientId),
+      (old) => [optimisticItem, ...(old ?? [])],
+    );
+
+    // Clear input immediately — operator can type the next one right away
+    setTitle('');
+    setIsOutOfScope(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 1500);
+
     try {
-      await createDelivery.mutateAsync({
+      const created = await createDelivery.mutateAsync({
         client_id: clientId,
-        title: trimmed,
+        title: cleanTitle,
         category: lastCategory || 'General',
         status: 'completed',
         is_out_of_scope: isOutOfScope,
+        ...(hours !== null ? { hours_spent: hours } : {}),
       });
-      setTitle('');
-      setIsOutOfScope(false);
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 1500);
+      toast('Delivery logged', {
+        action: {
+          label: 'Undo',
+          onClick: () => deleteDelivery.mutate({ id: created.id, clientId }),
+        },
+        duration: 4000,
+      });
     } catch {
+      // Roll back optimistic update and restore what the user typed
+      queryClient.setQueryData(queryKeys.clients.deliveries(clientId), previousData);
+      setTitle(trimmed);
       toast.error('Failed to log delivery');
     }
-  }, [title, clientId, lastCategory, isOutOfScope, createDelivery]);
+  }, [title, clientId, lastCategory, isOutOfScope, createDelivery, deleteDelivery, queryClient]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -87,12 +147,12 @@ export function QuickAddDelivery({
           isFocused
             ? 'border-primary/50 ring-2 ring-primary/20'
             : 'border-border hover:border-primary/30',
-          showSuccess && 'border-emerald-500/50 ring-2 ring-emerald-500/20'
+          showSuccess && 'border-status-success/50 ring-2 ring-status-success/20'
         )}
       >
         <div className="pl-3 flex-shrink-0">
           {showSuccess ? (
-            <Check className="w-4 h-4 text-emerald-600 animate-in zoom-in-50 duration-200" />
+            <Check className="w-4 h-4 text-status-success animate-in zoom-in-50 duration-200" />
           ) : (
             <Plus className="w-4 h-4 text-muted-foreground" />
           )}
@@ -105,7 +165,6 @@ export function QuickAddDelivery({
           onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           placeholder="What did you deliver?"
-          disabled={createDelivery.isPending}
           className="border-0 shadow-none focus-visible:ring-0 pl-2"
         />
         {(isFocused || isOutOfScope) && (
@@ -128,7 +187,7 @@ export function QuickAddDelivery({
       </div>
       {isFocused && (
         <p className="text-xs text-muted-foreground mt-1.5 ml-1 animate-in fade-in-0 slide-in-from-top-1 duration-200">
-          Press Enter to log · Tab for details · Escape to clear · OOS = out of scope
+          Enter to log · Tab for details · add <span className="font-mono">+2h</span> for hours · OOS = out of scope
         </p>
       )}
     </div>

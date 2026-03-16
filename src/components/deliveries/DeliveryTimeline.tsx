@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { TypedStatusBadge as StatusBadge } from '@/components/ui/status-badge';
 import { cn } from '@/lib/utils';
 import { format, isThisWeek, startOfWeek, subWeeks, isAfter } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
@@ -58,12 +58,12 @@ function TimelineItem({
           className={cn(
             'w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ring-2 ring-background',
             isComplete
-              ? 'bg-emerald-500'
+              ? 'bg-status-success'
               : delivery.status === 'in_progress'
-                ? 'border-2 border-indigo-500 bg-background'
+                ? 'border-2 border-status-info bg-background'
                 : delivery.status === 'revision_requested'
-                  ? 'bg-red-500'
-                  : 'bg-amber-500'
+                  ? 'bg-status-danger'
+                  : 'bg-status-warning'
           )}
         />
         {!isLast && (
@@ -75,11 +75,13 @@ function TimelineItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">
           <p className="font-medium text-sm truncate">{delivery.title}</p>
-          <StatusBadge
-            type="delivery"
-            status={delivery.status}
-            className="flex-shrink-0 text-xs"
-          />
+          {delivery.status !== 'in_progress' && (
+            <StatusBadge
+              type="delivery"
+              status={delivery.status}
+              className="flex-shrink-0 text-xs"
+            />
+          )}
         </div>
         {delivery.description && (
           <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
@@ -88,7 +90,7 @@ function TimelineItem({
         )}
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           {delivery.is_out_of_scope && (
-            <Badge variant="secondary" className="text-xs px-1.5 py-0 gap-1 bg-amber-50 text-amber-700">
+            <Badge variant="secondary" className="text-xs px-1.5 py-0 gap-1 bg-status-warning/10 text-status-warning">
               <AlertTriangle className="w-3 h-3" />
               Out of scope
             </Badge>

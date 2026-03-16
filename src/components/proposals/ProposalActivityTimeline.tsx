@@ -63,17 +63,24 @@ function buildTimeline(proposal: ProposalWithDetails): TimelineEvent[] {
 
 // --- TimelineDot ---
 
-function TimelineDot({ icon }: { icon: TimelineEvent['icon'] }) {
+function TimelineDot({ icon, compact }: { icon: TimelineEvent['icon']; compact: boolean }) {
   const colorMap = {
-    create: 'bg-gray-400',
+    create: 'bg-status-neutral',
     send: 'bg-primary',
-    view: 'bg-blue-500',
-    accept: 'bg-emerald-500',
-    decline: 'bg-red-500',
+    view: 'bg-status-info',
+    accept: 'bg-status-success',
+    decline: 'bg-status-danger',
   };
 
   return (
-    <div className={cn('w-2.5 h-2.5 rounded-full shrink-0 mt-1.5', colorMap[icon])} />
+    <div
+      className={cn(
+        'rounded-full shrink-0',
+        compact ? 'w-2 h-2 mt-1' : 'w-2.5 h-2.5 mt-1.5',
+        colorMap[icon]
+      )}
+      aria-hidden="true"
+    />
   );
 }
 
@@ -81,22 +88,32 @@ function TimelineDot({ icon }: { icon: TimelineEvent['icon'] }) {
 
 interface ProposalActivityTimelineProps {
   proposal: ProposalWithDetails;
+  variant?: 'default' | 'compact';
 }
 
-export function ProposalActivityTimeline({ proposal }: ProposalActivityTimelineProps) {
+export function ProposalActivityTimeline({ proposal, variant = 'default' }: ProposalActivityTimelineProps) {
   const events = useMemo(() => buildTimeline(proposal), [proposal]);
+  const isCompact = variant === 'compact';
 
   return (
     <Card>
-      <CardContent className="p-5">
-        <h3 className="text-sm font-semibold mb-4">Activity</h3>
-        <div className="space-y-4">
+      <CardContent className={isCompact ? 'p-4' : 'p-5'}>
+        <h3 className={cn(
+          'font-semibold mb-4',
+          isCompact ? 'text-xs uppercase tracking-wide' : 'text-sm'
+        )}>
+          Activity
+        </h3>
+        <div className={isCompact ? 'space-y-3' : 'space-y-4'}>
           {events.map((event, i) => (
             <div key={i} className="flex items-start gap-3">
-              <TimelineDot icon={event.icon} />
+              <TimelineDot icon={event.icon} compact={isCompact} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm">{event.label}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className={isCompact ? 'text-xs' : 'text-sm'}>{event.label}</p>
+                <p className={cn(
+                  'text-muted-foreground',
+                  isCompact ? 'text-[10px]' : 'text-xs'
+                )}>
                   {format(new Date(event.date), 'MMM d, yyyy')}
                 </p>
               </div>

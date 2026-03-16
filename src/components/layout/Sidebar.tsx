@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FileText, DollarSign, Clock,
-  Settings, LogOut, Zap, Receipt, ClipboardCheck, BarChart3,
+  Settings, LogOut, Zap, Receipt, ClipboardCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,7 +18,6 @@ const opsNav = [
   { to: '/approvals', icon: ClipboardCheck, label: 'Approvals' },
   { to: '/timesheet', icon: Clock, label: 'Timesheet' },
   { to: '/invoices', icon: Receipt, label: 'Invoices' },
-  { to: '/snapshots', icon: BarChart3, label: 'Snapshots' },
 ];
 
 const workspaceNav = [

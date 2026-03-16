@@ -9,14 +9,16 @@ import {
   Flame,
 } from 'lucide-react';
 import { SCOPE_STATUS_CONFIG, type ScopeStatusTier } from '@/lib/constants';
-import { calculateScope, formatScopeValue, type ScopeCalculation } from '@/lib/scope-utils';
+import { calculateScope, type ScopeCalculation } from '@/lib/scope-utils';
 import type { ScopeAllocation, DeliveryItem } from '@/types/database';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { ScopeAlertBanner } from '@/components/scope/ScopeAlertBanner';
 
 interface ScopeTrackerProps {
   allocation: ScopeAllocation;
   deliveries: DeliveryItem[];
+  clientName?: string;
   className?: string;
 }
 
@@ -28,7 +30,7 @@ const STATUS_ICONS: Record<ScopeStatusTier, React.ElementType> = {
   exceeded: Flame,
 };
 
-export function ScopeTracker({ allocation, deliveries, className }: ScopeTrackerProps) {
+export function ScopeTracker({ allocation, deliveries, clientName, className }: ScopeTrackerProps) {
   const calc = useMemo(
     () => calculateScope(allocation, deliveries),
     [allocation, deliveries]
@@ -38,144 +40,112 @@ export function ScopeTracker({ allocation, deliveries, className }: ScopeTracker
   const StatusIcon = STATUS_ICONS[calc.status];
   const periodLabel = format(new Date(allocation.period_start), 'MMM yyyy');
 
+  const remaining = Math.max(0, calc.totalAllocated - calc.totalUsed);
+
+  const byCategory = useMemo(() => {
+    const map = new Map<string, number>();
+    deliveries.forEach(d => {
+      if (d.category && d.hours_spent) {
+        map.set(d.category, (map.get(d.category) ?? 0) + d.hours_spent);
+      }
+    });
+    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [deliveries]);
+
+  const barColor =
+    calc.percentage >= 90 ? 'bg-status-danger' :
+    calc.percentage >= 80 ? 'bg-status-warning' :
+    'bg-primary';
+
+  const fillPercent = Math.min(calc.percentage, 100);
+
   return (
     <Card className={cn('overflow-hidden', className)}>
-      <CardContent className="pt-6 pb-5 space-y-5">
+      <CardContent className="pt-5 pb-5 space-y-4">
         {/* Header row */}
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Scope Usage
-          </h3>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Scope Tracker</h3>
+            <p className="text-xs text-muted-foreground">Monthly allocation hours</p>
+          </div>
           <span className="text-xs text-muted-foreground font-medium">{periodLabel}</span>
         </div>
 
         {/* Numeric summary */}
         <div className="flex items-end justify-between">
           <div>
-            <span className="text-2xl font-bold font-mono tracking-tight">
+            <span className="text-3xl font-bold font-mono tracking-tight">
               {calc.totalUsed}
             </span>
-            <span className="text-sm text-muted-foreground ml-1.5">
-              of {calc.totalAllocated} {calc.unitLabel} used
+            <p className="text-xs text-muted-foreground mt-0.5">hrs used</p>
+          </div>
+          <span className="text-sm text-muted-foreground font-medium">
+            {remaining} remaining
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="space-y-2">
+          <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className={cn(
+                'h-full rounded-full transition-all duration-700 ease-out',
+                barColor
+              )}
+              style={{ width: `${fillPercent}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Badge
+              variant="secondary"
+              className={cn(
+                'gap-1 px-2 py-0.5 text-xs font-medium',
+                statusCfg.bgColor,
+                statusCfg.color
+              )}
+            >
+              <StatusIcon className="w-3 h-3" />
+              {statusCfg.label}
+            </Badge>
+            <span
+              className={cn(
+                'text-xs font-mono font-semibold',
+                calc.percentage > 100 ? 'text-status-danger' : 'text-muted-foreground'
+              )}
+            >
+              {calc.percentage}%
             </span>
           </div>
-          <Badge
-            variant="secondary"
-            className={cn(
-              'gap-1.5 px-2.5 py-1 text-xs font-semibold',
-              statusCfg.bgColor,
-              statusCfg.color
-            )}
-          >
-            <StatusIcon className="w-3.5 h-3.5" />
-            {statusCfg.label}
-          </Badge>
         </div>
 
-        {/* Multi-segment progress bar */}
-        <ScopeProgressBar calc={calc} />
-
-        {/* Breakdown cards */}
-        <div className="grid grid-cols-3 gap-3">
-          <BreakdownCard
-            label="In-scope"
-            value={formatScopeValue(calc.inScopeUsed, calc.unitLabel)}
-            accent="bg-success"
-          />
-          <BreakdownCard
-            label="Out-of-scope"
-            value={formatScopeValue(calc.outOfScopeUsed, calc.unitLabel)}
-            accent="bg-accent-warm"
-          />
-          <BreakdownCard
-            label="Remaining"
-            value={formatScopeValue(calc.remaining, calc.unitLabel)}
-            accent="bg-muted-foreground/30"
-          />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ScopeProgressBar({ calc }: { calc: ScopeCalculation }) {
-  const statusCfg = SCOPE_STATUS_CONFIG[calc.status];
-  const total = calc.totalAllocated;
-
-  const inScopePercent = total > 0 ? Math.min((calc.inScopeUsed / total) * 100, 100) : 0;
-  const outOfScopePercent = total > 0 ? Math.min((calc.outOfScopeUsed / total) * 100, 100 - inScopePercent) : 0;
-  const isExceeded = calc.percentage > 100;
-  const overflowPercent = isExceeded ? Math.min(calc.percentage - 100, 30) : 0;
-
-  return (
-    <div className="space-y-1.5">
-      <div className="relative">
-        {/* Track */}
-        <div className="h-3 rounded-full bg-muted overflow-hidden relative">
-          {/* In-scope fill */}
-          <div
-            className={cn(
-              'absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out',
-              statusCfg.barColor
-            )}
-            style={{ width: `${inScopePercent}%` }}
-          />
-          {/* Out-of-scope fill (stacked after in-scope) */}
-          {calc.outOfScopeUsed > 0 && (
-            <div
-              className="absolute inset-y-0 rounded-full bg-amber-400/70 transition-all duration-700 ease-out"
-              style={{
-                left: `${inScopePercent}%`,
-                width: `${outOfScopePercent}%`,
-              }}
-            />
-          )}
-        </div>
-
-        {/* Overflow indicator for exceeded scope */}
-        {isExceeded && (
-          <div
-            className="absolute top-0 h-3 rounded-r-full bg-red-500 transition-all duration-700 ease-out opacity-90"
-            style={{
-              left: '100%',
-              width: `${overflowPercent}%`,
-              marginLeft: '-2px',
-            }}
+        {/* Alert banner */}
+        {calc.percentage >= 80 && (
+          <ScopeAlertBanner
+            percentage={calc.percentage}
+            clientName={clientName}
+            unitLabel={calc.unitLabel}
+            totalUsed={calc.totalUsed}
+            totalAllocated={calc.totalAllocated}
           />
         )}
-      </div>
 
-      {/* Percentage label */}
-      <div className="flex justify-end">
-        <span
-          className={cn(
-            'text-xs font-mono font-semibold',
-            isExceeded ? 'text-red-600' : 'text-muted-foreground'
-          )}
-        >
-          {calc.percentage}%
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function BreakdownCard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent: string;
-}) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-3 space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <div className={cn('w-2 h-2 rounded-full', accent)} />
-        <span className="text-xs text-muted-foreground font-medium">{label}</span>
-      </div>
-      <p className="text-sm font-bold font-mono">{value}</p>
-    </div>
+        {/* By Category */}
+        {byCategory.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+              By Category
+            </p>
+            <div className="space-y-1.5">
+              {byCategory.map(([category, hours]) => (
+                <div key={category} className="flex items-center justify-between">
+                  <span className="text-sm text-foreground">{category}</span>
+                  <span className="text-sm font-mono text-muted-foreground">{hours} hrs</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

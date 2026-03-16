@@ -104,7 +104,7 @@ export function CreateClientDialog({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="jane@acme.com" {...field} />
+                      <Input type="text" placeholder="jane@acme.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

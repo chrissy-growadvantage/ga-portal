@@ -3,18 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
-import { Link2, Copy, Check, RefreshCw, Loader2, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Link2, Copy, Check, RefreshCw, Loader2, ExternalLink, ShieldCheck, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 interface MagicLinkPanelProps {
   clientId: string;
+  companyName: string;
+  contactEmail?: string | null;
+  contactName?: string | null;
   hasExistingLink: boolean;
   expiresAt: string | null;
   onTokenUpdated: () => void;
 }
 
-export function MagicLinkPanel({ clientId, hasExistingLink, expiresAt, onTokenUpdated }: MagicLinkPanelProps) {
+export function MagicLinkPanel({ clientId, companyName, contactEmail, contactName, hasExistingLink, expiresAt, onTokenUpdated }: MagicLinkPanelProps) {
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   // Raw token is only available immediately after generation (not stored in DB)
@@ -83,12 +86,12 @@ export function MagicLinkPanel({ clientId, hasExistingLink, expiresAt, onTokenUp
             Client Portal Link
           </CardTitle>
           {hasValidLink && !generatedUrl && (
-            <Badge variant="secondary" className="text-xs bg-green-50 text-green-700">
+            <Badge variant="secondary" className="text-xs bg-status-success/10 text-status-success">
               Active
             </Badge>
           )}
           {isExpired && hasExistingLink && !generatedUrl && (
-            <Badge variant="secondary" className="text-xs bg-amber-50 text-amber-700">
+            <Badge variant="secondary" className="text-xs bg-status-warning/10 text-status-warning">
               Expired
             </Badge>
           )}
@@ -121,19 +124,36 @@ export function MagicLinkPanel({ clientId, hasExistingLink, expiresAt, onTokenUp
               <p className="text-xs text-muted-foreground">
                 Expires {displayExpiresAt ? format(new Date(displayExpiresAt), 'MMM d, yyyy') : 'in 30 days'}
               </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
-                asChild
-              >
-                <a href={generatedUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-3 h-3" />
-                  Preview
-                </a>
-              </Button>
+              <div className="flex items-center gap-1">
+                {contactEmail && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                    asChild
+                  >
+                    <a
+                      href={`mailto:${contactEmail}?subject=Your%20Client%20Portal%20%E2%80%94%20${encodeURIComponent(companyName)}&body=Hi%20${encodeURIComponent(contactName ?? companyName)}%2C%0A%0AHere%20is%20your%20portal%20link%3A%0A${encodeURIComponent(generatedUrl)}%0A%0AYou%20can%20use%20this%20link%20to%20view%20your%20deliveries%2C%20approve%20work%2C%20and%20track%20progress.%0A%0APlease%20note%20this%20link%20is%20private%20and%20expires%20in%2030%20days.`}
+                    >
+                      <Mail className="w-3 h-3" />
+                      Email
+                    </a>
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  asChild
+                >
+                  <a href={generatedUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-3 h-3" />
+                    Preview
+                  </a>
+                </Button>
+              </div>
             </div>
-            <p className="text-[11px] text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md">
+            <p className="text-[11px] text-status-warning bg-status-warning/10 px-2.5 py-1.5 rounded-md">
               Copy this link now. For security, the raw link is not stored and cannot be retrieved later.
             </p>
           </div>

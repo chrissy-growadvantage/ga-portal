@@ -1,4 +1,4 @@
-import { Menu, Zap } from 'lucide-react';
+import { Menu, Zap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -8,19 +8,10 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, DollarSign, Clock, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
-
-const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/clients', icon: Users, label: 'Clients' },
-  { to: '/proposals', icon: FileText, label: 'Proposals' },
-  { to: '/revenue', icon: DollarSign, label: 'Revenue' },
-  { to: '/timesheet', icon: Clock, label: 'Timesheet' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
-];
+import { navItems } from '@/components/layout/Sidebar';
 
 export function Header() {
   const { signOut, user } = useAuth();
@@ -31,9 +22,8 @@ export function Header() {
     <header className="md:hidden sticky top-0 z-40 flex items-center h-16 px-4 border-b border-border bg-card/80 backdrop-blur-sm">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="mr-3">
-            <Menu className="w-5 h-5" />
-            <span className="sr-only">Open menu</span>
+          <Button variant="ghost" size="icon" className="mr-3" aria-label="Open navigation">
+            <Menu className="w-5 h-5" aria-hidden="true" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">

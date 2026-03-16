@@ -1,17 +1,21 @@
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { PROPOSAL_STATUS_CONFIG } from '@/lib/constants';
 import type { ProposalStatus } from '@/types/database';
 
-interface ProposalStatusBadgeProps {
+type ProposalStatusBadgeProps = {
   status: ProposalStatus;
-}
+  size?: 'sm' | 'default' | 'lg';
+};
 
-export function ProposalStatusBadge({ status }: ProposalStatusBadgeProps) {
+export function ProposalStatusBadge({ status, size = 'default' }: ProposalStatusBadgeProps) {
   const config = PROPOSAL_STATUS_CONFIG[status];
+
   return (
-    <Badge variant="secondary" className={`gap-1.5 ${config.color}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} aria-hidden="true" />
-      {config.label}
-    </Badge>
+    <StatusBadge
+      label={config.label}
+      colorClasses={config.color}
+      dotColorClass={config.dot}
+      size={size}
+    />
   );
 }
