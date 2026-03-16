@@ -20,6 +20,10 @@ import { PortalClientTasks } from '@/components/portal/PortalClientTasks';
 import { PortalWorkVisibility } from '@/components/portal/PortalWorkVisibility';
 import { PortalDocumentsLinks } from '@/components/portal/PortalDocumentsLinks';
 import { PortalRequestForm } from '@/components/portal/PortalRequestForm';
+import { PortalWhatToDoNext } from '@/components/portal/PortalWhatToDoNext';
+import { PortalQuickLinks } from '@/components/portal/PortalQuickLinks';
+import { PortalMonthlyFocus } from '@/components/portal/PortalMonthlyFocus';
+import { PortalHoursUsed } from '@/components/portal/PortalHoursUsed';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { DELIVERY_STATUS_CONFIG } from '@/lib/constants';
@@ -247,8 +251,11 @@ function PortalContent({
   const hasOnboarding = onboardingStages.length > 0;
   const hasTasks = clientTasks.length > 0;
   const pendingTasks = clientTasks.filter((t) => !t.completed_at);
+  const overdueTasks = clientTasks.filter(
+    (t) => !t.completed_at && !!t.due_date && new Date(t.due_date) < new Date(new Date().toDateString()),
+  );
   const needsAttentionCount =
-    pendingApproval.length + recentlyResolvedRequests.length;
+    pendingApproval.length + recentlyResolvedRequests.length + overdueTasks.length;
   const hasAgreements =
     !!client.portal_stripe_url ||
     !!client.portal_intake_url ||
@@ -390,23 +397,15 @@ function PortalContent({
       case 'home':
         return (
           <>
-            {/* Operator message — shown when the operator has set a focus note */}
-            {client.this_month_focus && (
-              <div className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-1">
-                  From your team
-                </p>
-                <p className="text-sm text-foreground leading-relaxed">
-                  {client.this_month_focus}
-                </p>
-              </div>
-            )}
+            {/* Stage-aware action banner */}
+            <PortalWhatToDoNext onboardingStages={onboardingStages} />
 
-            {/* Pending Approvals — action items first */}
+            {/* Needs attention — approvals + overdue tasks */}
             {needsAttentionCount > 0 && (
               <PortalNeedsAttention
                 pendingApprovals={pendingApproval}
                 recentlyResolvedRequests={recentlyResolvedRequests}
+                overdueTasks={overdueTasks}
                 token={token}
                 onApprovalAction={onApprovalAction}
                 clientName={clientDisplayName}
@@ -431,6 +430,17 @@ function PortalContent({
               </div>
             </div>
 
+            {/* Quick links row */}
+            <PortalQuickLinks
+              slackUrl={client.portal_slack_url}
+              driveUrl={client.portal_drive_url}
+              intakeUrl={client.portal_intake_url}
+              onRequestSomething={() => setRequestDialogOpen(true)}
+            />
+
+            {/* This month's focus — operator message */}
+            <PortalMonthlyFocus focus={client.this_month_focus} />
+
             {/* Meeting card (time-sensitive) */}
             {client.next_meeting_at && (
               <PortalMeetingCard
@@ -438,6 +448,9 @@ function PortalContent({
                 meetingLink={client.next_meeting_link ?? null}
               />
             )}
+
+            {/* Hours used this month */}
+            <PortalHoursUsed hoursUsed={client.hours_used_this_month} />
 
             {/* 3 stat cards */}
             <PortalRightNow
