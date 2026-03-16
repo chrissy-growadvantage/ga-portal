@@ -52,6 +52,7 @@ export const brandingFormResponseSchema = z.object({
   portal_logo_url: z.string().nullable().transform(v => v ?? ''),
   portal_primary_color: z.string().nullable().transform(v => v ?? '#5B4DC7'),
   portal_accent_color: z.string().nullable().transform(v => v ?? '#E8853A'),
+  business_name: z.string().nullable().transform(v => v ?? ''),
 });
 
 const grantEvidencePilotClientSchema = z.object({

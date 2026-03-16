@@ -15,6 +15,7 @@ type BrandingForm = {
   portal_logo_url: string;
   portal_primary_color: string;
   portal_accent_color: string;
+  business_name: string;
 };
 
 function fromOperator(data: Partial<BrandingForm>): BrandingForm {
@@ -22,6 +23,7 @@ function fromOperator(data: Partial<BrandingForm>): BrandingForm {
     portal_logo_url: data.portal_logo_url ?? '',
     portal_primary_color: data.portal_primary_color ?? '#5B4DC7',
     portal_accent_color: data.portal_accent_color ?? '#E8853A',
+    business_name: data.business_name ?? '',
   };
 }
 
@@ -34,7 +36,7 @@ export function BrandingSettings() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('operators')
-        .select('portal_logo_url, portal_primary_color, portal_accent_color')
+        .select('portal_logo_url, portal_primary_color, portal_accent_color, business_name')
         .eq('id', user!.id)
         .single();
       if (error) throw error;
@@ -169,32 +171,40 @@ export function BrandingSettings() {
           </div>
         </div>
 
-        {/* Preview */}
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div
-            className="flex items-center gap-3 px-4 py-3"
-            style={{ backgroundColor: form.portal_primary_color }}
-          >
-            {form.portal_logo_url ? (
-              <img
-                src={form.portal_logo_url}
-                alt="Portal logo preview"
-                className="h-6 object-contain"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-              />
-            ) : (
-              <div className="h-6 w-24 rounded bg-white/20" />
-            )}
-            <span className="text-white text-sm font-semibold opacity-80">Client Portal</span>
-          </div>
-          <div className="p-4 bg-card flex items-center gap-3">
+        {/* Portal header preview */}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Live preview</Label>
+          <div className="rounded-lg border border-border overflow-hidden shadow-sm">
             <div
-              className="h-8 w-8 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: `${form.portal_accent_color}20` }}
+              className="flex items-center justify-between px-4 py-3"
+              style={{ backgroundColor: form.portal_primary_color }}
             >
-              <div className="h-3 w-3 rounded-full" style={{ backgroundColor: form.portal_accent_color }} />
+              <div className="flex items-center gap-3">
+                {form.portal_logo_url ? (
+                  <img
+                    src={form.portal_logo_url}
+                    alt="Portal logo preview"
+                    className="h-6 object-contain"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="h-6 w-24 rounded bg-white/20" />
+                )}
+                {form.business_name && (
+                  <span className="text-white text-sm font-semibold">{form.business_name}</span>
+                )}
+              </div>
             </div>
-            <span className="text-sm text-muted-foreground">Portal preview</span>
+            <div className="p-4 bg-card flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Sample portal content…</span>
+              <button
+                type="button"
+                className="text-white text-xs font-medium px-3 py-1.5 rounded"
+                style={{ backgroundColor: form.portal_accent_color }}
+              >
+                Submit Request
+              </button>
+            </div>
           </div>
         </div>
 
