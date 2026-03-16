@@ -22,6 +22,9 @@ export interface Operator {
   stripe_account_id: string | null;
   stripe_onboarding_complete: boolean;
   stripe_disconnected_at: string | null;
+  portal_logo_url: string | null;
+  portal_primary_color: string | null;
+  portal_accent_color: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -37,9 +40,131 @@ export interface Client {
   status: ClientStatus;
   magic_link_token_hash: string | null;
   magic_link_expires_at: string | null;
+  // Portal metadata fields (added in migration 021)
+  integrator_name: string | null;
+  primary_comms_channel: string | null;
+  next_strategy_meeting: string | null;
+  this_month_outcomes: string | null;
+  this_month_deliverables: string | null;
+  this_month_improvements: string | null;
+  this_month_risks: string | null;
+  this_month_focus: string | null;
+  portal_slack_url: string | null;
+  portal_drive_url: string | null;
+  portal_booking_url: string | null;
+  hours_used_this_month: number | null;
+  next_meeting_at: string | null;
+  next_meeting_link: string | null;
+  portal_stripe_url: string | null;
+  portal_intake_url: string | null;
+  onboarding_stage: number | null;
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================
+// Monthly Snapshot JSONB sub-types (migration 021)
+// ============================================================
+
+export type PriorityItem = {
+  id: string;
+  text: string;
+  phase: string;
+  category: string;
+  uplift: string;
+  status: string;
+};
+
+export type ProcessItem = {
+  id: string;
+  text: string;
+};
+
+export type AdhocItem = {
+  id: string;
+  title: string;
+  category: string;
+  status: string;
+  note: string;
+};
+
+export type MeetingItem = {
+  id: string;
+  name: string;
+  frequency: string;
+  owner: string;
+  status: string;
+};
+
+export type DecisionItem = {
+  id: string;
+  text: string;
+  owner: string;
+  due: string;
+};
+
+export type AgreementSnapshotItem = {
+  id: string;
+  label: string;
+  value: string;
+};
+
+export interface MonthlySnapshot {
+  id: string;
+  client_id: string;
+  operator_id: string;
+  month_label: string;
+  month_slug: string;
+  meeting_date: string | null;
+  attendees: string | null;
+  // Delivery
+  wins: string | null;
+  deliverables_completed: string | null;
+  slipped: string | null;
+  insights: string | null;
+  upcoming_priorities: PriorityItem[];
+  key_deadlines: string | null;
+  risks_constraints: string | null;
+  process_improvements: ProcessItem[];
+  adhoc_requests: AdhocItem[];
+  // Comms
+  primary_comms: string | null;
+  recurring_meetings: MeetingItem[];
+  response_times: string | null;
+  working_well: string | null;
+  unclear_messy: string | null;
+  more_visibility: string | null;
+  // Scores (0-10)
+  priorities_score: number | null;
+  delivery_score: number | null;
+  communication_score: number | null;
+  capacity_score: number | null;
+  // Actions
+  decisions_actions: DecisionItem[];
+  blockers: string | null;
+  // Impact
+  time_saved: string | null;
+  friction_removed: string | null;
+  systems_implemented: string | null;
+  // Agreement snapshot
+  agreement_snapshot: AgreementSnapshotItem[];
+  // Timestamps
+  created_at: string;
+  updated_at: string;
+}
+
+export type MonthlySnapshotIndex = Pick<
+  MonthlySnapshot,
+  'id' | 'month_label' | 'month_slug' | 'created_at'
+>;
+
+export type InsertMonthlySnapshot = Pick<
+  MonthlySnapshot,
+  'client_id' | 'operator_id' | 'month_label' | 'month_slug'
+> &
+  Partial<
+    Omit<MonthlySnapshot, 'id' | 'client_id' | 'operator_id' | 'month_label' | 'month_slug' | 'created_at' | 'updated_at'>
+  >;
 
 export interface ScopeAllocation {
   id: string;
@@ -64,6 +189,8 @@ export interface DeliveryItem {
   scope_cost: number;
   hours_spent: number | null;
   is_out_of_scope: boolean;
+  phase: string | null;
+  uplift: string | null;
   completed_at: string | null;
   created_at: string;
   updated_at: string;
@@ -77,6 +204,10 @@ export interface ScopeRequest {
   requested_by: RequestSource;
   status: RequestStatus;
   scope_cost: number | null;
+  category: string | null;
+  attachment_url: string | null;
+  admin_note: string | null;
+  ga_status: GaRequestStatus | null;
   created_at: string;
   updated_at: string;
 }
@@ -307,3 +438,106 @@ export type InsertWebhookEndpoint = Pick<WebhookEndpoint, 'operator_id' | 'url' 
   Partial<Pick<WebhookEndpoint, 'is_active'>>;
 
 export type InsertProposalContentBlock = Pick<ProposalContentBlock, 'proposal_id' | 'type' | 'position' | 'content_json'>;
+
+// ============================================================
+// GA4 Connections (migration 022)
+// ============================================================
+
+export interface Ga4Connection {
+  id: string;
+  client_id: string;
+  operator_id: string;
+  property_id: string;
+  property_name: string | null;
+  refresh_token: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type InsertGa4Connection = Pick<
+  Ga4Connection,
+  'client_id' | 'operator_id' | 'property_id'
+> &
+  Partial<Pick<Ga4Connection, 'property_name' | 'refresh_token'>>;
+
+// ============================================================
+// Client Notes / Brain Dump (migration 024)
+// ============================================================
+
+export type ClientNoteType = 'note' | 'request' | 'todo' | 'idea';
+
+export interface ClientNote {
+  id: string;
+  client_id: string;
+  operator_id: string;
+  body: string;
+  type: ClientNoteType;
+  created_at: string;
+}
+
+export type InsertClientNote = Pick<ClientNote, 'client_id' | 'operator_id' | 'body'> &
+  Partial<Pick<ClientNote, 'type'>>;
+
+// ============================================================
+// GA Portal MVP — Onboarding, Tasks, Pick-lists (migrations 025–029)
+// ============================================================
+
+export type OnboardingStageStatus = 'not_started' | 'in_progress' | 'waiting_on_client' | 'blocked' | 'done';
+export type OnboardingStageOwner = 'operator' | 'client';
+
+export type GaRequestStatus = 'submitted' | 'received' | 'in_progress' | 'waiting_on_client' | 'done';
+
+export type PickListType = 'phase' | 'category' | 'uplift' | 'work_status';
+
+export interface OnboardingStage {
+  id: string;
+  client_id: string;
+  operator_id: string;
+  stage_key: string;
+  stage_label: string;
+  sort_order: number;
+  status: OnboardingStageStatus;
+  owner_label: OnboardingStageOwner;
+  due_date: string | null;
+  notes: string | null;
+  action_url: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type InsertOnboardingStage = Pick<
+  OnboardingStage,
+  'client_id' | 'operator_id' | 'stage_key' | 'stage_label' | 'sort_order'
+> &
+  Partial<Pick<OnboardingStage, 'status' | 'owner_label' | 'due_date' | 'notes' | 'action_url'>>;
+
+export interface ClientTask {
+  id: string;
+  client_id: string;
+  operator_id: string;
+  title: string;
+  due_date: string | null;
+  link_url: string | null;
+  notes: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type InsertClientTask = Pick<ClientTask, 'client_id' | 'operator_id' | 'title'> &
+  Partial<Pick<ClientTask, 'due_date' | 'link_url' | 'notes'>>;
+
+export interface PickListItem {
+  id: string;
+  operator_id: string;
+  list_type: PickListType;
+  label: string;
+  colour: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type InsertPickListItem = Pick<PickListItem, 'operator_id' | 'list_type' | 'label'> &
+  Partial<Pick<PickListItem, 'colour' | 'sort_order' | 'is_active'>>;

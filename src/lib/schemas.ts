@@ -40,8 +40,14 @@ export const manualTimeEntrySchema = z.object({
   ended_at: z.string().min(1, 'End time is required'),
 });
 
+export const createScopeRequestSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(500),
+  description: z.string().max(2000).optional(),
+});
+
 export type CreateClientInput = z.infer<typeof createClientSchema>;
 export type CreateDeliveryItemInput = z.infer<typeof createDeliveryItemSchema>;
 export type CreateScopeAllocationInput = z.infer<typeof createScopeAllocationSchema>;
 export type StartTimerInput = z.infer<typeof startTimerSchema>;
 export type ManualTimeEntryInput = z.infer<typeof manualTimeEntrySchema>;
+export type CreateScopeRequestInput = z.infer<typeof createScopeRequestSchema>;

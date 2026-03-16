@@ -9,6 +9,7 @@ export const queryKeys = {
   operator: {
     profile: ['operator', 'profile'] as const,
     capacity: ['operator', 'capacity'] as const,
+    revenueGoal: ['operator', 'revenue-goal'] as const,
   },
   timeEntries: {
     all: ['time-entries'] as const,
@@ -52,5 +53,34 @@ export const queryKeys = {
   proposalTemplates: {
     all: ['proposal-templates'] as const,
     list: (category?: string) => ['proposal-templates', 'list', category] as const,
+  },
+  ga4: {
+    connections: (clientId: string) => ['ga4', 'connections', clientId] as const,
+    dashboard: (clientId: string, period: string, propertyId: string | null) =>
+      ['ga4', 'dashboard', clientId, period, propertyId] as const,
+  },
+  snapshots: {
+    all: ['snapshots'] as const,
+    list: (clientId: string) => ['snapshots', 'list', clientId] as const,
+    detail: (clientId: string, monthSlug: string) =>
+      ['snapshots', 'detail', clientId, monthSlug] as const,
+  },
+  clientNotes: {
+    all: ['client-notes'] as const,
+    list: (clientId: string) => ['client-notes', 'list', clientId] as const,
+  },
+  onboarding: {
+    list: (clientId: string) => ['onboarding', clientId] as const,
+  },
+  clientTasks: {
+    list: (clientId: string) => ['client-tasks', clientId] as const,
+  },
+  pickLists: {
+    list: (type?: string) => ['pick-lists', type ?? 'all'] as const,
+  },
+  invoices: {
+    all: ['invoices'] as const,
+    list: () => ['invoices', 'list'] as const,
+    detail: (id: string) => ['invoices', 'detail', id] as const,
   },
 };
