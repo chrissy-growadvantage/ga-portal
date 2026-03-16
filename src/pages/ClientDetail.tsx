@@ -32,7 +32,12 @@ import {
   BarChart3,
   FileText,
   Link2,
+  Save,
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/lib/supabase';
 import { PROPOSAL_STATUS_CONFIG } from '@/lib/constants';
 import { LogDeliveryDialog } from '@/components/deliveries/LogDeliveryDialog';
 import { QuickAddDelivery } from '@/components/deliveries/QuickAddDelivery';
@@ -58,6 +63,101 @@ function SectionHeading({ title, description }: { title: string; description: st
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
     </div>
+  );
+}
+
+type PortalContentEditorProps = {
+  client: import('@/types/database').Client;
+  onSaved: () => void;
+};
+
+function PortalContentEditor({ client, onSaved }: PortalContentEditorProps) {
+  const [focus, setFocus] = useState(client.this_month_focus ?? '');
+  const [hours, setHours] = useState<string>(
+    client.hours_used_this_month !== null ? String(client.hours_used_this_month) : '',
+  );
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({
+          this_month_focus: focus.trim() || null,
+          hours_used_this_month: hours !== '' ? Number(hours) : null,
+        })
+        .eq('id', client.id);
+
+      if (error) throw error;
+
+      toast.success('Portal content saved');
+      onSaved();
+    } catch {
+      toast.error('Failed to save portal content');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const isDirty =
+    focus !== (client.this_month_focus ?? '') ||
+    hours !== (client.hours_used_this_month !== null ? String(client.hours_used_this_month) : '');
+
+  return (
+    <section>
+      <SectionHeading
+        title="Portal Home Content"
+        description="Shown to the client on their portal home screen."
+      />
+      <div className="rounded-lg border border-border bg-card p-4 space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="this_month_focus" className="text-xs">
+            This month's focus <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <Textarea
+            id="this_month_focus"
+            placeholder="Write a short message for the client about this month's priorities…"
+            value={focus}
+            onChange={(e) => setFocus(e.target.value)}
+            rows={3}
+            className="resize-none text-sm"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="hours_used" className="text-xs">
+            Hours used this month <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <Input
+            id="hours_used"
+            type="number"
+            min={0}
+            step={0.5}
+            placeholder="e.g. 12"
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+            className="max-w-[120px] text-sm"
+          />
+        </div>
+
+        <div className="flex justify-end pt-1">
+          <button
+            type="button"
+            disabled={saving || !isDirty}
+            onClick={() => void handleSave()}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {saving ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            Save
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -492,6 +592,10 @@ export default function ClientDetail() {
             />
             <ClientTasksManager clientId={id!} />
           </section>
+
+          <PortalContentEditor client={client} onSaved={() => {
+            tanstackQueryClient.invalidateQueries({ queryKey: queryKeys.clients.detail(client.id) });
+          }} />
         </TabsContent>
 
         <TabsContent value="reports" className="mt-4 space-y-8">
