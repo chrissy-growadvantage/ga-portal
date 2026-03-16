@@ -41,3 +41,8 @@ lerna-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Playwright auth state — contains live session tokens, never commit
+tests/auth.json
+test-results/
+screenshots/
