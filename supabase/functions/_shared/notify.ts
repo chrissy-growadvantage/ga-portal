@@ -91,9 +91,9 @@ export async function notifyOperatorBySlack(payload: RequestNotificationPayload)
 
   const requestsUrl = `${payload.siteUrl}/requests`;
   const text = [
-    `*New request from ${payload.clientName}*`,
-    `*Title:* ${payload.requestTitle}`,
-    payload.requestDescription ? `*Description:* ${payload.requestDescription}` : null,
+    `*New request from ${escapeSlackMrkdwn(payload.clientName)}*`,
+    `*Title:* ${escapeSlackMrkdwn(payload.requestTitle)}`,
+    payload.requestDescription ? `*Description:* ${escapeSlackMrkdwn(payload.requestDescription)}` : null,
     `<${requestsUrl}|View in Luma>`,
   ]
     .filter(Boolean)
@@ -123,4 +123,15 @@ function escapeHtml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escapeSlackMrkdwn(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*/g, '\\*')
+    .replace(/_/g, '\\_')
+    .replace(/~/g, '\\~')
+    .replace(/`/g, '\\`');
 }
