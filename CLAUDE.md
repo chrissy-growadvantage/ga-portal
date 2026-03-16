@@ -93,3 +93,40 @@ For planning methodology, load the `planning` skill.
 ## Summary
 
 Write clean, testable, typed code that evolves through small, safe increments. Every new feature should be driven by tests. The implementation should be the simplest thing that works. When in doubt, favor simplicity and readability over cleverness.
+
+## RepaPips Integration
+
+**Project ID:** `luma`
+**RepaPips data:** `/Users/mervindecastro/Cowork/repapips/data/projects/luma/`
+
+### NON-NEGOTIABLE: Update status as you work
+
+Write your status to `/Users/mervindecastro/Cowork/repapips/data/projects/luma/status.json` at the start and end of every task.
+
+**At task start:**
+```json
+{
+  "updated_at": "<ISO timestamp>",
+  "agents": [
+    { "name": "Andres", "state": "working", "task": "Describe what you are doing" }
+  ]
+}
+```
+
+**At task end — set idle before handing off:**
+```json
+{ "name": "Andres", "state": "idle", "task": null }
+```
+
+Always write the full `agents` array. Include every agent active this session.
+
+### NON-NEGOTIABLE: Log completed work
+
+Append to `/Users/mervindecastro/Cowork/repapips/data/projects/luma/logbook.json` after each task:
+```json
+{ "id": "<uuid>", "project_id": "luma", "project_name": "Luma", "date": "<date>", "type": "milestone", "agent": "Andres", "body": "What was done and why it matters." }
+```
+
+### Check the message queue before starting
+
+Read `/Users/mervindecastro/Cowork/repapips/data/projects/luma/messages.json` for any notes from Mervin before beginning work. Mark messages read by setting `"read": true`.
