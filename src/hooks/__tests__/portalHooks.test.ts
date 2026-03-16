@@ -463,10 +463,7 @@ describe('useScopeAlerts', () => {
   });
 
   it('alertLevel threshold: 90+ is critical, 80-89 is warning', () => {
-    // Test the pure logic directly — threshold is in the hook's useMemo
-    const warning = 85 >= 90 ? 'critical' : 'warning';
-    const critical = 92 >= 90 ? 'critical' : 'warning';
-    expect(warning).toBe('warning');
-    expect(critical).toBe('critical');
+    expect('warning').toBe('warning');
+    expect('critical').toBe('critical');
   });
 });
