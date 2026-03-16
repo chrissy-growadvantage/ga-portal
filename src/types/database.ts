@@ -59,6 +59,7 @@ export interface Client {
   portal_intake_url: string | null;
   portal_proposal_url: string | null;
   portal_contract_url: string | null;
+  portal_contract_pdf_url: string | null;
   onboarding_stage: number | null;
   // Portal content fields (added in migration 033)
   completed_this_month: string | null;

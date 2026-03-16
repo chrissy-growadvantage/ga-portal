@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Save, Loader2, AlertTriangle, Upload, X, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
@@ -41,6 +41,7 @@ type FormState = {
   portal_booking_url: string;
   portal_proposal_url: string;
   portal_contract_url: string;
+  portal_contract_pdf_url: string;
   next_meeting_at: string;
   next_meeting_link: string;
 };
@@ -56,6 +57,7 @@ function fromClient(client: Client): FormState {
     portal_booking_url: client.portal_booking_url ?? '',
     portal_proposal_url: client.portal_proposal_url ?? '',
     portal_contract_url: client.portal_contract_url ?? '',
+    portal_contract_pdf_url: client.portal_contract_pdf_url ?? '',
     next_meeting_at: client.next_meeting_at
       ? client.next_meeting_at.slice(0, 16) // format for datetime-local input
       : '',
@@ -73,6 +75,7 @@ const URL_FIELDS: (keyof FormState)[] = [
   'portal_booking_url',
   'portal_proposal_url',
   'portal_contract_url',
+  'portal_contract_pdf_url',
   'next_meeting_link',
 ];
 
@@ -99,9 +102,9 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
   const [saving, setSaving] = useState(false);
   const [initialForm, setInitialForm] = useState<FormState>(fromClient(client));
   const [uploadingProposal, setUploadingProposal] = useState(false);
-  const [uploadingContract, setUploadingContract] = useState(false);
+  const [uploadingContractPdf, setUploadingContractPdf] = useState(false);
   const proposalInputRef = useRef<HTMLInputElement>(null);
-  const contractInputRef = useRef<HTMLInputElement>(null);
+  const contractPdfInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
   // Sync if client prop changes (e.g. after a refetch)
@@ -141,6 +144,7 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
           portal_booking_url: form.portal_booking_url || null,
           portal_proposal_url: form.portal_proposal_url || null,
           portal_contract_url: form.portal_contract_url || null,
+          portal_contract_pdf_url: form.portal_contract_pdf_url || null,
           next_meeting_at: form.next_meeting_at
             ? new Date(form.next_meeting_at).toISOString()
             : null,
@@ -160,20 +164,21 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
     }
   };
 
-  const handleDocUpload = async (field: 'proposal' | 'contract', file: File) => {
-    const setUploading = field === 'proposal' ? setUploadingProposal : setUploadingContract;
-    const formField = field === 'proposal' ? 'portal_proposal_url' : 'portal_contract_url';
+  const handleDocUpload = useCallback(async (field: 'proposal' | 'contract-pdf', file: File) => {
+    const setUploading = field === 'proposal' ? setUploadingProposal : setUploadingContractPdf;
+    const formField: keyof FormState = field === 'proposal' ? 'portal_proposal_url' : 'portal_contract_pdf_url';
+    const label = field === 'proposal' ? 'Proposal' : 'Contract PDF';
     setUploading(true);
     try {
-      const url = await uploadClientDoc(clientId, field, file);
+      const url = await uploadClientDoc(clientId, field === 'contract-pdf' ? 'contract' : field, file);
       set(formField, url);
-      toast.success(`${field === 'proposal' ? 'Proposal' : 'Contract'} uploaded`);
+      toast.success(`${label} uploaded`);
     } catch {
       toast.error('Upload failed — check file size and try again');
     } finally {
       setUploading(false);
     }
-  };
+  }, [clientId]);
 
   return (
     <Card>
@@ -267,26 +272,48 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
             </div>
           </div>
 
-          {/* Contract */}
+          {/* Contract SignWell link */}
           <div className="space-y-1.5">
-            <Label htmlFor="contract_url" className="text-xs">Signed contract (SignWell link or PDF copy)</Label>
+            <Label htmlFor="contract_url" className="text-xs">Signed contract — SignWell link</Label>
             <div className="flex gap-2">
               <Input
                 id="contract_url"
                 type="url"
-                placeholder="https://… or upload a PDF"
+                placeholder="https://app.signwell.com/…"
                 value={form.portal_contract_url}
                 onChange={(e) => set('portal_contract_url', e.target.value)}
                 className="flex-1"
               />
+              {form.portal_contract_url && (
+                <a href={form.portal_contract_url} target="_blank" rel="noopener noreferrer">
+                  <Button type="button" variant="ghost" size="sm" className="shrink-0 gap-1">
+                    <FileText className="w-3.5 h-3.5" />
+                  </Button>
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Contract PDF copy upload */}
+          <div className="space-y-1.5">
+            <Label htmlFor="contract_pdf" className="text-xs">Signed contract — uploaded PDF copy</Label>
+            <div className="flex gap-2">
+              <Input
+                id="contract_pdf"
+                type="url"
+                placeholder="Upload a PDF or paste a hosted URL"
+                value={form.portal_contract_pdf_url}
+                onChange={(e) => set('portal_contract_pdf_url', e.target.value)}
+                className="flex-1"
+              />
               <input
-                ref={contractInputRef}
+                ref={contractPdfInputRef}
                 type="file"
                 className="hidden"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) void handleDocUpload('contract', f);
+                  if (f) void handleDocUpload('contract-pdf', f);
                   e.target.value = '';
                 }}
               />
@@ -295,18 +322,18 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
                 variant="outline"
                 size="sm"
                 className="shrink-0 gap-1.5"
-                onClick={() => contractInputRef.current?.click()}
-                disabled={uploadingContract}
+                onClick={() => contractPdfInputRef.current?.click()}
+                disabled={uploadingContractPdf}
               >
-                {uploadingContract ? (
+                {uploadingContractPdf ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Upload className="w-3.5 h-3.5" />
                 )}
                 Upload
               </Button>
-              {form.portal_contract_url && (
-                <a href={form.portal_contract_url} target="_blank" rel="noopener noreferrer">
+              {form.portal_contract_pdf_url && (
+                <a href={form.portal_contract_pdf_url} target="_blank" rel="noopener noreferrer">
                   <Button type="button" variant="ghost" size="sm" className="shrink-0 gap-1">
                     <FileText className="w-3.5 h-3.5" />
                   </Button>
