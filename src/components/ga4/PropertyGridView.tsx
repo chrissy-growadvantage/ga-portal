@@ -8,7 +8,7 @@ interface DailyDataPoint {
   sessions: number;
 }
 
-interface PropertyData {
+export interface PropertyData {
   property_id: string;
   property_name: string;
   activeUsers: number;

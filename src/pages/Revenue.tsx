@@ -375,7 +375,6 @@ export default function Revenue() {
                   <div className="flex items-center gap-1">
                     <span>$</span>
                     <input
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus
                       type="number"
                       value={goalInput}

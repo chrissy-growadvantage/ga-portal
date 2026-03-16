@@ -26,6 +26,7 @@ import LandingPagesTable from './LandingPagesTable';
 import StickinessCard from './StickinessCard';
 import PropertySelector from './PropertySelector';
 import { PropertyGridView } from './PropertyGridView';
+import type { PropertyData } from './PropertyGridView';
 
 const PERIODS: { value: Period; label: string }[] = [
   { value: 'last7days', label: 'Last 7 Days' },
@@ -53,7 +54,7 @@ const GA4DashboardContent = ({ clientSlug }: Props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
-  const [propertyBreakdown, setPropertyBreakdown] = useState<any[]>([]);
+  const [propertyBreakdown, setPropertyBreakdown] = useState<PropertyData[]>([]);
 
   useEffect(() => {
     if (!clientSlug) return;

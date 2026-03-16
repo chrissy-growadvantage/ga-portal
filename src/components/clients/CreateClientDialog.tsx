@@ -51,8 +51,8 @@ export function CreateClientDialog({ open, onOpenChange }: Props) {
       form.reset();
       onOpenChange(false);
       navigate(`/clients/${newClient.id}`);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to create client');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to create client');
     }
   };
 

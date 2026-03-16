@@ -85,8 +85,8 @@ export function LogDeliveryDialog({ clientId, open, onOpenChange, prefillTitle }
       } as Parameters<typeof createDelivery.mutateAsync>[0]);
       toast.success('Delivery logged');
       onOpenChange(false);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to log delivery');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to log delivery');
     }
   };
 

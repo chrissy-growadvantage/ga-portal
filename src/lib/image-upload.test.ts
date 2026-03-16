@@ -74,7 +74,7 @@ describe('image-upload', () => {
 
     it('accepts WebP files', async () => {
       const webpFile = createMockFile('photo.webp', 500_000);
-      webpFile.type; // File type is set in constructor
+
       const result = await compressImage(new File([new Uint8Array(500_000)], 'photo.webp', { type: 'image/webp' }));
       expect(result.name).toBe('photo.webp');
     });
