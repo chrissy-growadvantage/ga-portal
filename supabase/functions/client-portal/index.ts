@@ -9,6 +9,7 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     const token = url.searchParams.get('token');
+    const snapshotSlug = url.searchParams.get('snapshot');
 
     if (!token) {
       return jsonResponse({ error: { code: 'INVALID_TOKEN', message: 'Token is required' } }, 400);
@@ -21,6 +22,22 @@ serve(async (req) => {
 
     const { client } = result;
     const supabase = getServiceClient();
+
+    // If requesting a specific snapshot, return just that snapshot
+    if (snapshotSlug) {
+      const { data: snapshot, error: snapshotError } = await supabase
+        .from('monthly_snapshots')
+        .select('*')
+        .eq('client_id', client.id)
+        .eq('month_slug', snapshotSlug)
+        .single();
+
+      if (snapshotError || !snapshot) {
+        return jsonResponse({ error: { code: 'NOT_FOUND', message: 'Snapshot not found' } }, 404);
+      }
+
+      return jsonResponse({ snapshot }, 200, { 'Cache-Control': 'public, max-age=60' });
+    }
 
     // Fetch operator info for trust banner
     const { data: operator } = await supabase

@@ -22,6 +22,7 @@ const Invoices = lazy(() => import('@/pages/Invoices'));
 const InvoiceDetail = lazy(() => import('@/pages/InvoiceDetail'));
 const PortalProposal = lazy(() => import('@/pages/PortalProposal'));
 const PortalAgreement = lazy(() => import('@/pages/PortalAgreement'));
+const PortalSnapshotDetail = lazy(() => import('@/pages/PortalSnapshotDetail'));
 const EditorTest = lazy(() => import('@/pages/EditorTest'));
 const SnapshotList = lazy(() => import('@/pages/SnapshotList'));
 const SnapshotDetail = lazy(() => import('@/pages/SnapshotDetail'));
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/portal/:token/proposal/:proposalId" element={<PortalProposal />} />
           <Route path="/portal/:token/agreements" element={<PortalAgreement />} />
           <Route path="/portal/:token/agreements/:agreementId" element={<PortalAgreement />} />
+          <Route path="/portal/:token/snapshots/:monthSlug" element={<PortalSnapshotDetail />} />
 
           {/* Protected — inside AppShell */}
           <Route

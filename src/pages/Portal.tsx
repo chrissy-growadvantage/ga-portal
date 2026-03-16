@@ -602,6 +602,9 @@ function PortalContent({
               onViewAgreement={(agreement) =>
                 navigate(`/portal/${token}/agreements/${agreement.id}`)
               }
+              onViewSnapshot={(snapshot) =>
+                navigate(`/portal/${token}/snapshots/${snapshot.month_slug}`)
+              }
             />
           </section>
         );
