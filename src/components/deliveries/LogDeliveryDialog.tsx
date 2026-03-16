@@ -31,7 +31,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import { DELIVERY_CATEGORIES, DELIVERY_STATUS_CONFIG } from '@/lib/constants';
+import {
+  DELIVERY_CATEGORIES,
+  DELIVERY_STATUS_CONFIG,
+  DEFAULT_PICK_LIST_CATEGORIES,
+  DEFAULT_PICK_LIST_PHASES,
+  DEFAULT_PICK_LIST_UPLIFTS,
+} from '@/lib/constants';
 import type { DeliveryStatus } from '@/types/database';
 
 interface Props {
@@ -50,6 +56,8 @@ export function LogDeliveryDialog({ clientId, open, onOpenChange, prefillTitle }
       title: '',
       description: '',
       category: '',
+      phase: undefined,
+      uplift: undefined,
       status: 'completed',
       hours_spent: undefined,
       is_out_of_scope: false,
@@ -72,7 +80,9 @@ export function LogDeliveryDialog({ clientId, open, onOpenChange, prefillTitle }
         ...values,
         client_id: clientId,
         hours_spent: values.hours_spent ?? null,
-      });
+        phase: values.phase || null,
+        uplift: values.uplift || null,
+      } as Parameters<typeof createDelivery.mutateAsync>[0]);
       toast.success('Delivery logged');
       onOpenChange(false);
     } catch (err: any) {
@@ -138,7 +148,7 @@ export function LogDeliveryDialog({ clientId, open, onOpenChange, prefillTitle }
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {DELIVERY_CATEGORIES.map((cat) => (
+                        {DEFAULT_PICK_LIST_CATEGORIES.map((cat) => (
                           <SelectItem key={cat} value={cat}>
                             {cat}
                           </SelectItem>
@@ -175,6 +185,58 @@ export function LogDeliveryDialog({ clientId, open, onOpenChange, prefillTitle }
                 )}
               />
             </div>
+
+            {/* Phase */}
+            <FormField
+              control={form.control}
+              name="phase"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phase <span className="text-muted-foreground font-normal text-xs">(optional)</span></FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select phase…" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {DEFAULT_PICK_LIST_PHASES.map((p) => (
+                        <SelectItem key={p} value={p}>
+                          {p}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Uplift */}
+            <FormField
+              control={form.control}
+              name="uplift"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Uplift <span className="text-muted-foreground font-normal text-xs">(optional)</span></FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select uplift…" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {DEFAULT_PICK_LIST_UPLIFTS.map((u) => (
+                        <SelectItem key={u} value={u}>
+                          {u}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

@@ -73,6 +73,8 @@ type PortalContentEditorProps = {
 
 function PortalContentEditor({ client, onSaved }: PortalContentEditorProps) {
   const [focus, setFocus] = useState(client.this_month_focus ?? '');
+  const [completedThisMonth, setCompletedThisMonth] = useState(client.completed_this_month ?? '');
+  const [monthlyPlanNotes, setMonthlyPlanNotes] = useState(client.monthly_plan_notes ?? '');
   const [hours, setHours] = useState<string>(
     client.hours_used_this_month !== null ? String(client.hours_used_this_month) : '',
   );
@@ -85,6 +87,8 @@ function PortalContentEditor({ client, onSaved }: PortalContentEditorProps) {
         .from('clients')
         .update({
           this_month_focus: focus.trim() || null,
+          completed_this_month: completedThisMonth.trim() || null,
+          monthly_plan_notes: monthlyPlanNotes.trim() || null,
           hours_used_this_month: hours !== '' ? Number(hours) : null,
         })
         .eq('id', client.id);
@@ -102,6 +106,8 @@ function PortalContentEditor({ client, onSaved }: PortalContentEditorProps) {
 
   const isDirty =
     focus !== (client.this_month_focus ?? '') ||
+    completedThisMonth !== (client.completed_this_month ?? '') ||
+    monthlyPlanNotes !== (client.monthly_plan_notes ?? '') ||
     hours !== (client.hours_used_this_month !== null ? String(client.hours_used_this_month) : '');
 
   return (
@@ -120,6 +126,34 @@ function PortalContentEditor({ client, onSaved }: PortalContentEditorProps) {
             placeholder="Write a short message for the client about this month's priorities…"
             value={focus}
             onChange={(e) => setFocus(e.target.value)}
+            rows={3}
+            className="resize-none text-sm"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="completed_this_month" className="text-xs">
+            Completed this month <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <Textarea
+            id="completed_this_month"
+            placeholder="Summarise what was delivered this month…"
+            value={completedThisMonth}
+            onChange={(e) => setCompletedThisMonth(e.target.value)}
+            rows={3}
+            className="resize-none text-sm"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="monthly_plan_notes" className="text-xs">
+            Monthly plan / catch-up notes <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <Textarea
+            id="monthly_plan_notes"
+            placeholder="Notes about the monthly plan, what's coming up, or catch-up context…"
+            value={monthlyPlanNotes}
+            onChange={(e) => setMonthlyPlanNotes(e.target.value)}
             rows={3}
             className="resize-none text-sm"
           />

@@ -417,7 +417,7 @@ export type InsertClient = Pick<Client, 'company_name' | 'operator_id'> &
   Partial<Pick<Client, 'contact_name' | 'contact_email' | 'contact_phone' | 'notes' | 'status'>>;
 
 export type InsertDeliveryItem = Pick<DeliveryItem, 'client_id' | 'title' | 'category'> &
-  Partial<Pick<DeliveryItem, 'description' | 'status' | 'scope_cost' | 'hours_spent' | 'is_out_of_scope' | 'completed_at' | 'scope_allocation_id'>>;
+  Partial<Pick<DeliveryItem, 'description' | 'status' | 'scope_cost' | 'hours_spent' | 'is_out_of_scope' | 'completed_at' | 'scope_allocation_id' | 'phase' | 'uplift'>>;
 
 export type InsertScopeAllocation = Pick<ScopeAllocation, 'client_id' | 'period_start' | 'period_end' | 'scope_type' | 'total_allocated' | 'unit_label'>;
 

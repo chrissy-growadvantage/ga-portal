@@ -1,10 +1,10 @@
-import { MessageSquare, FolderOpen, PlusCircle, ExternalLink } from 'lucide-react';
+import { MessageSquare, FolderOpen, PlusCircle, ExternalLink, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type PortalQuickLinksProps = {
   slackUrl: string | null;
   driveUrl: string | null;
-  intakeUrl: string | null;
+  bookingUrl: string | null;
   onRequestSomething: () => void;
 };
 
@@ -20,7 +20,7 @@ type LinkCard = {
 export function PortalQuickLinks({
   slackUrl,
   driveUrl,
-  intakeUrl,
+  bookingUrl,
   onRequestSomething,
 }: PortalQuickLinksProps) {
   const links: LinkCard[] = [
@@ -39,10 +39,10 @@ export function PortalQuickLinks({
       external: true,
     },
     {
-      id: 'intake',
-      label: 'Intake Form',
-      icon: FolderOpen,
-      href: intakeUrl,
+      id: 'meetings',
+      label: 'Book a Meeting',
+      icon: Calendar,
+      href: bookingUrl,
       external: true,
     },
     {

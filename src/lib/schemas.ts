@@ -12,6 +12,8 @@ export const createDeliveryItemSchema = z.object({
   title: z.string().min(1, 'Title is required').max(500),
   description: z.string().max(5000).optional(),
   category: z.string().min(1, 'Category is required').max(100),
+  phase: z.string().max(200).optional(),
+  uplift: z.string().max(300).optional(),
   status: z.enum(['completed', 'in_progress', 'pending_approval', 'approved', 'revision_requested']).default('completed'),
   hours_spent: z.number().min(0).max(10000).optional(),
   scope_cost: z.number().min(0).max(10000).default(1),

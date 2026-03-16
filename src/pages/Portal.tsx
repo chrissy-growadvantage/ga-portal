@@ -434,12 +434,36 @@ function PortalContent({
             <PortalQuickLinks
               slackUrl={client.portal_slack_url}
               driveUrl={client.portal_drive_url}
-              intakeUrl={client.portal_intake_url}
+              bookingUrl={client.portal_booking_url}
               onRequestSomething={() => setRequestDialogOpen(true)}
             />
 
             {/* This month's focus — operator message */}
             <PortalMonthlyFocus focus={client.this_month_focus} />
+
+            {/* Completed this month */}
+            {client.completed_this_month && (
+              <div className="rounded-xl border border-border bg-card px-5 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                  Completed This Month
+                </p>
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                  {client.completed_this_month}
+                </p>
+              </div>
+            )}
+
+            {/* Monthly plan / catch-up notes */}
+            {client.monthly_plan_notes && (
+              <div className="rounded-xl border border-border bg-card px-5 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                  Monthly Plan
+                </p>
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                  {client.monthly_plan_notes}
+                </p>
+              </div>
+            )}
 
             {/* Meeting card (time-sensitive) */}
             {client.next_meeting_at && (
