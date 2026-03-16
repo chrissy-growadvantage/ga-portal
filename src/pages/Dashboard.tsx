@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { SCOPE_STATUS_CONFIG } from '@/lib/constants';
 import { useScopeAlerts } from '@/hooks/useScopeAlerts';
 import { getScopeStatus } from '@/lib/scope-utils';
+import { useBlockedOnboardingStages } from '@/hooks/useOnboardingStages';
 
 function AnimatedNumber({ value, className }: { value: number; className?: string }) {
   const hasAnimated = useRef(value !== 0);
@@ -56,6 +57,7 @@ export default function Dashboard() {
   }, []);
   const { data: clients, isLoading } = useClients();
   const { alerts } = useScopeAlerts();
+  const { data: blockedOnboarding = [] } = useBlockedOnboardingStages();
 
   const now = new Date();
   const stats = useMemo(() => {
@@ -264,6 +266,45 @@ export default function Dashboard() {
               )}
             </div>
           </div>
+
+          {/* Blocked Onboarding Stages */}
+          {blockedOnboarding.length > 0 && (
+            <div className="bg-card border border-destructive/40 rounded-lg overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border/60 bg-destructive/5">
+                <div>
+                  <p className="text-[14px] font-semibold flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-destructive" />
+                    Blocked Onboarding
+                  </p>
+                  <p className="text-[12px] text-muted-foreground">Stages needing action</p>
+                </div>
+              </div>
+              <div>
+                {blockedOnboarding.map((entry, index) => (
+                  <Link
+                    key={`${entry.clientId}-${entry.stage}`}
+                    to={`/clients/${entry.clientId}?tab=onboarding`}
+                    className="flex items-center justify-between py-2.5 px-4 border-b border-border/40 last:border-0 hover:bg-muted/40 transition-colors"
+                    style={{ animationDelay: `${index * 60}ms` }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-7 h-7 rounded-full bg-destructive/10 flex items-center justify-center text-destructive font-semibold text-[11px] shrink-0">
+                        {entry.clientName[0]?.toUpperCase() ?? '?'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[13.5px] font-medium truncate">{entry.clientName}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{entry.stage}</p>
+                      </div>
+                    </div>
+                    <TypedStatusBadge
+                      status={entry.status === 'blocked' ? 'blocked' : 'waiting_on_client'}
+                      size="sm"
+                    />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Recent Clients table */}
           <div className="bg-card border border-border rounded-lg overflow-hidden">

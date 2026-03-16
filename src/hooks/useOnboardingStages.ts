@@ -40,6 +40,56 @@ export function useCreateOnboardingStages() {
   });
 }
 
+type BlockedOnboardingEntry = {
+  clientId: string;
+  clientName: string;
+  stage: string;
+  status: 'blocked' | 'waiting_on_client';
+};
+
+/** Fetch all blocked/waiting-on-client onboarding stages across all clients for the operator. */
+export function useBlockedOnboardingStages() {
+  const { data: clients } = useQuery({
+    queryKey: ['clients-minimal'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, company_name, contact_name')
+        .order('company_name', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 30_000,
+  });
+
+  return useQuery({
+    queryKey: ['onboarding-blocked'],
+    queryFn: async (): Promise<BlockedOnboardingEntry[]> => {
+      const { data, error } = await supabase
+        .from('onboarding_stages')
+        .select('client_id, stage_label, status')
+        .in('status', ['blocked', 'waiting_on_client'])
+        .order('client_id');
+      if (error) throw error;
+      if (!data?.length) return [];
+
+      const clientMap = new Map((clients ?? []).map((c) => [
+        c.id,
+        c.company_name || c.contact_name || 'Unknown',
+      ]));
+
+      return data.map((row) => ({
+        clientId: row.client_id,
+        clientName: clientMap.get(row.client_id) ?? 'Unknown',
+        stage: row.stage_label,
+        status: row.status as 'blocked' | 'waiting_on_client',
+      }));
+    },
+    enabled: !!clients,
+    staleTime: 30_000,
+  });
+}
+
 export function useUpdateOnboardingStage() {
   const qc = useQueryClient();
   return useMutation({
