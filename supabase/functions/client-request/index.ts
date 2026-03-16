@@ -2,6 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsResponse, jsonResponse } from '../_shared/cors.ts';
 import { validateToken } from '../_shared/validate-token.ts';
 import { getServiceClient } from '../_shared/supabase.ts';
+import { notifyOperatorByEmail, notifyOperatorBySlack } from '../_shared/notify.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return corsResponse();
@@ -63,6 +64,34 @@ serve(async (req) => {
     if (insertError || !scopeRequest) {
       return jsonResponse({ error: { code: 'SERVER_ERROR', message: 'Failed to create request' } }, 500);
     }
+
+    // --- Operator notification (best-effort, non-blocking) ---
+    const siteUrl = Deno.env.get('SITE_URL') ?? 'https://app.lumaops.com';
+
+    const { data: operator } = await supabase
+      .from('operators')
+      .select('email, full_name, business_name')
+      .eq('id', client.operator_id)
+      .single();
+
+    if (operator) {
+      const notificationPayload = {
+        operatorEmail: operator.email,
+        operatorName: operator.business_name ?? operator.full_name ?? 'Operator',
+        clientName: client.company_name,
+        requestTitle: title.trim(),
+        requestDescription: description?.trim() ?? null,
+        requestId: scopeRequest.id,
+        siteUrl,
+      };
+
+      // Fire-and-forget — errors are logged inside helpers, never bubble up
+      await Promise.allSettled([
+        notifyOperatorByEmail(notificationPayload),
+        notifyOperatorBySlack(notificationPayload),
+      ]);
+    }
+    // ---------------------------------------------------------
 
     return jsonResponse({ success: true, id: scopeRequest.id });
   } catch {
