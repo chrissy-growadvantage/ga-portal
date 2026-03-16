@@ -25,7 +25,7 @@ serve(async (req) => {
     // Fetch operator info for trust banner
     const { data: operator } = await supabase
       .from('operators')
-      .select('full_name, business_name')
+      .select('full_name, business_name, portal_logo_url, portal_primary_color, portal_accent_color')
       .eq('id', client.operator_id)
       .single();
 
@@ -50,6 +50,34 @@ serve(async (req) => {
       .eq('client_id', client.id)
       .order('signed_at', { ascending: false });
 
+    // Fetch monthly snapshots index (lightweight — just enough to render the list)
+    const { data: monthlySnapshots } = await supabase
+      .from('monthly_snapshots')
+      .select('id, month_label, month_slug, created_at')
+      .eq('client_id', client.id)
+      .order('month_slug', { ascending: false });
+
+    // Fetch scope requests for this client
+    const { data: scopeRequests } = await supabase
+      .from('scope_requests')
+      .select('id, title, description, requested_by, status, scope_cost, category, admin_note, attachment_url, ga_status, created_at')
+      .eq('client_id', client.id)
+      .order('created_at', { ascending: false });
+
+    // Fetch onboarding stages for this client
+    const { data: onboardingStages } = await supabase
+      .from('onboarding_stages')
+      .select('id, stage_key, stage_label, sort_order, status, owner_label, due_date, notes, action_url, completed_at')
+      .eq('client_id', client.id)
+      .order('sort_order', { ascending: true });
+
+    // Fetch client tasks (active + recently completed)
+    const { data: clientTasks } = await supabase
+      .from('client_tasks')
+      .select('id, title, due_date, link_url, completed_at, created_at')
+      .eq('client_id', client.id)
+      .order('created_at', { ascending: false });
+
     return jsonResponse(
       {
         client: {
@@ -57,11 +85,33 @@ serve(async (req) => {
           company_name: client.company_name,
           contact_name: client.contact_name,
           status: client.status,
+          // Portal metadata fields (migration 021)
+          integrator_name: client.integrator_name ?? null,
+          primary_comms_channel: client.primary_comms_channel ?? null,
+          next_strategy_meeting: client.next_strategy_meeting ?? null,
+          this_month_outcomes: client.this_month_outcomes ?? null,
+          this_month_deliverables: client.this_month_deliverables ?? null,
+          this_month_improvements: client.this_month_improvements ?? null,
+          this_month_risks: client.this_month_risks ?? null,
+          this_month_focus: client.this_month_focus ?? null,
+          portal_slack_url: client.portal_slack_url ?? null,
+          portal_drive_url: client.portal_drive_url ?? null,
+          portal_booking_url: client.portal_booking_url ?? null,
+          portal_stripe_url: client.portal_stripe_url ?? null,
+          portal_intake_url: client.portal_intake_url ?? null,
+          onboarding_stage: client.onboarding_stage ?? null,
+          hours_used_this_month: client.hours_used_this_month ?? null,
+          next_meeting_at: client.next_meeting_at ?? null,
+          next_meeting_link: client.next_meeting_link ?? null,
         },
         operator: operator ?? { full_name: 'Your Operator', business_name: null },
         deliveries: deliveries ?? [],
         scope_allocations: scopeAllocations ?? [],
         agreements: agreements ?? [],
+        monthly_snapshots: monthlySnapshots ?? [],
+        scope_requests: scopeRequests ?? [],
+        onboarding_stages: onboardingStages ?? [],
+        client_tasks: clientTasks ?? [],
       },
       200,
       { 'Cache-Control': 'public, max-age=30' }

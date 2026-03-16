@@ -18,14 +18,15 @@ serve(async (req) => {
       return jsonResponse({ error: { code: 'UNAUTHORIZED', message: 'Authorization header required' } }, 401);
     }
 
-    // Create client with anon key but use the user's JWT for auth
+    const token = authHeader.replace('Bearer ', '');
+
+    // Verify user JWT by passing token directly
     const anonClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: authError } = await anonClient.auth.getUser();
+    const { data: { user }, error: authError } = await anonClient.auth.getUser(token);
     if (authError || !user) {
       return jsonResponse({ error: { code: 'UNAUTHORIZED', message: 'Invalid auth token' } }, 401);
     }
@@ -45,7 +46,7 @@ serve(async (req) => {
     // Verify operator owns this client
     const { data: client, error: clientError } = await supabase
       .from('clients')
-      .select('id, operator_id')
+      .select('id, operator_id, company_name')
       .eq('id', client_id)
       .single();
 
@@ -57,8 +58,19 @@ serve(async (req) => {
       return jsonResponse({ error: { code: 'FORBIDDEN', message: 'You do not own this client' } }, 403);
     }
 
-    // Generate raw token and hash
-    const rawToken = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, '');
+    // Generate slug from company name + random suffix
+    const slug = (client as { company_name?: string })?.company_name
+      ? (client as { company_name: string }).company_name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 30)
+      : 'client';
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+      .map((b) => chars[b % chars.length])
+      .join('');
+    const rawToken = `${slug}-${randomPart}`;
     const tokenHash = await hashToken(rawToken);
     const expiresAt = new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString();
 
