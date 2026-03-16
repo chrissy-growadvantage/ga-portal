@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useScopeRequests, useUpdateScopeRequestStatus } from '@/hooks/useScopeRequests';
+import { useState, useCallback } from 'react';
+import { useScopeRequests, useUpdateScopeRequestStatus, useUpdateScopeRequestFields } from '@/hooks/useScopeRequests';
 import { CreateScopeRequestDialog } from '@/components/scope/CreateScopeRequestDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/ui/empty-state';
 import {
   DropdownMenu,
@@ -20,10 +21,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MessageSquarePlus, Plus, MoreHorizontal } from 'lucide-react';
-import { REQUEST_STATUS_CONFIG } from '@/lib/constants';
+import { REQUEST_STATUS_CONFIG, GA_REQUEST_STATUS_CONFIG } from '@/lib/constants';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import type { RequestStatus } from '@/types/database';
+import type { RequestStatus, GaRequestStatus } from '@/types/database';
 
 type Props = {
   clientId: string;
@@ -39,11 +40,61 @@ const STATUS_FILTER_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'completed', label: 'Completed' },
 ];
 
+function AdminNoteField({
+  requestId,
+  initialNote,
+  onBlur,
+}: {
+  requestId: string;
+  initialNote: string;
+  onBlur: (note: string) => void;
+}) {
+  const [note, setNote] = useState(initialNote);
+  return (
+    <div className="flex items-start gap-2">
+      <span className="text-xs text-muted-foreground w-20 shrink-0 pt-1.5">Note</span>
+      <Textarea
+        key={requestId}
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        onBlur={() => onBlur(note)}
+        placeholder="Internal note…"
+        className="text-xs min-h-[52px] resize-none"
+      />
+    </div>
+  );
+}
+
+const GA_STATUS_OPTIONS: { value: GaRequestStatus; label: string }[] = [
+  { value: 'submitted', label: 'Submitted' },
+  { value: 'received', label: 'Received' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'waiting_on_client', label: 'Waiting on Client' },
+  { value: 'done', label: 'Done' },
+];
+
 export function ScopeRequestsTab({ clientId }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const { data: requests, isLoading } = useScopeRequests(clientId);
   const updateStatus = useUpdateScopeRequestStatus();
+  const updateFields = useUpdateScopeRequestFields();
+
+  const handleGaStatusChange = useCallback(async (id: string, ga_status: GaRequestStatus) => {
+    try {
+      await updateFields.mutateAsync({ id, clientId, ga_status });
+    } catch {
+      toast.error('Failed to update status');
+    }
+  }, [clientId, updateFields]);
+
+  const handleAdminNoteBlur = useCallback(async (id: string, admin_note: string) => {
+    try {
+      await updateFields.mutateAsync({ id, clientId, admin_note: admin_note || null });
+    } catch {
+      toast.error('Failed to save note');
+    }
+  }, [clientId, updateFields]);
 
   const handleStatusChange = async (id: string, status: RequestStatus) => {
     try {
@@ -144,9 +195,41 @@ export function ScopeRequestsTab({ clientId }: Props) {
                           Cost: {request.scope_cost}
                         </span>
                       )}
+                      {request.category && (
+                        <span className="text-xs text-muted-foreground">{request.category}</span>
+                      )}
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(request.created_at), 'MMM d, yyyy')}
                       </span>
+                    </div>
+
+                    {/* GA status + admin note */}
+                    <div className="pt-2 space-y-2 border-t border-border/40 mt-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground w-20 shrink-0">GA Status</span>
+                        <Select
+                          value={request.ga_status ?? ''}
+                          onValueChange={(v) => void handleGaStatusChange(request.id, v as GaRequestStatus)}
+                        >
+                          <SelectTrigger className="h-7 text-xs w-44">
+                            <SelectValue placeholder="Set status…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {GA_STATUS_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                                <span className={GA_REQUEST_STATUS_CONFIG[opt.value].color}>
+                                  {opt.label}
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <AdminNoteField
+                        requestId={request.id}
+                        initialNote={request.admin_note ?? ''}
+                        onBlur={(note) => void handleAdminNoteBlur(request.id, note)}
+                      />
                     </div>
                   </div>
 

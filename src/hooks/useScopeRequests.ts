@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryKeys } from '@/lib/query-keys';
-import type { ScopeRequest, InsertScopeRequest, RequestStatus } from '@/types/database';
+import type { ScopeRequest, InsertScopeRequest, RequestStatus, GaRequestStatus } from '@/types/database';
 
 export function useScopeRequests(clientId: string | undefined) {
   return useQuery({
@@ -62,6 +62,37 @@ export function useUpdateScopeRequestStatus() {
       queryClient.invalidateQueries({ queryKey: queryKeys.clients.scopeRequests(variables.clientId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.clients.detail(variables.clientId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.clients.all });
+    },
+  });
+}
+
+export function useUpdateScopeRequestFields() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      clientId,
+      ga_status,
+      admin_note,
+    }: {
+      id: string;
+      clientId: string;
+      ga_status?: GaRequestStatus | null;
+      admin_note?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from('scope_requests')
+        .update({ ga_status, admin_note })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ScopeRequest;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.clients.scopeRequests(variables.clientId) });
     },
   });
 }

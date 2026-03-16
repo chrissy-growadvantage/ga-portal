@@ -9,6 +9,7 @@ import { StripeConnect } from '@/components/settings/StripeConnect';
 import { BillingSettings } from '@/components/settings/BillingSettings';
 import { PickListsSettings } from '@/components/settings/PickListsSettings';
 import { WeeklyDigestSettings } from '@/components/settings/WeeklyDigestSettings';
+import { BrandingSettings } from '@/components/settings/BrandingSettings';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ export default function Settings() {
       <Tabs defaultValue={defaultTab}>
         <TabsList>
           <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="addon-library">Addon Library</TabsTrigger>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
@@ -51,6 +53,10 @@ export default function Settings() {
           </Card>
 
           <WeeklyDigestSettings />
+        </TabsContent>
+
+        <TabsContent value="branding">
+          <BrandingSettings />
         </TabsContent>
 
         <TabsContent value="addon-library">

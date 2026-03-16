@@ -123,14 +123,14 @@ export const ONBOARDING_STAGE_STATUS_CONFIG = {
 } as const;
 
 export const DEFAULT_ONBOARDING_STAGES = [
-  { stage_key: 'sanity_call', stage_label: 'Sanity Call', owner_label: 'operator' as const },
-  { stage_key: 'proposal', stage_label: 'Proposal Sent', owner_label: 'operator' as const },
-  { stage_key: 'contract', stage_label: 'Contract Signed', owner_label: 'client' as const },
-  { stage_key: 'payment', stage_label: 'Payment Setup', owner_label: 'client' as const },
-  { stage_key: 'intake', stage_label: 'Intake Form', owner_label: 'client' as const },
-  { stage_key: 'tech_setup', stage_label: 'Tech Setup', owner_label: 'operator' as const },
-  { stage_key: 'kickoff', stage_label: 'Kickoff Meeting', owner_label: 'operator' as const },
-  { stage_key: 'week_1', stage_label: 'Week 1 Started', owner_label: 'operator' as const },
+  { stage_key: 'sanity_call', stage_label: 'Sanity Call completed', owner_label: 'operator' as const },
+  { stage_key: 'proposal', stage_label: 'Proposal sent', owner_label: 'operator' as const },
+  { stage_key: 'contract', stage_label: 'Contract sent / signed (SignWell)', owner_label: 'client' as const },
+  { stage_key: 'payment', stage_label: 'Payment: Week 1 paid + subscription active (Stripe)', owner_label: 'client' as const },
+  { stage_key: 'intake', stage_label: 'Intake form sent / received (Google Form)', owner_label: 'client' as const },
+  { stage_key: 'tech_setup', stage_label: 'Tech setup: Slack channel + Drive folder created', owner_label: 'operator' as const },
+  { stage_key: 'kickoff', stage_label: 'Kickoff call booked / completed', owner_label: 'operator' as const },
+  { stage_key: 'week_1', stage_label: 'Week 1 started: roadmap shared + BAU confirmed', owner_label: 'operator' as const },
 ] as const;
 
 export const DEFAULT_PICK_LIST_PHASES = [

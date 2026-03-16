@@ -26,6 +26,8 @@ export type PortalClient = Pick<
 > & {
   portal_stripe_url: string | null;
   portal_intake_url: string | null;
+  portal_proposal_url: string | null;
+  portal_contract_url: string | null;
   onboarding_stage: number | null;
 };
 

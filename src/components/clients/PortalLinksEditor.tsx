@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Save, Loader2, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Save, Loader2, AlertTriangle, Upload, X, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,6 +39,8 @@ type FormState = {
   portal_slack_url: string;
   portal_drive_url: string;
   portal_booking_url: string;
+  portal_proposal_url: string;
+  portal_contract_url: string;
   next_meeting_at: string;
   next_meeting_link: string;
 };
@@ -52,6 +54,8 @@ function fromClient(client: Client): FormState {
     portal_slack_url: client.portal_slack_url ?? '',
     portal_drive_url: client.portal_drive_url ?? '',
     portal_booking_url: client.portal_booking_url ?? '',
+    portal_proposal_url: client.portal_proposal_url ?? '',
+    portal_contract_url: client.portal_contract_url ?? '',
     next_meeting_at: client.next_meeting_at
       ? client.next_meeting_at.slice(0, 16) // format for datetime-local input
       : '',
@@ -67,6 +71,8 @@ const URL_FIELDS: (keyof FormState)[] = [
   'portal_slack_url',
   'portal_drive_url',
   'portal_booking_url',
+  'portal_proposal_url',
+  'portal_contract_url',
   'next_meeting_link',
 ];
 
@@ -77,10 +83,25 @@ function isValidUrl(value: string) {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
+async function uploadClientDoc(clientId: string, field: 'proposal' | 'contract', file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'pdf';
+  const path = `${clientId}/${field}-${Date.now()}.${ext}`;
+  const { error } = await supabase.storage
+    .from('client-documents')
+    .upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  const { data } = supabase.storage.from('client-documents').getPublicUrl(path);
+  return data.publicUrl;
+}
+
 export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) {
   const [form, setForm] = useState<FormState>(fromClient(client));
   const [saving, setSaving] = useState(false);
   const [initialForm, setInitialForm] = useState<FormState>(fromClient(client));
+  const [uploadingProposal, setUploadingProposal] = useState(false);
+  const [uploadingContract, setUploadingContract] = useState(false);
+  const proposalInputRef = useRef<HTMLInputElement>(null);
+  const contractInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
   // Sync if client prop changes (e.g. after a refetch)
@@ -118,6 +139,8 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
           portal_slack_url: form.portal_slack_url || null,
           portal_drive_url: form.portal_drive_url || null,
           portal_booking_url: form.portal_booking_url || null,
+          portal_proposal_url: form.portal_proposal_url || null,
+          portal_contract_url: form.portal_contract_url || null,
           next_meeting_at: form.next_meeting_at
             ? new Date(form.next_meeting_at).toISOString()
             : null,
@@ -134,6 +157,21 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
       toast.error('Failed to save portal links');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDocUpload = async (field: 'proposal' | 'contract', file: File) => {
+    const setUploading = field === 'proposal' ? setUploadingProposal : setUploadingContract;
+    const formField = field === 'proposal' ? 'portal_proposal_url' : 'portal_contract_url';
+    setUploading(true);
+    try {
+      const url = await uploadClientDoc(clientId, field, file);
+      set(formField, url);
+      toast.success(`${field === 'proposal' ? 'Proposal' : 'Contract'} uploaded`);
+    } catch {
+      toast.error('Upload failed — check file size and try again');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -172,6 +210,109 @@ export function PortalLinksEditor({ clientId, client }: PortalLinksEditorProps) 
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Proposal & Contract documents */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Documents
+          </p>
+
+          {/* Proposal */}
+          <div className="space-y-1.5">
+            <Label htmlFor="proposal_url" className="text-xs">Proposal (link or PDF)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="proposal_url"
+                type="url"
+                placeholder="https://… or upload a PDF"
+                value={form.portal_proposal_url}
+                onChange={(e) => set('portal_proposal_url', e.target.value)}
+                className="flex-1"
+              />
+              <input
+                ref={proposalInputRef}
+                type="file"
+                className="hidden"
+                accept=".pdf,.doc,.docx"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void handleDocUpload('proposal', f);
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="shrink-0 gap-1.5"
+                onClick={() => proposalInputRef.current?.click()}
+                disabled={uploadingProposal}
+              >
+                {uploadingProposal ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Upload className="w-3.5 h-3.5" />
+                )}
+                Upload
+              </Button>
+              {form.portal_proposal_url && (
+                <a href={form.portal_proposal_url} target="_blank" rel="noopener noreferrer">
+                  <Button type="button" variant="ghost" size="sm" className="shrink-0 gap-1">
+                    <FileText className="w-3.5 h-3.5" />
+                  </Button>
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Contract */}
+          <div className="space-y-1.5">
+            <Label htmlFor="contract_url" className="text-xs">Signed contract (SignWell link or PDF copy)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="contract_url"
+                type="url"
+                placeholder="https://… or upload a PDF"
+                value={form.portal_contract_url}
+                onChange={(e) => set('portal_contract_url', e.target.value)}
+                className="flex-1"
+              />
+              <input
+                ref={contractInputRef}
+                type="file"
+                className="hidden"
+                accept=".pdf,.doc,.docx"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void handleDocUpload('contract', f);
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="shrink-0 gap-1.5"
+                onClick={() => contractInputRef.current?.click()}
+                disabled={uploadingContract}
+              >
+                {uploadingContract ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Upload className="w-3.5 h-3.5" />
+                )}
+                Upload
+              </Button>
+              {form.portal_contract_url && (
+                <a href={form.portal_contract_url} target="_blank" rel="noopener noreferrer">
+                  <Button type="button" variant="ghost" size="sm" className="shrink-0 gap-1">
+                    <FileText className="w-3.5 h-3.5" />
+                  </Button>
+                </a>
+              )}
+            </div>
           </div>
         </div>
 

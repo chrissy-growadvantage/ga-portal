@@ -9,6 +9,8 @@ import {
   FolderOpen,
   Calendar,
   ExternalLink,
+  ScrollText,
+  PenLine,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { PortalClient } from '@/types/portal';
@@ -83,7 +85,11 @@ export function PortalDocumentsLinks({
   onViewAgreement,
   showOnly,
 }: PortalDocumentsLinksProps) {
-  const hasDocs = !!client.portal_stripe_url || !!client.portal_intake_url;
+  const hasDocs =
+    !!client.portal_stripe_url ||
+    !!client.portal_intake_url ||
+    !!client.portal_proposal_url ||
+    !!client.portal_contract_url;
   const hasAgreements = agreements.length > 0;
   const hasSnapshots = monthlySnapshots.length > 0;
   const hasQuickLinks =
@@ -108,6 +114,20 @@ export function PortalDocumentsLinks({
             Documents
           </h3>
           <div className="space-y-2">
+            {client.portal_proposal_url && (
+              <DocCard
+                icon={ScrollText}
+                label="Proposal"
+                href={client.portal_proposal_url}
+              />
+            )}
+            {client.portal_contract_url && (
+              <DocCard
+                icon={PenLine}
+                label="Signed Contract"
+                href={client.portal_contract_url}
+              />
+            )}
             {client.portal_stripe_url && (
               <DocCard
                 icon={CreditCard}
