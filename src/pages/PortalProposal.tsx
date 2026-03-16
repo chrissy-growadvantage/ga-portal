@@ -294,7 +294,7 @@ export default function PortalProposal() {
   // Loading state
   if (viewState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center" className="bg-portal-background">
+      <div className="min-h-screen flex items-center justify-center bg-portal-background">
         <div className="text-center">
           <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Loading proposal...</p>
@@ -306,7 +306,7 @@ export default function PortalProposal() {
   // Error state
   if (viewState === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-portal-background">
         <div className="text-center max-w-sm">
           <ShieldAlert className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <h1 className="text-lg font-semibold mb-1">
@@ -325,7 +325,7 @@ export default function PortalProposal() {
   // Expired state
   if (viewState === 'expired') {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-portal-background">
         <div className="text-center max-w-sm">
           <Clock className="w-10 h-10 text-amber-500 mx-auto mb-3" />
           <h1 className="text-lg font-semibold mb-1">Proposal Expired</h1>

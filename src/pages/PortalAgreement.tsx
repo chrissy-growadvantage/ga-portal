@@ -101,7 +101,7 @@ export default function PortalAgreement() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" className="bg-portal-background">
+      <div className="min-h-screen flex items-center justify-center bg-portal-background">
         <div className="text-center">
           <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Loading agreement...</p>
@@ -113,7 +113,7 @@ export default function PortalAgreement() {
   if (error) {
     const isExpired = error === 'EXPIRED_TOKEN';
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" className="bg-portal-background">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-portal-background">
         <div className="text-center max-w-sm">
           {isExpired ? (
             <>
