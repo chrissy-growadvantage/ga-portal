@@ -54,7 +54,6 @@ serve(async (req) => {
         client_id: client.id,
         title: title.trim(),
         description: description?.trim() || null,
-        requested_by: 'client',
         status: 'pending',
         category: category ?? null,
         attachment_url: attachment_url ?? null,
