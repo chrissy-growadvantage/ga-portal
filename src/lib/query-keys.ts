@@ -86,4 +86,7 @@ export const queryKeys = {
   grantEvidence: {
     all: ['grant-evidence'] as const,
   },
+  portalLinks: {
+    list: (clientId: string) => ['portal-links', clientId] as const,
+  },
 };

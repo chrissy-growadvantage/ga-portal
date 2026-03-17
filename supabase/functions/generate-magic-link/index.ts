@@ -20,7 +20,6 @@ serve(async (req) => {
 
     const token = authHeader.replace('Bearer ', '');
 
-    // Verify user JWT by passing token directly
     const anonClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -31,11 +30,12 @@ serve(async (req) => {
       return jsonResponse({ error: { code: 'UNAUTHORIZED', message: 'Invalid auth token' } }, 401);
     }
 
-    const body = await req.json();
-    const { client_id, expires_in_days = 30 } = body as {
+    const body = await req.json() as {
       client_id: string;
       expires_in_days?: number;
+      label?: string;
     };
+    const { client_id, expires_in_days = 30, label } = body;
 
     if (!client_id) {
       return jsonResponse({ error: { code: 'BAD_REQUEST', message: 'client_id is required' } }, 400);
@@ -74,18 +74,29 @@ serve(async (req) => {
     const tokenHash = await hashToken(rawToken);
     const expiresAt = new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString();
 
-    // Store hash (NOT raw token) in database
-    const { error: updateError } = await supabase
+    // Insert into portal_links table (multi-token — does NOT invalidate existing links)
+    const { error: insertError } = await supabase
+      .from('portal_links')
+      .insert({
+        client_id,
+        token_hash: tokenHash,
+        label: label ?? null,
+        expires_at: expiresAt,
+        is_active: true,
+      });
+
+    if (insertError) {
+      return jsonResponse({ error: { code: 'SERVER_ERROR', message: 'Failed to generate link' } }, 500);
+    }
+
+    // Legacy: also update clients table so old code still works during transition
+    await supabase
       .from('clients')
       .update({
         magic_link_token_hash: tokenHash,
         magic_link_expires_at: expiresAt,
       })
       .eq('id', client_id);
-
-    if (updateError) {
-      return jsonResponse({ error: { code: 'SERVER_ERROR', message: 'Failed to generate link' } }, 500);
-    }
 
     // Return raw token to operator (one-time display — we don't store the raw value)
     return jsonResponse({

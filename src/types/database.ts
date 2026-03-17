@@ -588,3 +588,20 @@ export interface GrantEvidence {
 }
 
 export type UpsertGrantEvidence = Pick<GrantEvidence, 'operator_id' | 'client_a' | 'client_b' | 'checklist' | 'kpis'>;
+
+// ============================================================
+// Portal Links (migration 037) — multi-token magic link system
+// ============================================================
+
+export interface PortalLink {
+  id: string;
+  client_id: string;
+  token_hash: string;
+  label: string | null;
+  expires_at: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type InsertPortalLink = Pick<PortalLink, 'client_id' | 'token_hash' | 'expires_at'> &
+  Partial<Pick<PortalLink, 'label' | 'is_active'>>;

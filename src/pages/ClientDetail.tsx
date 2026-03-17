@@ -606,11 +606,6 @@ export default function ClientDetail() {
               companyName={client.company_name}
               contactEmail={client.contact_email}
               contactName={client.contact_name}
-              hasExistingLink={!!client.magic_link_token_hash}
-              expiresAt={client.magic_link_expires_at}
-              onTokenUpdated={() => {
-                tanstackQueryClient.invalidateQueries({ queryKey: queryKeys.clients.detail(client.id) });
-              }}
             />
           </section>
 
