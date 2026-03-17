@@ -88,7 +88,7 @@ serve(async (req) => {
     // Fetch scope requests for this client
     const { data: scopeRequests } = await supabase
       .from('scope_requests')
-      .select('id, title, description, requested_by, status, scope_cost, category, admin_note, attachment_url, ga_status, created_at')
+      .select('id, title, description, status, category, admin_note, attachment_url, ga_status, created_at')
       .eq('client_id', client.id)
       .order('created_at', { ascending: false });
 
