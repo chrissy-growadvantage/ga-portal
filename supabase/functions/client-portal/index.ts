@@ -20,8 +20,19 @@ serve(async (req) => {
       return jsonResponse({ error: { code: result.code, message: result.code === 'EXPIRED_TOKEN' ? 'This link has expired' : 'Invalid or unknown token' } }, result.status);
     }
 
-    const { client } = result;
+    const { client: validatedClient } = result;
     const supabase = getServiceClient();
+
+    // Re-fetch full client row (validateToken only returns slim fields)
+    const { data: client, error: clientError } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('id', validatedClient.id)
+      .single();
+
+    if (clientError || !client) {
+      return jsonResponse({ error: { code: 'SERVER_ERROR', message: 'Failed to load client' } }, 500);
+    }
 
     // If requesting a specific snapshot, return just that snapshot
     if (snapshotSlug) {
@@ -120,8 +131,19 @@ serve(async (req) => {
           hours_used_this_month: client.hours_used_this_month ?? null,
           next_meeting_at: client.next_meeting_at ?? null,
           next_meeting_link: client.next_meeting_link ?? null,
+          completed_this_month: client.completed_this_month ?? null,
+          monthly_plan_notes: client.monthly_plan_notes ?? null,
+          portal_proposal_url: client.portal_proposal_url ?? null,
+          portal_contract_url: client.portal_contract_url ?? null,
+          portal_contract_pdf_url: client.portal_contract_pdf_url ?? null,
         },
-        operator: operator ?? { full_name: 'Your Operator', business_name: null },
+        operator: {
+          full_name: operator?.full_name ?? 'Your Operator',
+          business_name: operator?.business_name ?? null,
+          portal_logo_url: operator?.portal_logo_url ?? null,
+          portal_primary_color: operator?.portal_primary_color ?? null,
+          portal_accent_color: operator?.portal_accent_color ?? null,
+        },
         deliveries: deliveries ?? [],
         scope_allocations: scopeAllocations ?? [],
         agreements: agreements ?? [],
