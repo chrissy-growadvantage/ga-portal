@@ -11,6 +11,7 @@ async function fetchPortalSnapshot(token: string, monthSlug: string): Promise<Mo
       method: 'GET',
       headers: {
         'apikey': anonKey,
+        'Authorization': `Bearer ${anonKey}`,
         'Content-Type': 'application/json',
       },
     }

@@ -23,6 +23,7 @@ async function completeTask(token: string, taskId: string) {
     method: 'POST',
     headers: {
       apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ token, task_id: taskId }),

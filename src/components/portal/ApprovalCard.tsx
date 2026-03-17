@@ -23,6 +23,7 @@ async function submitAction(token: string, deliveryItemId: string, action: 'appr
     method: 'POST',
     headers: {
       'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

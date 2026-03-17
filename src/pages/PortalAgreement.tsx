@@ -68,6 +68,7 @@ export default function PortalAgreement() {
             method: 'GET',
             headers: {
               'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
               'Content-Type': 'application/json',
             },
           }

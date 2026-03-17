@@ -152,6 +152,7 @@ export default function PortalProposal() {
             method: 'GET',
             headers: {
               'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
               'Content-Type': 'application/json',
             },
           }
@@ -201,6 +202,7 @@ export default function PortalProposal() {
         method: 'POST',
         headers: {
           'apikey': anonKey,
+          'Authorization': `Bearer ${anonKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token, addon_id: addonId, is_selected: isSelected }),
@@ -243,6 +245,7 @@ export default function PortalProposal() {
         method: 'POST',
         headers: {
           'apikey': anonKey,
+          'Authorization': `Bearer ${anonKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -274,6 +277,7 @@ export default function PortalProposal() {
         method: 'POST',
         headers: {
           'apikey': anonKey,
+          'Authorization': `Bearer ${anonKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token, reason }),

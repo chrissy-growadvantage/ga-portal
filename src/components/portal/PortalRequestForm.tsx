@@ -57,6 +57,7 @@ async function submitRequest(
     method: 'POST',
     headers: {
       apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

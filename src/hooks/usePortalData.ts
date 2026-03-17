@@ -12,6 +12,7 @@ async function fetchPortalData(token: string): Promise<PortalData> {
       method: 'GET',
       headers: {
         'apikey': anonKey,
+        'Authorization': `Bearer ${anonKey}`,
         'Content-Type': 'application/json',
       },
     }
