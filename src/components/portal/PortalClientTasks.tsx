@@ -154,7 +154,7 @@ function TaskRow({ task, token, onTaskComplete }: TaskRowProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 gap-1 text-xs min-h-[44px]"
+                className="px-2 gap-1 text-xs min-h-[44px]"
                 aria-label={`Open document for ${task.title} (opens in new tab)`}
               >
                 <ExternalLink className="w-3 h-3" aria-hidden="true" />

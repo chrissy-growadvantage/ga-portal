@@ -104,7 +104,7 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
   }
 
   return (
-    <div className={cn('px-5 py-5', !isLast && 'border-b border-border')}>
+    <div className={cn('px-5 py-4', !isLast && 'border-b border-border')}>
       {/* Content */}
       <div className="min-w-0">
         <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>

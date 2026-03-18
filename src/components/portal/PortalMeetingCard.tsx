@@ -13,7 +13,7 @@ export function PortalMeetingCard({ meetingAt, meetingLink }: PortalMeetingCardP
 
   return (
     <Card className="border-border/60 overflow-hidden">
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">

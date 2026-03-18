@@ -43,7 +43,7 @@ export function PortalNeedsAttention({
     >
       <div className="bg-card border-2 border-amber-400/80 rounded-2xl overflow-hidden shadow-md shadow-amber-100/60">
         {/* Header row — bold and unmissable */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-amber-200/70 bg-gradient-to-r from-amber-50 to-orange-50/40">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-amber-200/70 bg-gradient-to-r from-amber-50 to-orange-50/40">
           <div className="flex items-center gap-3">
             <div className="relative shrink-0">
               <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm">
@@ -101,7 +101,7 @@ export function PortalNeedsAttention({
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: (pendingApprovals.length + index) * 0.08, duration: 0.25 }}
-              className={cn('flex items-center gap-3 px-5 py-5', !isLast && 'border-b border-border')}
+              className={cn('flex items-center gap-3 px-5 py-4', !isLast && 'border-b border-border')}
             >
               <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-status-danger/10">
                 <AlertTriangle className="w-4.5 h-4.5 text-status-danger" />
@@ -131,7 +131,7 @@ export function PortalNeedsAttention({
           return (
             <div
               key={request.id}
-              className={cn('flex items-center gap-3 px-5 py-3', !isLast && 'border-b border-border')}
+              className={cn('flex items-center gap-3 px-5 py-4', !isLast && 'border-b border-border')}
             >
               <div className={cn(
                 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0',

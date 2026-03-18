@@ -118,7 +118,7 @@ function SidebarNavList({
 export function PortalDesktopSidebar(props: SidebarProps) {
   return (
     <aside className="hidden md:flex w-[220px] shrink-0 flex-col border-r border-border bg-card">
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto px-4 py-5">
         <SidebarNavList {...props} />
       </div>
     </aside>
@@ -143,8 +143,8 @@ export function PortalMobileNav(
           <Menu className="w-5 h-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[260px] pt-8">
-        <div className="mb-6 px-3">
+      <SheetContent side="left" className="w-[260px] pt-6">
+        <div className="mb-5 px-4">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Portal
           </p>

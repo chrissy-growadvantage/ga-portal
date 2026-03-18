@@ -27,7 +27,7 @@ function InProgressCard({ item }: { item: DeliveryItem }) {
   const statusCfg = DELIVERY_STATUS_CONFIG[item.status];
 
   return (
-    <div className="rounded-lg border border-border/60 bg-background p-3">
+    <div className="rounded-lg border border-border/60 bg-background p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">{item.title}</p>
@@ -54,7 +54,7 @@ function CompletedItem({ item, index }: { item: DeliveryItem; index: number }) {
       initial={{ opacity: 0, x: -4 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05, duration: 0.2 }}
-      className="flex items-center gap-2 py-1.5 px-1"
+      className="flex items-center gap-2.5 py-2.5 px-2"
     >
       <CheckCircle2 className="w-3.5 h-3.5 text-status-success shrink-0" />
       <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export function PortalWorkVisibility({
             <span className="text-foreground ml-1">({completedThisMonth.length})</span>
           </h3>
           <Card className="border-border/40 bg-muted/10">
-            <CardContent className="py-1.5 divide-y divide-border/30">
+            <CardContent className="p-4 divide-y divide-border/30">
               {completedThisMonth.map((item, index) => (
                 <CompletedItem key={item.id} item={item} index={index} />
               ))}
@@ -184,7 +184,7 @@ function PastMonthCollapsible({
     <Collapsible key={monthKey} open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
         <Card className="border-border/60 cursor-pointer hover:bg-muted/30 transition-colors">
-          <CardContent className="py-3 flex items-center justify-between">
+          <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium">{format(date, 'MMMM yyyy')}</p>
               <p className="text-xs text-muted-foreground">
@@ -198,11 +198,11 @@ function PastMonthCollapsible({
         </Card>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="mt-2 space-y-1.5 pl-2">
+        <div className="mt-3 space-y-1 pl-3">
           {items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-2 py-1.5 text-sm text-muted-foreground"
+              className="flex items-center gap-2.5 py-2.5 text-sm text-muted-foreground"
             >
               <span
                 className={cn(

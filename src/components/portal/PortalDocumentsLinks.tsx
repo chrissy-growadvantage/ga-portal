@@ -35,7 +35,7 @@ type DocCardProps = {
 function DocCard({ icon: Icon, label, href }: DocCardProps) {
   return (
     <Card className="border-border/60">
-      <CardContent className="py-3 flex items-center justify-between gap-3">
+      <CardContent className="p-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
             <Icon className="w-3.5 h-3.5 text-muted-foreground" />
@@ -175,7 +175,7 @@ export function PortalDocumentsLinks({
           <div className="space-y-2">
             {monthlySnapshots.map((snapshot) => (
               <Card key={snapshot.id} className="border-border/60">
-                <CardContent className="py-3 flex items-center justify-between gap-3">
+                <CardContent className="p-4 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
                       <FileText className="w-3.5 h-3.5 text-muted-foreground" />

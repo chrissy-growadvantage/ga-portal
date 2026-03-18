@@ -125,7 +125,7 @@ export function PortalRightNow({
           variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
         >
           <Card className="border-border/60 overflow-hidden">
-            <CardContent className="pt-5 pb-5">
+            <CardContent className="p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
                 Deliverables This Month
               </p>
@@ -168,7 +168,7 @@ export function PortalRightNow({
           variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
         >
           <Card className="border-border/60">
-            <CardContent className="pt-5 pb-5">
+            <CardContent className="p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
                 Plan Usage
               </p>
@@ -225,7 +225,7 @@ export function PortalRightNow({
                 : 'border-border/60',
             )}
           >
-            <CardContent className="pt-5 pb-5">
+            <CardContent className="p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
                 Awaiting You
               </p>

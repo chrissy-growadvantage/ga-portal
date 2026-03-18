@@ -120,7 +120,7 @@ export function PortalOnboardingStepper({ stages, isLoading = false }: PortalOnb
                 {/* Content */}
                 <div
                   className={cn(
-                    'flex-1 min-w-0 pb-6',
+                    'flex-1 min-w-0',
                     isLast && 'pb-0',
                     needsLeftBorder && 'border-l-4 border-destructive pl-3 -ml-1',
                   )}

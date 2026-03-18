@@ -87,10 +87,10 @@ export function PortalLayout({
       <div className="flex flex-1 min-h-0">
         {sidebar}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-[960px] mx-auto px-6 py-8 space-y-8">
+          <div className="max-w-3xl mx-auto px-5 py-6 space-y-6">
             {children}
           </div>
-          <footer className="max-w-[960px] mx-auto px-6 pb-12 mt-6 pt-6 border-t border-border/50 text-center space-y-1">
+          <footer className="max-w-3xl mx-auto px-5 pb-8 mt-8 pt-6 border-t border-border/50 text-center space-y-1">
             <p className="text-xs text-muted-foreground">
               Questions? Reach out to{' '}
               <span className="font-medium">{operatorName}</span>

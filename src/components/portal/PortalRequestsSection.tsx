@@ -134,7 +134,7 @@ export function PortalRequestsSection({
   return (
     <div>
       {/* CTA card */}
-      <div className="bg-primary/5 border border-primary/20 rounded-xl px-5 py-4 flex items-center justify-between gap-4 mb-6">
+      <div className="bg-primary/5 border border-primary/20 rounded-xl px-5 py-4 flex items-center justify-between gap-4 mb-4">
         <div>
           <p className="text-sm font-semibold">Got something on your mind?</p>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">

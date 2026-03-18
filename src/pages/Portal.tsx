@@ -400,7 +400,7 @@ function PortalContent({
       case 'home':
         return (
           <motion.div
-            className="contents"
+            className="space-y-4"
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
@@ -445,7 +445,7 @@ function PortalContent({
             {openRequestsCount > 0 && (
               <button
                 onClick={() => setSearchParams({ section: 'requests' })}
-                className="w-full flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-3 text-left hover:bg-destructive/10 transition-colors"
+                className="w-full flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-4 text-left hover:bg-destructive/10 transition-colors"
               >
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold shrink-0">
                   {openRequestsCount}
@@ -514,9 +514,9 @@ function PortalContent({
 
             {/* Tasks — max 3, then link to full tasks */}
             {hasTasks && pendingTasks.length > 0 && (
-              <section className="space-y-3">
+              <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold tracking-tight">
+                  <h2 className="text-base font-semibold tracking-tight">
                     Your Tasks
                     <span className="ml-2 text-sm font-normal text-muted-foreground">
                       ({pendingTasks.length} open)
@@ -564,7 +564,7 @@ function PortalContent({
                       <div
                         key={d.id}
                         className={cn(
-                          'flex items-center gap-2 px-3 py-1.5',
+                          'flex items-center gap-3 px-4 py-2.5',
                           i < Math.min(allDeliveriesSorted.length, 4) - 1 && 'border-b border-border/20',
                         )}
                       >
@@ -591,8 +591,8 @@ function PortalContent({
 
       case 'plan':
         return (
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">My Plan</h2>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight">My Plan</h2>
             <PortalHoursUsed hoursUsed={client.hours_used_this_month} />
             <PortalRightNow
               client={client}
@@ -606,8 +606,8 @@ function PortalContent({
 
       case 'requests':
         return (
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">Ask Your Team</h2>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight">Ask Your Team</h2>
             <PortalRequestsSection
               requests={scopeRequests}
               onRequestSomething={() => setRequestDialogOpen(true)}
@@ -618,7 +618,7 @@ function PortalContent({
       case 'resources':
         return (
           <section className="space-y-6">
-            <h2 className="text-lg font-semibold tracking-tight">Resources</h2>
+            <h2 className="text-xl font-bold tracking-tight">Resources</h2>
             <PortalDocumentsLinks
               client={client}
               agreements={agreements}
@@ -635,8 +635,8 @@ function PortalContent({
 
       case 'tasks':
         return (
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight">
               Your Tasks
               {pendingTasks.length > 0 && (
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
@@ -654,8 +654,8 @@ function PortalContent({
 
       case 'work':
         return (
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">What We've Achieved</h2>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight">What We've Achieved</h2>
             <PortalWorkVisibility
               deliveries={currentDeliveries}
               pastByMonth={pastByMonth}
@@ -666,8 +666,8 @@ function PortalContent({
 
       case 'onboarding':
         return (
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">Onboarding</h2>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight">Onboarding</h2>
             <PortalOnboardingStepper stages={onboardingStages} />
           </section>
         );
