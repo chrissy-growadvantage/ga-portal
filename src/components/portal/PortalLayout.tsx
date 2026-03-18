@@ -32,11 +32,12 @@ export function PortalLayout({
   const displayName = businessName || operatorName;
 
   useEffect(() => {
-    document.title = `${clientName} — Client Portal`;
+    const portalBrand = displayName || 'Grow Advantage';
+    document.title = `${clientName} — ${portalBrand} Portal`;
     return () => {
-      document.title = 'Luma';
+      document.title = 'Grow Advantage Portal';
     };
-  }, [clientName]);
+  }, [clientName, displayName]);
 
   const cssVars: CSSProperties = {
     ...(primaryColor ? { ['--portal-primary' as string]: primaryColor } : {}),
@@ -99,7 +100,7 @@ export function PortalLayout({
               .
             </p>
             {!logoUrl && (
-              <p className="text-xs text-muted-foreground/40">Powered by Luma</p>
+              <p className="text-xs text-muted-foreground/40">Grow Advantage Portal</p>
             )}
           </footer>
         </main>

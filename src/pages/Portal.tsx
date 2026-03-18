@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { usePortalData } from '@/hooks/usePortalData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -303,10 +304,10 @@ function PortalContent({
     const parts: string[] = [];
     if (currentDeliveries.length > 0) {
       parts.push(
-        `Your team completed ${currentDeliveries.length} ${currentDeliveries.length === 1 ? 'delivery' : 'deliveries'} in ${monthName}`,
+        `Your team completed ${currentDeliveries.length} ${currentDeliveries.length === 1 ? 'deliverable' : 'deliverables'} in ${monthName}`,
       );
     } else {
-      parts.push(`Your team is working on ${monthName}'s deliveries`);
+      parts.push(`Your team is working on ${monthName}'s deliverables`);
     }
     if (currentScopes.length > 0 && scopePercentage > 0) {
       parts.push(`and you're ${scopePercentage}% through your monthly budget`);
@@ -371,7 +372,7 @@ function PortalContent({
       },
       {
         id: 'work',
-        label: 'Work Done',
+        label: 'What We\'ve Achieved',
         icon: SECTION_ICONS.work,
         visible: true,
       },
@@ -398,7 +399,12 @@ function PortalContent({
     switch (activeSection) {
       case 'home':
         return (
-          <>
+          <motion.div
+            className="contents"
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+          >
             {/* Stage-aware action banner */}
             <PortalWhatToDoNext onboardingStages={onboardingStages} />
 
@@ -415,7 +421,10 @@ function PortalContent({
             )}
 
             {/* Greeting narrative */}
-            <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-4 flex items-start gap-3">
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
+              className="rounded-xl border border-border/50 bg-muted/20 px-5 py-4 flex items-start gap-3"
+            >
               <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-foreground">{greeting}</p>
@@ -425,12 +434,12 @@ function PortalContent({
                 {thisWeekDeliveries.length > 0 && (
                   <p className="text-xs text-primary font-medium mt-1.5">
                     {thisWeekDeliveries.length} new{' '}
-                    {thisWeekDeliveries.length === 1 ? 'delivery' : 'deliveries'} in
+                    {thisWeekDeliveries.length === 1 ? 'deliverable' : 'deliverables'} in
                     the last 7 days
                   </p>
                 )}
               </div>
-            </div>
+            </motion.div>
 
             {/* Open requests count — red when > 0 */}
             {openRequestsCount > 0 && (
@@ -526,11 +535,11 @@ function PortalContent({
               </section>
             )}
 
-            {/* Recent work — 3 items only, link to full Work Done */}
+            {/* Delivered For You — 3 items only, link to full What We've Achieved */}
             {allDeliveriesSorted.length > 0 && (
               <section className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold tracking-tight">Recent Work</h2>
+                  <h2 className="text-base font-medium tracking-tight text-muted-foreground">Delivered For You</h2>
                   <button
                     onClick={() => setSearchParams({ section: 'work' })}
                     className="text-xs text-primary hover:underline font-medium"
@@ -538,20 +547,20 @@ function PortalContent({
                     See all
                   </button>
                 </div>
-                <div className="rounded-xl border border-border/60 bg-background overflow-hidden">
-                  <div className="divide-y divide-border/40">
+                <div className="rounded-xl border border-border/40 bg-muted/20 overflow-hidden">
+                  <div className="divide-y divide-border/30">
                     {allDeliveriesSorted.slice(0, 3).map((d) => {
                       const date = new Date(d.completed_at || d.created_at);
                       const statusCfg = DELIVERY_STATUS_CONFIG[d.status];
                       return (
-                        <div key={d.id} className="flex items-center gap-3 px-4 py-3">
-                          <span className="text-xs text-muted-foreground whitespace-nowrap w-12 shrink-0">
+                        <div key={d.id} className="flex items-center gap-2.5 px-4 py-2">
+                          <span className="text-[11px] text-muted-foreground/70 whitespace-nowrap w-10 shrink-0">
                             {format(date, 'MMM d')}
                           </span>
-                          <span className="flex-1 text-sm font-medium truncate">{d.title}</span>
+                          <span className="flex-1 text-xs text-muted-foreground truncate">{d.title}</span>
                           <Badge
                             variant="secondary"
-                            className={cn('text-xs shrink-0', statusCfg.color)}
+                            className={cn('text-[10px] shrink-0 opacity-70', statusCfg.color)}
                           >
                             {statusCfg.label}
                           </Badge>
@@ -562,7 +571,7 @@ function PortalContent({
                 </div>
               </section>
             )}
-          </>
+          </motion.div>
         );
 
       case 'plan':
@@ -631,7 +640,7 @@ function PortalContent({
       case 'work':
         return (
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight">Work Done</h2>
+            <h2 className="text-lg font-semibold tracking-tight">What We've Achieved</h2>
             <PortalWorkVisibility
               deliveries={currentDeliveries}
               pastByMonth={pastByMonth}

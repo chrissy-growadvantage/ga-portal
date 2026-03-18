@@ -2,6 +2,7 @@ import { ApprovalCard } from '@/components/portal/ApprovalCard';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { format, isBefore, parseISO, startOfDay } from 'date-fns';
+import { motion } from 'framer-motion';
 import type { DeliveryItem } from '@/types/database';
 import type { PortalScopeRequest, PortalClientTask } from '@/types/portal';
 import { REQUEST_STATUS_CONFIG } from '@/lib/constants';
@@ -35,22 +36,29 @@ export function PortalNeedsAttention({
   if (totalCount === 0) return null;
 
   return (
-    <section>
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+    >
+      <div className="bg-card border-2 border-amber-400/70 rounded-xl overflow-hidden shadow-sm shadow-amber-100/50">
         {/* Header row */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <div>
-            <p className="text-sm font-semibold">Needs Your Attention</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {pendingApprovals.length > 0
-                ? `${pendingApprovals.length} item${pendingApprovals.length === 1 ? '' : 's'} waiting on you`
-                : actualOverdue.length > 0
-                  ? `${actualOverdue.length} overdue task${actualOverdue.length === 1 ? '' : 's'}`
-                  : 'Recently resolved items'}
-            </p>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-amber-200/60 bg-amber-50/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <div>
+              <p className="text-sm font-bold text-amber-900">Requires Your Action</p>
+              <p className="text-xs text-amber-700/70 mt-0.5">
+                {pendingApprovals.length > 0
+                  ? `${pendingApprovals.length} item${pendingApprovals.length === 1 ? '' : 's'} waiting on you`
+                  : actualOverdue.length > 0
+                    ? `${actualOverdue.length} overdue task${actualOverdue.length === 1 ? '' : 's'}`
+                    : 'Recently resolved items'}
+              </p>
+            </div>
           </div>
           {(pendingApprovals.length > 0 || actualOverdue.length > 0) && (
-            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-status-danger text-white text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center min-w-[26px] h-[26px] px-2 rounded-full bg-amber-500 text-white text-[11px] font-bold shadow-sm">
               {pendingApprovals.length + actualOverdue.length}
             </span>
           )}
@@ -58,32 +66,41 @@ export function PortalNeedsAttention({
 
         {/* Approval rows */}
         {pendingApprovals.map((item, index) => (
-          <ApprovalCard
+          <motion.div
             key={item.id}
-            item={item}
-            token={token}
-            onAction={onApprovalAction}
-            isLast={
-              index === pendingApprovals.length - 1 &&
-              recentlyResolvedRequests.length === 0 &&
-              actualOverdue.length === 0
-            }
-          />
+            initial={{ opacity: 0, x: -4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.08, duration: 0.25 }}
+          >
+            <ApprovalCard
+              item={item}
+              token={token}
+              onAction={onApprovalAction}
+              isLast={
+                index === pendingApprovals.length - 1 &&
+                recentlyResolvedRequests.length === 0 &&
+                actualOverdue.length === 0
+              }
+            />
+          </motion.div>
         ))}
 
         {/* Overdue tasks */}
         {actualOverdue.map((task, index) => {
           const isLast = index === actualOverdue.length - 1 && recentlyResolvedRequests.length === 0;
           return (
-            <div
+            <motion.div
               key={task.id}
+              initial={{ opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: (pendingApprovals.length + index) * 0.08, duration: 0.25 }}
               className={cn('flex items-center gap-3 px-5 py-4', !isLast && 'border-b border-border')}
             >
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-status-danger/10">
-                <AlertTriangle className="w-3.5 h-3.5 text-status-danger" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-status-danger/10">
+                <AlertTriangle className="w-4 h-4 text-status-danger" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{task.title}</p>
+                <p className="text-sm font-semibold truncate">{task.title}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Task was due{' '}
                   <span className="font-medium text-status-danger">
@@ -94,7 +111,7 @@ export function PortalNeedsAttention({
               <Badge variant="secondary" className="shrink-0 text-xs bg-status-danger/10 text-status-danger">
                 Overdue
               </Badge>
-            </div>
+            </motion.div>
           );
         })}
 
@@ -107,7 +124,7 @@ export function PortalNeedsAttention({
           return (
             <div
               key={request.id}
-              className={cn('flex items-center gap-3 px-5 py-4', !isLast && 'border-b border-border')}
+              className={cn('flex items-center gap-3 px-5 py-3', !isLast && 'border-b border-border')}
             >
               <div className={cn(
                 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0',
@@ -135,6 +152,6 @@ export function PortalNeedsAttention({
           );
         })}
       </div>
-    </section>
+    </motion.section>
   );
 }

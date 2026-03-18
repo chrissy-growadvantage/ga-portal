@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -47,24 +48,27 @@ function InProgressCard({ item }: { item: DeliveryItem }) {
   );
 }
 
-function CompletedItem({ item }: { item: DeliveryItem }) {
+function CompletedItem({ item, index }: { item: DeliveryItem; index: number }) {
   return (
-    <div className="flex items-start gap-2.5 py-2 px-1">
-      <CheckCircle2 className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
+    <motion.div
+      initial={{ opacity: 0, x: -4 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.2 }}
+      className="flex items-center gap-2 py-1.5 px-1"
+    >
+      <CheckCircle2 className="w-3.5 h-3.5 text-status-success shrink-0" />
       <div className="min-w-0 flex-1">
-        <p className="text-sm">{item.title}</p>
-        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-          <DeliveryBadge label={item.category} />
-          {item.phase && <DeliveryBadge label={item.phase} />}
-          {item.uplift && <DeliveryBadge label={item.uplift} />}
-          {item.completed_at && (
-            <span className="text-xs text-muted-foreground">
-              {format(parseISO(item.completed_at), 'MMM d')}
-            </span>
-          )}
-        </div>
+        <p className="text-xs text-muted-foreground truncate">{item.title}</p>
       </div>
-    </div>
+      <div className="flex items-center gap-1 shrink-0">
+        {item.completed_at && (
+          <span className="text-[10px] text-muted-foreground/60">
+            {format(parseISO(item.completed_at), 'MMM d')}
+          </span>
+        )}
+        <DeliveryBadge label={item.category} />
+      </div>
+    </motion.div>
   );
 }
 
@@ -95,7 +99,12 @@ export function PortalWorkVisibility({
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       {/* Working On */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
@@ -116,13 +125,13 @@ export function PortalWorkVisibility({
       {completedThisMonth.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-            Completed This Month{' '}
+            Delivered For You This Month{' '}
             <span className="text-foreground ml-1">({completedThisMonth.length})</span>
           </h3>
-          <Card className="border-border/60">
-            <CardContent className="py-2 divide-y divide-border/40">
-              {completedThisMonth.map((item) => (
-                <CompletedItem key={item.id} item={item} />
+          <Card className="border-border/40 bg-muted/10">
+            <CardContent className="py-1.5 divide-y divide-border/30">
+              {completedThisMonth.map((item, index) => (
+                <CompletedItem key={item.id} item={item} index={index} />
               ))}
             </CardContent>
           </Card>
@@ -131,7 +140,7 @@ export function PortalWorkVisibility({
 
       {/* Past Months */}
       {pastMonthKeys.length > 0 && (
-        <div className="space-y-2">
+        <motion.div className="space-y-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           {pastMonthKeys.map((monthKey) => {
             const items = pastByMonth[monthKey];
             const date = new Date(monthKey + '-01');
@@ -150,9 +159,9 @@ export function PortalWorkVisibility({
               />
             );
           })}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
