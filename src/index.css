@@ -74,9 +74,15 @@ html {
     --status-neutral: 220 9% 46%;        /* gray — draft, not started, archived */
 
     /* Portal-specific overrides */
-    --portal-background: 220 14% 98%;
+    --portal-background: 0 0% 99%;          /* near-pure white — Olivia: "clean, white, open" */
     --portal-card: 0 0% 100%;
     --portal-max-width: 672px;
+
+    /* Grow Advantage brand colors — applied via [data-portal] selector below */
+    --ga-primary: 155 60% 26%;              /* #1A6B45 forest green */
+    --ga-primary-foreground: 0 0% 100%;
+    --ga-primary-glow: 155 60% 95%;         /* soft green tint */
+    --ga-accent: 28 92% 58%;               /* amber — GA brand energy */
 
     /* Login page */
     --login-bg: 240 5% 96%;
@@ -166,6 +172,20 @@ html {
     @apply font-semibold;
     letter-spacing: -0.005em;
   }
+}
+
+/* Grow Advantage portal theme — overrides primary palette within the portal */
+[data-portal] {
+  --primary: 155 60% 26%;              /* GA forest green */
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 155 60% 95%;
+  --ring: 155 60% 26%;
+  --background: 0 0% 99%;
+  --sidebar-primary: 155 60% 26%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 155 60% 95%;
+  --sidebar-accent-foreground: 155 60% 26%;
+  --sidebar-ring: 155 60% 26%;
 }
 
 @layer components {

@@ -104,11 +104,11 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
   }
 
   return (
-    <div className={cn('px-5 py-4', !isLast && 'border-b border-border')}>
+    <div className={cn('px-5 py-5', !isLast && 'border-b border-border')}>
       {/* Content */}
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-foreground">{item.title}</p>
-        <div className="flex items-center gap-2 mt-1">
+        <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>
+        <div className="flex items-center gap-2 mt-1.5">
           <Badge variant="outline" className="text-xs px-1.5 py-0 font-normal">
             {item.category}
           </Badge>
@@ -119,7 +119,7 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
           )}
         </div>
         {item.description && (
-          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed line-clamp-2">
             {item.description}
           </p>
         )}
@@ -127,23 +127,21 @@ export function ApprovalCard({ item, token, onAction, isLast }: ApprovalCardProp
 
       {/* Actions — always below content */}
       {!showFeedback ? (
-        <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-border/50">
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-border/50">
           <Button
-            variant="ghost"
-            size="sm"
+            variant="outline"
             onClick={() => setShowFeedback(true)}
             disabled={submitting}
-            className="text-xs min-h-[44px] text-muted-foreground hover:text-foreground"
+            className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground"
           >
             Request Changes
           </Button>
           <Button
-            size="sm"
             onClick={handleApprove}
             disabled={submitting}
-            className="text-xs min-h-[44px] gap-1.5 bg-status-success hover:bg-status-success/90 text-white"
+            className="flex-1 h-11 text-sm gap-2 bg-status-success hover:bg-status-success/90 text-white font-semibold shadow-sm"
           >
-            {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             Approve
           </Button>
         </div>

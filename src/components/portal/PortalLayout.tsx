@@ -45,24 +45,24 @@ export function PortalLayout({
   };
 
   return (
-    <div className="min-h-screen bg-portal-background flex flex-col" style={cssVars}>
+    <div data-portal className="min-h-screen bg-portal-background flex flex-col" style={cssVars}>
       {/* Full-width sticky header */}
-      <header className="w-full bg-card border-b border-border shrink-0 sticky top-0 z-20">
-        <div className="flex items-center justify-between h-14 px-5">
+      <header className="w-full bg-card border-b border-border/60 shrink-0 sticky top-0 z-20 shadow-[0_1px_3px_hsl(0_0%_0%/0.05)]">
+        <div className="flex items-center justify-between h-[58px] px-5">
           {/* Left: logo + operator name + divider + client name */}
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt={displayName} className="h-7 w-auto object-contain" />
+              <img src={logoUrl} alt={displayName} className="h-8 w-auto object-contain" />
             ) : (
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-bold text-primary-foreground">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
+                <span className="text-[12px] font-bold text-primary-foreground">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
-            <span className="font-bold text-[15px] tracking-tight">{displayName}</span>
-            <div className="w-px h-4 bg-border" />
-            <span className="text-[13.5px] text-muted-foreground">{clientName}</span>
+            <span className="font-bold text-[15px] tracking-tight text-foreground">{displayName}</span>
+            <div className="w-px h-4 bg-border/70" />
+            <span className="text-[13px] text-muted-foreground font-medium">{clientName}</span>
           </div>
 
           {/* Right: request button + mobile nav */}

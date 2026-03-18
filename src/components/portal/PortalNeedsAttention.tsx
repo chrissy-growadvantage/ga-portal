@@ -37,18 +37,30 @@ export function PortalNeedsAttention({
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
     >
-      <div className="bg-card border-2 border-amber-400/70 rounded-xl overflow-hidden shadow-sm shadow-amber-100/50">
-        {/* Header row */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-amber-200/60 bg-amber-50/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+      <div className="bg-card border-2 border-amber-400/80 rounded-2xl overflow-hidden shadow-md shadow-amber-100/60">
+        {/* Header row — bold and unmissable */}
+        <div className="flex items-center justify-between px-5 py-5 border-b border-amber-200/70 bg-gradient-to-r from-amber-50 to-orange-50/40">
+          <div className="flex items-center gap-3">
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm">
+                <AlertTriangle className="w-4.5 h-4.5 text-white" />
+              </div>
+              {(pendingApprovals.length + actualOverdue.length) > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 text-white text-[9px] font-bold items-center justify-center">
+                    {pendingApprovals.length + actualOverdue.length}
+                  </span>
+                </span>
+              )}
+            </div>
             <div>
-              <p className="text-sm font-bold text-amber-900">Requires Your Action</p>
-              <p className="text-xs text-amber-700/70 mt-0.5">
+              <p className="text-base font-bold text-amber-900 leading-tight">Requires Your Action</p>
+              <p className="text-xs text-amber-700/80 mt-0.5">
                 {pendingApprovals.length > 0
                   ? `${pendingApprovals.length} item${pendingApprovals.length === 1 ? '' : 's'} waiting on you`
                   : actualOverdue.length > 0
@@ -57,11 +69,6 @@ export function PortalNeedsAttention({
               </p>
             </div>
           </div>
-          {(pendingApprovals.length > 0 || actualOverdue.length > 0) && (
-            <span className="inline-flex items-center justify-center min-w-[26px] h-[26px] px-2 rounded-full bg-amber-500 text-white text-[11px] font-bold shadow-sm">
-              {pendingApprovals.length + actualOverdue.length}
-            </span>
-          )}
         </div>
 
         {/* Approval rows */}
@@ -94,10 +101,10 @@ export function PortalNeedsAttention({
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: (pendingApprovals.length + index) * 0.08, duration: 0.25 }}
-              className={cn('flex items-center gap-3 px-5 py-4', !isLast && 'border-b border-border')}
+              className={cn('flex items-center gap-3 px-5 py-5', !isLast && 'border-b border-border')}
             >
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-status-danger/10">
-                <AlertTriangle className="w-4 h-4 text-status-danger" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-status-danger/10">
+                <AlertTriangle className="w-4.5 h-4.5 text-status-danger" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">{task.title}</p>

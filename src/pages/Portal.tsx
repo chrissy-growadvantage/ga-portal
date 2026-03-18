@@ -422,8 +422,8 @@ function PortalContent({
 
             {/* Greeting narrative */}
             <motion.div
-              variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
-              className="rounded-xl border border-border/50 bg-muted/20 px-5 py-4 flex items-start gap-3"
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
+              className="rounded-xl border border-border/40 bg-gradient-to-br from-primary-glow/40 to-transparent px-5 py-4 flex items-start gap-3"
             >
               <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div>
@@ -457,12 +457,16 @@ function PortalContent({
             )}
 
             {/* Quick links row */}
-            <PortalQuickLinks
-              slackUrl={client.portal_slack_url}
-              driveUrl={client.portal_drive_url}
-              bookingUrl={client.portal_booking_url}
-              onRequestSomething={() => setRequestDialogOpen(true)}
-            />
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
+            >
+              <PortalQuickLinks
+                slackUrl={client.portal_slack_url}
+                driveUrl={client.portal_drive_url}
+                bookingUrl={client.portal_booking_url}
+                onRequestSomething={() => setRequestDialogOpen(true)}
+              />
+            </motion.div>
 
             {/* Monthly summary — focus + completed + plan collapsed into one card */}
             {(client.this_month_focus || client.completed_this_month || client.monthly_plan_notes) && (
@@ -535,11 +539,16 @@ function PortalContent({
               </section>
             )}
 
-            {/* Delivered For You — 3 items only, link to full What We've Achieved */}
+            {/* Delivered For You — compact list, link to full What We've Achieved */}
             {allDeliveriesSorted.length > 0 && (
-              <section className="space-y-3">
+              <motion.section
+                variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
+                className="space-y-2"
+              >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-medium tracking-tight text-muted-foreground">Delivered For You</h2>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                    Recently Delivered
+                  </h2>
                   <button
                     onClick={() => setSearchParams({ section: 'work' })}
                     className="text-xs text-primary hover:underline font-medium"
@@ -547,29 +556,35 @@ function PortalContent({
                     See all
                   </button>
                 </div>
-                <div className="rounded-xl border border-border/40 bg-muted/20 overflow-hidden">
-                  <div className="divide-y divide-border/30">
-                    {allDeliveriesSorted.slice(0, 3).map((d) => {
-                      const date = new Date(d.completed_at || d.created_at);
-                      const statusCfg = DELIVERY_STATUS_CONFIG[d.status];
-                      return (
-                        <div key={d.id} className="flex items-center gap-2.5 px-4 py-2">
-                          <span className="text-[11px] text-muted-foreground/70 whitespace-nowrap w-10 shrink-0">
-                            {format(date, 'MMM d')}
-                          </span>
-                          <span className="flex-1 text-xs text-muted-foreground truncate">{d.title}</span>
-                          <Badge
-                            variant="secondary"
-                            className={cn('text-[10px] shrink-0 opacity-70', statusCfg.color)}
-                          >
-                            {statusCfg.label}
-                          </Badge>
-                        </div>
-                      );
-                    })}
-                  </div>
+                <div className="rounded-lg border border-border/30 bg-muted/10 overflow-hidden">
+                  {allDeliveriesSorted.slice(0, 4).map((d, i) => {
+                    const date = new Date(d.completed_at || d.created_at);
+                    const statusCfg = DELIVERY_STATUS_CONFIG[d.status];
+                    return (
+                      <div
+                        key={d.id}
+                        className={cn(
+                          'flex items-center gap-2 px-3 py-1.5',
+                          i < Math.min(allDeliveriesSorted.length, 4) - 1 && 'border-b border-border/20',
+                        )}
+                      >
+                        <span className="text-[10px] text-muted-foreground/50 whitespace-nowrap w-9 shrink-0 tabular-nums">
+                          {format(date, 'MMM d')}
+                        </span>
+                        <span className="flex-1 text-xs text-muted-foreground truncate leading-tight">
+                          {d.title}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className={cn('text-[10px] shrink-0 opacity-60 py-0 px-1.5 h-4', statusCfg.color)}
+                        >
+                          {statusCfg.label}
+                        </Badge>
+                      </div>
+                    );
+                  })}
                 </div>
-              </section>
+              </motion.section>
             )}
           </motion.div>
         );
