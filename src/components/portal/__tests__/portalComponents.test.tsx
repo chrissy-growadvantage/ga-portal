@@ -127,7 +127,7 @@ describe('PortalNeedsAttention', () => {
       />,
     );
 
-    expect(screen.getByText('Needs Your Attention')).toBeInTheDocument();
+    expect(screen.getByText('Requires Your Action')).toBeInTheDocument();
     expect(screen.getByText('2 items waiting on you')).toBeInTheDocument();
     // Count badge
     expect(screen.getByText('2')).toBeInTheDocument();
